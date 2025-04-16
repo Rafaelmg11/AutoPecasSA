@@ -24,11 +24,9 @@ class PRODUTO:
             host = "localhost",
             user = "root",
             password = "",
-            database = "mobiliariasa_db"
+            database = "autopecassa_db"
         )
         self.cursor = self.conn.cursor()
-        self.conn.commit()
-
 
 
     def create_widgets(self):
@@ -95,25 +93,25 @@ class PRODUTO:
 
         def cadastrarProduto():
             #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
-            produto = self.ProdutoEntry.get()
+            # produto = self.ProdutoEntry.get()
             descricao = self.DescricaoEntry.get()
             quantidade = self.QuantidadeEntry.get()
-            valorDeCompra = self.ValorDeCompraEntry.get()
-            valorDeVenda = self.ValorDeVendaEntry.get()
-            fornecedor = self.FornecedorEntry.get()
+            # valorDeCompra = self.ValorDeCompraEntry.get()
+            # valorDeVenda = self.ValorDeVendaEntry.get()
+            # fornecedor = self.FornecedorEntry.get()
 
             #VERIFICANDO SE TODOS OS CAMPOS ESTÂO PREENCHIDOS:
-            if produto and descricao and quantidade and valorDeCompra and valorDeVenda and fornecedor:
-                create_produto(produto,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor)
+            if descricao and quantidade:
+                create_produto(descricao,quantidade)
             #Limpar campos:
-                self.ProdutoEntry.delete(0, tk.END)
+                # self.ProdutoEntry.delete(0, tk.END)
                 self.DescricaoEntry.delete(0, tk.END)
                 self.QuantidadeEntry.delete(0, tk.END)
-                self.ValorDeCompraEntry.delete(0, tk.END)
-                self.ValorDeVendaEntry.delete(0, tk.END)
-                self.FornecedorEntry.delete(0, tk.END)
-                self.CodigoEntry.delete(0, tk.END)
-                self.PesquisaEntry.delete(0, END)
+                # self.ValorDeCompraEntry.delete(0, tk.END)
+                # self.ValorDeVendaEntry.delete(0, tk.END)
+                # self.FornecedorEntry.delete(0, tk.END)
+                # self.CodigoEntry.delete(0, tk.END)
+                # self.PesquisaEntry.delete(0, END)
 
                 messagebox.showinfo("Success","Produto criado com sucesso!")
             else:

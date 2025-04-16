@@ -11,14 +11,15 @@ def get_connection():
         database = MYSQL_DATABASE,
     )
 
+
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 #FUNCÕES PRODUTOS:
-def create_produto(produto,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor):
+def create_produto(descricao,quantidade):
 
     conn = get_connection()
     cursor = conn.cursor()
-    query = "insert produto (produto,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor) VALUES (%s, %s, %s, %s, %s, %s)"
-    cursor.execute(query, (produto,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor))
+    query = "insert produto (descricao,quantidade) VALUES (%s, %s)"
+    cursor.execute(query, (descricao,quantidade))
     conn.commit()
     cursor.close()
     conn.close()
