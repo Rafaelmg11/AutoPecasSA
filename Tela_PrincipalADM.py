@@ -6,9 +6,9 @@ from Tela_Cadastro import CADASTRO
 
 
 class Menu:
-    def __init__(self, root,main_window):
+    def __init__(self, root):
         self.root = root
-        self.main_window = main_window
+        #self.main_window = main_window
         self.root.title("Tela Principal")
         self.root.geometry("600x600")
         self.root.configure(background="#5424A2")  # Cor de fundo da janela principal

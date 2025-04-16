@@ -10,7 +10,7 @@ import tkinter as tk
 # OBSERVAÇÕES  SOBRE O LOGIN (para diferenciar o adm de usuario, o adm tem que ter ADM no usuario, qualquer outro usuario sem ADM é apenas um usuario comum)
 
 class Tela_Login:
-    def __init__(self,root):
+    def __init__(self,root): #NÂO TEM MAIN_WINDOW
         self.root = root
         self.root.title("CADASTRO DE PRODUTOS") #Define o titulo
         self.root.geometry("400x500") #Define o tamanho da janela

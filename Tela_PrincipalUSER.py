@@ -3,9 +3,9 @@ from Tela_ProdutoUSER import PRODUTOUSER  # Importa a classe PRODUTO do arquivo 
 from Tela_FornecedorUSER import FORNECEDORUSER
 
 class Menu2:
-    def __init__(self, root,main_window):
+    def __init__(self, root):
         self.root = root
-        self.main_window = main_window
+        #self.main_window = main_window
         self.root.title("Tela Principal")
         self.root.geometry("450x450")
         self.root.configure(background="#5424A2")  # Cor de fundo da janela principal
