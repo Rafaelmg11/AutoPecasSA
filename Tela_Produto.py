@@ -2,7 +2,7 @@
 from tkinter import* #Importa tudo do tkinter
 from tkinter import messagebox #Importa as caixas de mensagem
 from tkinter import ttk #Importa o widgets tematicos do tkinter
-from crudPrincipal import get_connection,create_produto, read_produto , update_produto , delete_produto 
+from crudPrincipal import get_connection,create_peca, read_peca , update_peca , delete_peca 
 import tkinter as tk
 import mysql.connector
 
@@ -12,7 +12,7 @@ class PRODUTO:
     def __init__(self,root): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"
         self.root = root
         #self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
-        self.root.title("CADASTRO DE PRODUTOS") #Define o titulo
+        self.root.title("CADASTRO DE PEÇAS") #Define o titulo
         self.root.geometry("700x680") #Define o tamanho da janela
         self.root.configure(background = ("#5424A2")) #Configura a cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
@@ -32,54 +32,54 @@ class PRODUTO:
     def create_widgets(self):
 
         #CRIANDO LABELS:
-        TituloLabel = Label(self.root,text="PRODUTOS: ",font=("Georgia",25),bg = "#5424A2",fg = "WHITE") #Cria Label TITULO
-        ProdutoLabel = Label(self.root,text = "Produto: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Produtos
+        TituloLabel = Label(self.root,text="PEÇAS: ",font=("Georgia",25),bg = "#5424A2",fg = "WHITE") #Cria Label TITULO
+        TipoDePecaLabel = Label(self.root,text = "Tipo de Peça: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Peça
         DescricaoLabel = Label(self.root,text= "Descrição: ",font= ("Georgia",16),bg = "#5424A2", fg = "WHITE")#Cria Label Descrição
         QuantidadeLabel = Label (self.root,text= "Quantidade: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Quantidade
-        ValorDeCompraLabel = Label(self.root,text="Valor de Compra: ",font=("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Valor de Compra
-        ValorDeVendaLabel = Label (self.root,text="Valor de Venda: ",font=("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Valor de Venda
+        LoteLabel = Label(self.root,text="Lote: ",font=("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Lote
+        ValorLabel = Label (self.root,text="Valor: ",font=("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Valor
         FornecedorLabel = Label (self.root,text="Fornecedor: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Fornecedor
-        CodigoLabel = Label (self.root,text="Codigo de Produto: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Codigo de Produto
+        CodigoLabel = Label (self.root,text="Codigo de Peça: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") #Cria Label Codigo de Peça
 
         #POSICIONANDO LABELS:
         TituloLabel.pack(pady=40,anchor="center") #POSICIONA O TITULO
 
-        ProdutoLabel.place(x=40,y=105)
+        TipoDePecaLabel.place(x=40,y=105)
         DescricaoLabel.place(x=40,y=135)
         QuantidadeLabel.place(x=40,y=165)
-        ValorDeCompraLabel.place(x=40,y=195)
-        ValorDeVendaLabel.place(x=40,y=225)
+        LoteLabel.place(x=40,y=195)
+        ValorLabel.place(x=40,y=225)
         FornecedorLabel.place(x=40,y=255)
         CodigoLabel.place(x=40,y=285)
 
         #CRIANDO CAMPOS DE ENTRADAS:
-        self.ProdutoEntry = tk.Entry(self.root, width=44,font=("Georgia",12))
+        self.TipoDePecaEntry = tk.Entry(self.root, width=44,font=("Georgia",12))
         self.DescricaoEntry = tk.Entry(self.root, width=48,font=("Georgia",12))
         self.QuantidadeEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
-        self.ValorDeCompraEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
-        self.ValorDeVendaEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
+        self.LoteEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
+        self.ValorEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
         self.FornecedorEntry = tk.Entry(self.root, width=30,font=("Georgia",12))
         self.CodigoEntry = tk.Entry(self.root, width=10,font=("Georgia",12))
         self.PesquisaEntry = tk.Entry(self.root, width=53,font= ("Georgia",13))
 
         #POSICIONA OS CAMPOS DE ENTRADAS:
-        self.ProdutoEntry.place(x=132,y=110)
+        self.TipoDePecaEntry.place(x=132,y=110)
         self.DescricaoEntry.place(x=151, y= 140)
         self.QuantidadeEntry.place(x=166, y= 170)
-        self.ValorDeCompraEntry.place(x=214, y= 200)
-        self.ValorDeVendaEntry.place(x=199, y= 230)
+        self.LoteEntry.place(x=214, y= 200)
+        self.ValorEntry.place(x=199, y= 230)
         self.FornecedorEntry.place(x=166, y= 260)
         self.CodigoEntry.place(x=230,y=290)
         self.PesquisaEntry.place(x=143,y=392)
 
-        #CRIANDO A LISTA DE CADASTRO DE PRODUTOS:
+        #CRIANDO A LISTA DE CADASTRO DE PEÇAS:
         self.text_area = tk.Text(self.root, height=13,width=82)
         self.text_area.place(x=18,y=423)
 
         def voltar_para_principal():
-            # Fechar a janela atual de cadastro de produtos e voltar para a janela principal
-            self.root.quit()  # Fecha a janela de cadastro de produtos (destrói a instância)
-            self.root.destroy()  # Fecha a janela de cadastro de produtos, liberando recursos
+            # Fechar a janela atual de cadastro de peças e voltar para a janela principal
+            self.root.quit()  # Fecha a janela de cadastro de peças (destrói a instância)
+            self.root.destroy()  # Fecha a janela de cadastro de peças, liberando recursos
 
             self.main_window.deiconify()  # Reexibe a janela principal
 
@@ -91,39 +91,39 @@ class PRODUTO:
 
     #FUNÇÃO PRA REGISTRAR NO BANCO DE DADOS:
 
-        def cadastrarProduto():
+        def cadastrarPeca():
             #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
-            # produto = self.ProdutoEntry.get()
+            tipoDePeca = self.TipoDePecaEntry.get()
             descricao = self.DescricaoEntry.get()
             quantidade = self.QuantidadeEntry.get()
-            # valorDeCompra = self.ValorDeCompraEntry.get()
-            # valorDeVenda = self.ValorDeVendaEntry.get()
-            # fornecedor = self.FornecedorEntry.get()
+            lote = self.LoteEntry.get()
+            valor = self.ValorEntry.get()
+            fornecedor = self.FornecedorEntry.get()
 
             #VERIFICANDO SE TODOS OS CAMPOS ESTÂO PREENCHIDOS:
-            if descricao and quantidade:
-                create_produto(descricao,quantidade)
+            if tipoDePeca and descricao and quantidade and lote and valor and fornecedor:
+                create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor)
             #Limpar campos:
-                # self.ProdutoEntry.delete(0, tk.END)
+                self.TipoDePecaEntry.delete(0, tk.END)
                 self.DescricaoEntry.delete(0, tk.END)
                 self.QuantidadeEntry.delete(0, tk.END)
-                # self.ValorDeCompraEntry.delete(0, tk.END)
-                # self.ValorDeVendaEntry.delete(0, tk.END)
-                # self.FornecedorEntry.delete(0, tk.END)
-                # self.CodigoEntry.delete(0, tk.END)
-                # self.PesquisaEntry.delete(0, END)
+                self.LoteEntry.delete(0, tk.END)
+                self.ValorEntry.delete(0, tk.END)
+                self.FornecedorEntry.delete(0, tk.END)
+                self.CodigoEntry.delete(0, tk.END)
+                self.PesquisaEntry.delete(0, END)
 
                 messagebox.showinfo("Success","Produto criado com sucesso!")
             else:
                 messagebox.showerror("Error","Todos os campos são obrigatórios" )
 
         #BOTÃO DE PRODUTO
-        CadastrarButton = tk.Button (self.root,text = "CADASTRAR",font= ("Georgia",10),width=13,command=cadastrarProduto)
+        CadastrarButton = tk.Button (self.root,text = "CADASTRAR",font= ("Georgia",10),width=13,command=cadastrarPeca)
         CadastrarButton.place(x=40,y=335)
 
         #LISTAR PRODUTO
         def listar_produto():
-            produtos = read_produto() #PUXANDO FUNÇÃO DO CRUD
+            produtos = read_peca() #PUXANDO FUNÇÃO DO CRUD
             self.text_area.delete(1.0, tk.END) #ACESSANDO A "LISTA" DA TELA
             for produto in produtos: #produto ANDANDO EM produtos
                 self.text_area.insert(tk.END, f"COD.PRODUTO: {produto[0]}, Produto: {produto[1]}, Descricao: {produto[2]},Quantidade: {produto[3]},Valor de compra: {produto[4]},Valor de Venda: {produto[5]},Fornecedor: {produto[6]}\n")
@@ -155,7 +155,7 @@ class PRODUTO:
                     # Verificando se o produto foi encontrado
                     if produto_pesquisa:  # SE FOI ENCONTRADO...
                         if codigo_produto and produto and descricao and quantidade and valorDeCompra and valorDeVenda and fornecedor:
-                            update_produto(produto,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor,codigo_produto) #PUXANDO A FUNÇÃO DO CRUD E AS VARIAVEIS
+                            update_peca(produto,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor,codigo_produto) #PUXANDO A FUNÇÃO DO CRUD E AS VARIAVEIS
 
                             #LIMPAR CAMPOS
                             self.ProdutoEntry.delete(0, tk.END)
@@ -192,7 +192,7 @@ class PRODUTO:
         
                 # Verificando se o produto foi encontrado
                 if produto_pesquisa:  # SE FOI ENCONTRADO...
-                    delete_produto(codigo_produto) #PUXANDO FUNÇÃO DO CRUD
+                    delete_peca(codigo_produto) #PUXANDO FUNÇÃO DO CRUD
 
                     #LIMPAR CAMPOS
                     self.ProdutoEntry.delete(0, tk.END)

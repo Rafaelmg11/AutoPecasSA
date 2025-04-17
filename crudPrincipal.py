@@ -13,42 +13,42 @@ def get_connection():
 
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-#FUNCÕES PRODUTOS:
-def create_produto(descricao,quantidade):
+#FUNCÕES PecaS:
+def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor):
 
     conn = get_connection()
     cursor = conn.cursor()
-    query = "insert produto (descricao,quantidade) VALUES (%s, %s)"
-    cursor.execute(query, (descricao,quantidade))
+    query = "insert peca (tipo_peca,desc_peca,qtde_estoque,lote,valor_unitario,fornecedor) VALUES ( %s, %s , %s, %s, %s, %s)"
+    cursor.execute(query, (tipoDePeca,desc,qtde,lote,valor,fornecedor))
     conn.commit()
     cursor.close()
     conn.close()
 
-def read_produto():
+def read_peca():
 
     conn = get_connection()
     cursor = conn.cursor()
-    query = "SELECT * FROM produto"
+    query = "SELECT * FROM Peca"
     cursor.execute(query)
     result = cursor.fetchall()
     cursor.close()
     conn.close()
     return result
 
-def update_produto(produto,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor,codigo_produto):
+def update_peca(Peca,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor,codigo_Peca):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "UPDATE produto SET produto = %s, descricao = %s, quantidade = %s, valorDeCompra = %s, valorDeVenda = %s, fornecedor = %s WHERE codproduto = %s"
-    cursor.execute(query,(produto,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor,codigo_produto))
+    query = "UPDATE Peca SET Peca = %s, descricao = %s, quantidade = %s, valorDeCompra = %s, valorDeVenda = %s, fornecedor = %s WHERE codPeca = %s"
+    cursor.execute(query,(Peca,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor,codigo_Peca))
     conn.commit()
     cursor.close()
     conn.close()
 
-def delete_produto(codigo_produto):
+def delete_peca(codigo_Peca):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "DELETE FROM produto WHERE codproduto = %s"
-    cursor.execute(query, (codigo_produto,))
+    query = "DELETE FROM Peca WHERE codPeca = %s"
+    cursor.execute(query, (codigo_Peca,))
     conn.commit()
     cursor.close()
     conn.close()
@@ -147,21 +147,21 @@ def delete_funcionario(id_funcionario):
 #FUNÇÕES FORNECEDORES:
 
 
-def create_fornecedores(nome_fornecedor, endereco, telefone, email, produto):
+def create_fornecedores(nome_fornecedor, endereco, telefone, email, Peca):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "INSERT INTO fornecedor (nome_fornecedor, endereco, telefone, email, produto) VALUES (%s, %s, %s, %s, %s)"
-    cursor.execute(query, (nome_fornecedor, endereco, telefone, email, produto))
+    query = "INSERT INTO fornecedor (nome_fornecedor, endereco, telefone, email, Peca) VALUES (%s, %s, %s, %s, %s)"
+    cursor.execute(query, (nome_fornecedor, endereco, telefone, email, Peca))
     conn.commit()
     cursor.close()
     conn.close()
 
 
-def atualizar_fornecedor( nome_fornecedor, endereco, telefone, email, produto, id_produto):
+def atualizar_fornecedor( nome_fornecedor, endereco, telefone, email, Peca, id_Peca):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "UPDATE fornecedor SET nome_fornecedor = %s, endereco = %s, telefone = %s, email = %s, produto = %s WHERE idfornecedor = %s"
-    cursor.execute(query, ( nome_fornecedor, endereco, telefone, email, produto, id_produto ))
+    query = "UPDATE fornecedor SET nome_fornecedor = %s, endereco = %s, telefone = %s, email = %s, Peca = %s WHERE idfornecedor = %s"
+    cursor.execute(query, ( nome_fornecedor, endereco, telefone, email, Peca, id_Peca ))
     conn.commit()
     cursor.close()
     conn.close()
