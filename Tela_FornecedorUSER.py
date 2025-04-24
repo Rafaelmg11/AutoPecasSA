@@ -38,7 +38,6 @@ class FORNECEDORUSER:
         label_nome_fornecedor = Label(self.root,text = "Fornecedor: ",font = ("Georgia",16), bg = "#5424A2", fg = "WHITE" ) 
         label_nome_fornecedor.place(x=40,y=105)
 
-
         label_endereco = Label(self.root,text = "Endereço: ",font = ("Georgia",16), bg = "#5424A2", fg = "WHITE" )
         label_endereco.place(x=40,y=135)
 
@@ -48,11 +47,14 @@ class FORNECEDORUSER:
         label_email = Label(self.root,text = "Email: ",font = ("Georgia",16), bg = "#5424A2", fg = "WHITE" ) 
         label_email.place(x=40,y=195)
 
-        label_produto= Label(self.root,text = "Produto: ",font = ("Georgia",16), bg = "#5424A2", fg = "WHITE" ) 
-        label_produto.place(x=40,y=225)
+        label_cnpj= Label(self.root,text = "CNPJ: ",font = ("Georgia",16), bg = "#5424A2", fg = "WHITE" ) 
+        label_cnpj.place(x=40,y=225)
 
-        label_idFornecedor = Label (self.root,text="ID Fornecedor: ",font = ("Georgia",16), bg = "#5424A2", fg = "WHITE" ) 
-        label_idFornecedor.place(x=40,y=255)
+        label_insc_estadual = Label (self.root,text="Inscrição Estadual: ",font = ("Georgia",16), bg = "#5424A2", fg = "WHITE" ) 
+        label_insc_estadual.place(x=40,y=255)
+
+        label_idFornecedor = Label (self.root,text="ID fornecedor: ",font = ("Georgia",16), bg = "#5424A2", fg = "WHITE" ) 
+        label_idFornecedor.place(x=40,y=275)
 
         #CAMPOS DE ENTRADA
         self.entry_nome_fornecedor = tk.Entry(self.root, width=30,font=("Georgia",12))
@@ -67,15 +69,17 @@ class FORNECEDORUSER:
         self.entry_email = tk.Entry(self.root, width=30,font=("Georgia",12))
         self.entry_email.place(x=115, y= 201)
 
-        self.entry_produto = tk.Entry(self.root, width=30,font=("Georgia",12))
-        self.entry_produto.place(x=140, y= 231)
+        self.entry_cnpj = tk.Entry(self.root, width=30,font=("Georgia",12))
+        self.entry_cnpj.place(x=140, y= 231)
+
+        self.entry_insc_estadual = tk.Entry (self.root, width=30,font = ("Georgia",12)) 
+        self.entry_insc_estadual.place(x=190,y=261)
+        
+        self.entry_idFornecedor = tk.Entry (self.root, width=30,font = ("Georgia",12)) 
+        self.entry_idFornecedor.place(x=190,y=291)
 
         self.entry_pesquisa = tk.Entry(self.root, width=53,font= ("Georgia",13))
         self.entry_pesquisa.place(x=143,y=392)
-
-
-        self.entry_idFornecedor = tk.Entry (self.root, width=30,font = ("Georgia",12)) 
-        self.entry_idFornecedor.place(x=190,y=261)
 
         #CRIANDO A LISTA :
         self.text_area = tk.Text(self.root, height=13,width=82)
@@ -91,20 +95,23 @@ class FORNECEDORUSER:
     
         def cadastrarFornecedor():
             #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
-            nome = self.entry_nome_fornecedor.get()
+            nome_fornecedor = self.entry_nome_fornecedor.get()
             endereco = self.entry_endereco.get()
             telefone = self.entry_telefone.get()
             email = self.entry_email.get()
-            produto = self.entry_produto.get()
+            cnpj = self.entry_cnpj.get()
+            insc_estadual = self.entry_insc_estadual.get()
+
             #VERIFICANDO SE TODOS OS CAMPOS ESTÂO PREENCHIDOS:
-            if nome and endereco and telefone and email and produto:
-                create_fornecedores(nome,endereco,telefone,email,produto)
+            if nome_fornecedor and endereco and telefone and email and cnpj and insc_estadual:
+                create_fornecedores(nome_fornecedor,endereco,telefone,email,cnpj,insc_estadual)
             #Limpar campos:
                 self.entry_nome_fornecedor.delete(0, tk.END)
                 self.entry_endereco.delete(0, tk.END)
                 self.entry_telefone.delete(0, tk.END)
                 self.entry_email.delete(0, tk.END)
-                self.entry_produto.delete(0, tk.END)
+                self.entry_cnpj.delete(0, tk.END)
+                self.entry_insc_estadual.delete(0, tk.END)
                 self.entry_idFornecedor.delete(0, tk.END)
                 self.entry_pesquisa.delete(0, tk.END)
 

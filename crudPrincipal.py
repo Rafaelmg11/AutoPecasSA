@@ -147,11 +147,11 @@ def delete_funcionario(id_funcionario):
 #FUNÇÕES FORNECEDORES:
 
 
-def create_fornecedores(nome_fornecedor, endereco, telefone, email, Peca):
+def create_fornecedores(nome_fornecedor, telefone, email, cnpj, insc_estadual,endereco):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "INSERT INTO fornecedor (nome_fornecedor, endereco, telefone, email, Peca) VALUES (%s, %s, %s, %s, %s)"
-    cursor.execute(query, (nome_fornecedor, endereco, telefone, email, Peca))
+    query = "INSERT INTO fornecedor (nome_fornec, telefone_fornec, email_fornec, cnpj, inscestadual,endereco_fornec) VALUES (%s, %s, %s, %s, %s, %s)"
+    cursor.execute(query, (nome_fornecedor, telefone, email, cnpj, insc_estadual,endereco))
     conn.commit()
     cursor.close()
     conn.close()
@@ -186,4 +186,11 @@ def listar_fornecedores():
     conn.close()
     return fornecedores
 
+def selecionar_fornecedores():
+    conn = get_connection
+    cursor = conn.cursor()
+    query = "SELECT nome_fornec FROM fornecedor"
+    cursor.execute(query)
+    cursor.close()
+    conn.close()
     

@@ -28,8 +28,21 @@ class PRODUTO:
         )
         self.cursor = self.conn.cursor()
 
+    def selecionado(self, event):
+        selecionado = self.TipoDePecaCB.get()
+        print("Selecionado {}".format(selecionado))
 
     def create_widgets(self):
+        #CRIANDO COMBO BOX:
+        
+        TipoDePecaLista = ['Mecanica','Interior','Lataria']
+
+        self.TipoDePecaCB = ttk.Combobox (self.root,values= TipoDePecaLista, height=44, width=44, state="readonly")
+        self.TipoDePecaCB.place(x=50,y=105)
+        self.TipoDePecaCB.set("Selecione um Tipo")
+
+        self.TipoDePecaCB.bind("<<ComboboxSelected>>", self.selecionado)
+
 
         #CRIANDO LABELS:
         TituloLabel = Label(self.root,text="PEÇAS: ",font=("Georgia",25),bg = "#5424A2",fg = "WHITE") #Cria Label TITULO
@@ -53,7 +66,7 @@ class PRODUTO:
         CodigoLabel.place(x=40,y=285)
 
         #CRIANDO CAMPOS DE ENTRADAS:
-        self.TipoDePecaEntry = tk.Entry(self.root, width=44,font=("Georgia",12))
+        # self.TipoDePecaEntry = tk.Entry(self.root, width=44,font=("Georgia",12))
         self.DescricaoEntry = tk.Entry(self.root, width=48,font=("Georgia",12))
         self.QuantidadeEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
         self.LoteEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
@@ -63,7 +76,7 @@ class PRODUTO:
         self.PesquisaEntry = tk.Entry(self.root, width=53,font= ("Georgia",13))
 
         #POSICIONA OS CAMPOS DE ENTRADAS:
-        self.TipoDePecaEntry.place(x=132,y=110)
+        # self.TipoDePecaEntry.place(x=132,y=110)
         self.DescricaoEntry.place(x=151, y= 140)
         self.QuantidadeEntry.place(x=166, y= 170)
         self.LoteEntry.place(x=214, y= 200)
@@ -76,6 +89,8 @@ class PRODUTO:
         self.text_area = tk.Text(self.root, height=13,width=82)
         self.text_area.place(x=18,y=423)
 
+
+       
         def voltar_para_principal():
             # Fechar a janela atual de cadastro de peças e voltar para a janela principal
             self.root.quit()  # Fecha a janela de cadastro de peças (destrói a instância)
@@ -85,15 +100,15 @@ class PRODUTO:
 
         voltar_button = tk.Button(self.root, text="VOLTAR", width=11, font=("Georgia", 10), command=voltar_para_principal)
         voltar_button.place(x=20, y=645)
-
-    
         
 
     #FUNÇÃO PRA REGISTRAR NO BANCO DE DADOS:
+    
 
         def cadastrarPeca():
             #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
-            tipoDePeca = self.TipoDePecaEntry.get()
+            
+            tipoDePeca = self.TipoDePecaCB.get()
             descricao = self.DescricaoEntry.get()
             quantidade = self.QuantidadeEntry.get()
             lote = self.LoteEntry.get()
@@ -104,7 +119,7 @@ class PRODUTO:
             if tipoDePeca and descricao and quantidade and lote and valor and fornecedor:
                 create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor)
             #Limpar campos:
-                self.TipoDePecaEntry.delete(0, tk.END)
+                # self.TipoDePecaEntry.delete(0, tk.END)
                 self.DescricaoEntry.delete(0, tk.END)
                 self.QuantidadeEntry.delete(0, tk.END)
                 self.LoteEntry.delete(0, tk.END)
