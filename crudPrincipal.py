@@ -13,7 +13,7 @@ def get_connection():
 
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-#FUNCÕES PecaS:
+#FUNCÕES Pecas:
 def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor):
 
     conn = get_connection()
@@ -187,14 +187,38 @@ def listar_fornecedores():
     return fornecedores
 
 def selecionar_fornecedores():
-    conn = get_connection
+
+    conn = get_connection()
     cursor = conn.cursor()
     query = "SELECT nome_fornec FROM fornecedor"
     cursor.execute(query)
     fornecedores = cursor.fetchall()
 
-    # Transforma a lista de tuplas em lista simples de nomes
+    
     nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]
     cursor.close()
     conn.close()
+    return nome_fornecedores
+
+
+# def selecionar_fornecedores():
+#     try:
+#         conn = get_connection()
+#         cursor = conn.cursor()
+#         query = "SELECT nome_fornec FROM fornecedor"
+#         cursor.execute(query)
+#         fornecedores = cursor.fetchall()
+
+#         # Transforma a lista de tuplas em lista simples de nomes
+#         return  [fornecedor[0] for fornecedor in fornecedores]
+    
+#     except Exception as e:
+#         print("ERRO",e)
+#         return []
+    
+#     finally:
+#         if 'conn' in locals():
+#             conn.close()
+            
+    
     

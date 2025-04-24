@@ -42,16 +42,16 @@ class PRODUTO:
         TipoDePecaLista = ['Mecanica','Interior','Lataria']
 
         self.TipoDePecaCB = ttk.Combobox (self.root,values= TipoDePecaLista, height=44, width=44, state="readonly")
-        self.TipoDePecaCB.place(x=50,y=105)
-        self.TipoDePecaCB.set("Selecione um Tipo")
+        self.TipoDePecaCB.place(x=180,y=105)
+        self.TipoDePecaCB.set("Selicione Um Tipo")
 
         self.TipoDePecaCB.bind("<<ComboboxSelected>>", self.selecionado)
 
-        fornecedores = selecionar_fornecedores
+        fornecedores = selecionar_fornecedores()
         self.fornecedorCB = ttk.Combobox(self.root,values = fornecedores,height=44,width=44, state="readonly")
         self.fornecedorCB.place(x=166, y= 260)
         self.fornecedorCB.set("Selecione um Fornecedor")
-        self.TipoDePecaCB.bind("<<ComboboxSelected>>", self.selecionado_fornec)
+        self.fornecedorCB.bind("<<ComboboxSelected>>", self.selecionado_fornec)
 
 
         #CRIANDO LABELS:
@@ -129,14 +129,14 @@ class PRODUTO:
             if tipoDePeca and descricao and quantidade and lote and valor and fornecedor:
                 create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor)
             #Limpar campos:
-                # self.TipoDePecaEntry.delete(0, tk.END)
+                self.TipoDePecaCB.set("Selicione Um Tipo")
                 self.DescricaoEntry.delete(0, tk.END)
                 self.QuantidadeEntry.delete(0, tk.END)
                 self.LoteEntry.delete(0, tk.END)
                 self.ValorEntry.delete(0, tk.END)
-                self.FornecedorEntry.delete(0, tk.END)
                 self.CodigoEntry.delete(0, tk.END)
-                self.PesquisaEntry.delete(0, END)
+                self.fornecedorCB.set("Selecione um Fornecedor")
+                self.PesquisaEntry.delete(0, tk.END)
 
                 messagebox.showinfo("Success","Produto criado com sucesso!")
             else:
@@ -148,10 +148,10 @@ class PRODUTO:
 
         #LISTAR PRODUTO
         def listar_produto():
-            produtos = read_peca() #PUXANDO FUNÇÃO DO CRUD
+            peca = read_peca() #PUXANDO FUNÇÃO DO CRUD
             self.text_area.delete(1.0, tk.END) #ACESSANDO A "LISTA" DA TELA
-            for produto in produtos: #produto ANDANDO EM produtos
-                self.text_area.insert(tk.END, f"COD.PRODUTO: {produto[0]}, Produto: {produto[1]}, Descricao: {produto[2]},Quantidade: {produto[3]},Valor de compra: {produto[4]},Valor de Venda: {produto[5]},Fornecedor: {produto[6]}\n")
+            for peca in peca: #produto ANDANDO EM produtos
+                self.text_area.insert(tk.END, f"COD.Peça: {peca[0]}, Tipo de Peça: {peca[1]}, Descricao: {peca[2]},Quantidade: {peca[3]},Lote: {peca[4]},Valor Unitario: {peca[5]},Fornecedor: {peca[6]}\n")
     
         #BOTÃO DE LISTAR:
         ListarButton = tk.Button (self.root,text="LISTAR",font= ("Georgia",10),width=13,command=listar_produto)
@@ -160,12 +160,9 @@ class PRODUTO:
         def alterar_produto():
                 
                 #RECEBENDO VALORES
-                produto = self.ProdutoEntry.get()
+                
                 descricao = self.DescricaoEntry.get()
                 quantidade = self.QuantidadeEntry.get()
-                valorDeCompra = self.ValorDeCompraEntry.get()
-                valorDeVenda = self.ValorDeVendaEntry.get()
-                fornecedor = self.FornecedorEntry.get()
                 codigo_produto = self.CodigoEntry.get()
 
                 codigo_produto = self.CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O CODPRODUTO DA TABELA
