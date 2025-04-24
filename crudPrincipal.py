@@ -191,6 +191,10 @@ def selecionar_fornecedores():
     cursor = conn.cursor()
     query = "SELECT nome_fornec FROM fornecedor"
     cursor.execute(query)
+    fornecedores = cursor.fetchall()
+
+    # Transforma a lista de tuplas em lista simples de nomes
+    nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]
     cursor.close()
     conn.close()
     

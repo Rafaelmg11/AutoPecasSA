@@ -2,7 +2,7 @@
 from tkinter import* #Importa tudo do tkinter
 from tkinter import messagebox #Importa as caixas de mensagem
 from tkinter import ttk #Importa o widgets tematicos do tkinter
-from crudPrincipal import get_connection,create_peca, read_peca , update_peca , delete_peca 
+from crudPrincipal import get_connection,create_peca, read_peca , update_peca , delete_peca , selecionar_fornecedores
 import tkinter as tk
 import mysql.connector
 
@@ -32,6 +32,10 @@ class PRODUTO:
         selecionado = self.TipoDePecaCB.get()
         print("Selecionado {}".format(selecionado))
 
+    def selecionado_fornec(self, event):
+        selecionado_fornec = self.fornecedorCB.get()
+        print("Selecionado {}".format(selecionado_fornec))
+
     def create_widgets(self):
         #CRIANDO COMBO BOX:
         
@@ -42,6 +46,12 @@ class PRODUTO:
         self.TipoDePecaCB.set("Selecione um Tipo")
 
         self.TipoDePecaCB.bind("<<ComboboxSelected>>", self.selecionado)
+
+        fornecedores = selecionar_fornecedores
+        self.fornecedorCB = ttk.Combobox(self.root,values = fornecedores,height=44,width=44, state="readonly")
+        self.fornecedorCB.place(x=166, y= 260)
+        self.fornecedorCB.set("Selecione um Fornecedor")
+        self.TipoDePecaCB.bind("<<ComboboxSelected>>", self.selecionado_fornec)
 
 
         #CRIANDO LABELS:
@@ -71,7 +81,7 @@ class PRODUTO:
         self.QuantidadeEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
         self.LoteEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
         self.ValorEntry = tk.Entry(self.root, width=14,font=("Georgia",12))
-        self.FornecedorEntry = tk.Entry(self.root, width=30,font=("Georgia",12))
+        # self.FornecedorEntry = tk.Entry(self.root, width=30,font=("Georgia",12))
         self.CodigoEntry = tk.Entry(self.root, width=10,font=("Georgia",12))
         self.PesquisaEntry = tk.Entry(self.root, width=53,font= ("Georgia",13))
 
@@ -81,7 +91,7 @@ class PRODUTO:
         self.QuantidadeEntry.place(x=166, y= 170)
         self.LoteEntry.place(x=214, y= 200)
         self.ValorEntry.place(x=199, y= 230)
-        self.FornecedorEntry.place(x=166, y= 260)
+        # self.FornecedorEntry.place(x=166, y= 260)
         self.CodigoEntry.place(x=230,y=290)
         self.PesquisaEntry.place(x=143,y=392)
 
@@ -113,7 +123,7 @@ class PRODUTO:
             quantidade = self.QuantidadeEntry.get()
             lote = self.LoteEntry.get()
             valor = self.ValorEntry.get()
-            fornecedor = self.FornecedorEntry.get()
+            fornecedor = self.fornecedorCB.get()
 
             #VERIFICANDO SE TODOS OS CAMPOS ESTÂO PREENCHIDOS:
             if tipoDePeca and descricao and quantidade and lote and valor and fornecedor:
