@@ -22,7 +22,7 @@ class FUNCIONARIO:
             host = "localhost",
             user = "root",
             password = "",
-            database = "mobiliariasa_db"
+            database = "autopecassa_db"
         )
         self.cursor = self.conn.cursor()
         self.conn.commit()
@@ -32,24 +32,26 @@ class FUNCIONARIO:
         #CRIANDO LABELS:
         TituloLabel = Label(self.root,text="CADASTRAR FUNCIONÁRIOS: ",font=("Georgia",25),bg = "#5424A2",fg = "WHITE")
 
-        nome = Label(self.root,text = "Nome: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
-        cpf = Label(self.root,text = "CPF: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
-        telefone = Label(self.root,text = "Telefone: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
-        email = Label(self.root,text = "Email: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
-        cargo = Label(self.root,text= "Cargo: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE")
-        salario = Label (self.root,text= "Salário: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
-        idFuncionario = Label (self.root,text="ID Funcionario: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
+        nomeLabel = Label(self.root,text = "Nome: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
+        cpfLabel = Label(self.root,text = "CPF: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
+        telefoneLabel = Label(self.root,text = "Telefone: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
+        emailLabel = Label(self.root,text = "Email: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
+        enderecoLabel = Label (self.root,text = "Endereço",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE")
+        cargoLabel = Label(self.root,text= "Cargo: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE")
+        salarioLabel= Label (self.root,text= "Salário: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
+        idFuncionarioLabel = Label (self.root,text="ID Funcionario: ",font = ("Georgia",16),bg = "#5424A2", fg = "WHITE") 
       
         #POSICIONANDO LABELS:
         TituloLabel.pack(pady=40,anchor="center") 
 
-        nome.place(x=40,y=105)
-        cpf.place(x=40,y=135)
-        telefone.place(x=40,y=165)
-        email.place(x=40,y=195)
-        cargo.place(x=40,y=225)
-        salario.place(x=40,y=255)
-        idFuncionario.place(x=40,y=285)
+        nomeLabel.place(x=40,y=105)
+        cpfLabel.place(x=40,y=135)
+        telefoneLabel.place(x=40,y=165)
+        emailLabel.place(x=40,y=195)
+        enderecoLabel.place(x=40,y=225)
+        cargoLabel.place(x=40,y=255)
+        salarioLabel.place(x=40,y=285)
+        idFuncionarioLabel.place(x=40,y=315)
 
 
 
@@ -58,6 +60,7 @@ class FUNCIONARIO:
         self.cpfEntry =  tk.Entry(self.root, width=11,font=("Georgia",12))
         self.TelefoneEntry = tk.Entry(self.root, width=12,font=("Georgia",12))
         self.EmailEntry = tk.Entry(self.root, width=50,font=("Georgia",12))
+        self.EnderecoEntry = tk.Entry(self.root, width=50,font=("Georgia",12))
         self.CargoEntry = tk.Entry(self.root, width=40,font=("Georgia",12))
         self.SalarioEntry = tk.Entry(self.root, width=8,font=("Georgia",12))
         self.idfuncionarioEntry = tk.Entry(self.root, width=20,font=("Georgia",12))
@@ -68,9 +71,10 @@ class FUNCIONARIO:
         self.cpfEntry.place(x=98, y= 140)
         self.TelefoneEntry.place(x=135, y= 170)
         self.EmailEntry.place(x=113, y= 200)
-        self.CargoEntry.place(x=113, y= 230)
-        self.SalarioEntry.place(x=123, y= 260)
-        self.idfuncionarioEntry.place(x=200, y= 290)
+        self.EnderecoEntry.place(x= 113, y = 230 )
+        self.CargoEntry.place(x=113, y= 260)
+        self.SalarioEntry.place(x=123, y= 290)
+        self.idfuncionarioEntry.place(x=200, y= 320)
         self.PesquisaEntry.place(x=143,y=392)
      
         #CRIANDO A LISTA DE CADASTRO DE FUNCIONARIOS:
@@ -96,17 +100,19 @@ class FUNCIONARIO:
             cpf = self.cpfEntry.get()
             telefone = self.TelefoneEntry.get()
             email = self.EmailEntry.get()
+            endereco = self.EnderecoEntry.get()
             cargo = self.CargoEntry.get()
             salario = self.SalarioEntry.get()
 
             #VERIFICANDO SE TODOS OS CAMPOS ESTÂO PREENCHIDOS:
-            if nome and cpf and telefone and email and cargo and salario:
-                create_funcionario(nome,cpf,telefone,email,cargo,salario)
+            if nome and cpf and telefone and email and endereco and cargo and salario:
+                create_funcionario(nome,cpf,telefone,email,endereco,cargo,salario)
                 #Limpar campos:
                 self.NomeEntry.delete(0, tk.END)
                 self.cpfEntry.delete(0, tk.END)
                 self.TelefoneEntry.delete(0, tk.END)
                 self.EmailEntry.delete(0, tk.END)
+                self.EnderecoEntry.delete(0,tk.END)
                 self.CargoEntry.delete(0, tk.END)
                 self.SalarioEntry.delete(0, tk.END)
                 self.idfuncionarioEntry.delete(0, tk.END)

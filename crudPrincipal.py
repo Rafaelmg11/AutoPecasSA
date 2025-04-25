@@ -51,55 +51,6 @@ def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor):
     conn.close()
 
 
-
-# def selecionar_fornecedores():
-
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     query = "SELECT nome_fornec FROM fornecedor"
-#     cursor.execute(query)
-#     fornecedores = cursor.fetchall()
-#     nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]
-#     cursor.close()
-#     conn.close()
-#     return nome_fornecedores
-
-# def codigo_selecionado(codigo_fornecedor):
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     query = ("SELECT cod_fornec FROM fornecedor")
-#     cursor.execute(query,(codigo_fornecedor))
-#     resultado = cursor.fetchone()
-#     if resultado:
-#        codigo_fornecedor.set(resultado[0])
-#     cursor.close()
-#     conn.close()
-
-# def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor):
-
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     query = "insert into peca (tipo_peca,desc_peca,qtde_estoque,lote,valor_unitario,fornecedor,cod_fornec) VALUES ( %s, %s , %s, %s, %s, %s, %s)"
-#     cursor.execute(query, (tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor))
-#     conn.commit()
-#     cursor.close()
-    conn.close()
-
-
-
-
-# def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor):
-
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     query = "insert peca (tipo_peca,desc_peca,qtde_estoque,lote,valor_unitario,fornecedor) VALUES ( %s, %s , %s, %s, %s, %s)"
-#     cursor.execute(query, (tipoDePeca,desc,qtde,lote,valor,fornecedor))
-#     conn.commit()
-#     cursor.close()
-#     conn.close()
-
-
-
 def read_peca():
 
     conn = get_connection()
@@ -174,12 +125,12 @@ def delete_usuario(idusuario):
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 #FUNÇÕES FUNCIONARIO:
-def create_funcionario(nome,cpf,telefone,email,cargo,salario):
+def create_funcionario(nome,telefone,email,cpf,endereco,cargo,salario):
 
     conn = get_connection()
     cursor = conn.cursor()
-    query = "insert funcionario (nome,cpf,telefone,email,cargo,salario) VALUES (%s, %s, %s,%s,%s,%s)"
-    cursor.execute(query, (nome,cpf,telefone,email,cargo,salario))
+    query = "insert into funcionario (nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario) VALUES (%s, %s, %s,%s,%s,%s, %s)"
+    cursor.execute(query, (nome,telefone,email,cpf,endereco,cargo,salario))
     conn.commit()
     cursor.close()
     conn.close()
@@ -262,16 +213,16 @@ def listar_fornecedores():
     conn.close()
     return fornecedores
 
-# def selecionar_fornecedores():
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     query = "SELECT nome_fornec FROM fornecedor"
-#     cursor.execute(query)
-#     fornecedores = cursor.fetchall()
+#FUNÇÕES CLIENTE:
 
-    
-#     nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]
-#     cursor.close()
-#     conn.close()
-#     return nome_fornecedores
+
+def create_cliente(nome_cli,telefone_cli,email_cli,cpf_cli,endereco_cli):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO cliente (nome_cliente, telefone_cliente, email_cliente,cpf_cliente,endereco_cliente) VALUES (%s, %s, %s, %s, %s)"
+    cursor.execute(query, (nome_cli,telefone_cli,email_cli,cpf_cli,endereco_cli))
+    conn.commit()
+    cursor.close()
+    conn.close()
