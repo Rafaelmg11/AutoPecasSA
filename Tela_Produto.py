@@ -238,25 +238,26 @@ class PRODUTO:
 
         #FUNÇÃO DE PESQUISAR :) ;) OBS: NAO TEM RELAÇÃO COM O CRUD
         def pesquisar_produto():
-            codigo_produto = self.PesquisaEntry.get() 
+            codigo_peca = self.PesquisaEntry.get() 
             conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
             self.cursor = conn.cursor() #sell.conn TRABALHAR COM A CONEXAO
             try:
                 
-                self.cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, cod_peca FROM peca WHERE cod_peca=%s or desc_peca=%s", (codigo_produto,codigo_produto)) 
+                self.cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, cod_peca FROM peca WHERE cod_peca=%s or desc_peca=%s", (codigo_peca,codigo_peca)) 
                 # ACIMA SELECIONA AS COLUNAS DA TABELA SE codproduto OU produto OU descricao == codigo_produto
                 # codproduto E produto E descricao PERMITE FAZER A BUSCA POR PRODUTO,DESCRICAO, E CODIGO DE PRODUTO
                 #EM OUTROS CASOS PODERIA SER CPF E NÚMERO DE TELEFONE
 
                 # CONSULTA NO BANCO
-                produto_pesquisa = self.cursor.fetchone()
+                peca_pesquisa = self.cursor.fetchone()
         
                 # Verificando se o produto foi encontrado
-                if produto_pesquisa:  # SE FOI ENCONTRADO...
-                    tipoDePeca, descricao, quantidade, lote, valor, fornecedor, cod_peca = produto_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
+                if peca_pesquisa:  # SE FOI ENCONTRADO...
+                    tipoDePeca, descricao, quantidade, lote, valor, fornecedor, cod_peca = peca_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
 
-                    #LIMPA TODOS OS CAMPOS ANTES DE RECEBER AS INFORMAÇOES
-                    self.TipoDePecaCB.set("Selicione Um Tipo")
+                    #LIMPA TODOS OS CAMPOS ANTES DE RECEBER AS INFORMAÇOES)
+
+                    self.TipoDePecaCB.set("Selecione um Tipo")
                     self.DescricaoEntry.delete(0, tk.END)
                     self.QuantidadeEntry.delete(0, tk.END)
                     self.LoteEntry.delete(0, tk.END)
@@ -267,12 +268,14 @@ class PRODUTO:
                     self.PesquisaEntry.delete(0, END)
 
                     # Inserindo os dados nas entradas (Entry)
-                    self.TipoDePecaCB.insert(0, tipoDePeca)
+                    if tipoDePeca in TipoDePecaLista:
+                        self.TipoDePecaCB.set(tipoDePeca)
+                    if fornecedor in fornecedores:
+                        self.fornecedorCB.set(fornecedor)
                     self.DescricaoEntry.insert(0, descricao)
                     self.QuantidadeEntry.insert(0, quantidade)
                     self.LoteEntry.insert(0, lote)
                     self.ValorEntry.insert(0, valor)
-                    self.fornecedorCB.insert(0, fornecedor)
                     self.CodigoEntry.insert(0, cod_peca)
             
                     messagebox.showinfo("Success", "Produto encontrado")
