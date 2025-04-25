@@ -275,7 +275,3 @@ def listar_fornecedores():
 #     cursor.close()
 #     conn.close()
 #     return nome_fornecedores
-
-            
-    
-    

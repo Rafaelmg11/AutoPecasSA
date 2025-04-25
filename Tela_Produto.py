@@ -23,8 +23,6 @@ class PRODUTO:
         self.create_widgets()
 
 
-        self.cod_fornecedor_selecionado = None
-
     def conectarBanco(self):
         self.conn = mysql.connector.connect(
             host = "localhost",
@@ -283,7 +281,7 @@ class PRODUTO:
                     # Inserindo os dados nas entradas (Entry)
                     if tipoDePeca in TipoDePecaLista:
                         self.TipoDePecaCB.set(tipoDePeca)
-                    if fornecedor in fornecedores:
+                    if fornecedor in nome_fornecedores:
                         self.fornecedorCB.set(fornecedor)
                     self.DescricaoEntry.insert(0, descricao)
                     self.QuantidadeEntry.insert(0, quantidade)
@@ -324,5 +322,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = PRODUTO(root)
     root.mainloop()
-
-
