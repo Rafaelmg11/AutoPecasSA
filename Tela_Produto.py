@@ -2,7 +2,7 @@
 from tkinter import* #Importa tudo do tkinter
 from tkinter import messagebox #Importa as caixas de mensagem
 from tkinter import ttk #Importa o widgets tematicos do tkinter
-from crudPrincipal import get_connection,create_peca, read_peca , update_peca , delete_peca , selecionar_fornecedores
+from crudPrincipal import get_connection,create_peca, read_peca , update_peca , delete_peca , selecionar_fornecedores, obter_cod_fornecedor
 import tkinter as tk
 import mysql.connector
 
@@ -16,8 +16,14 @@ class PRODUTO:
         self.root.geometry("700x680") #Define o tamanho da janela
         self.root.configure(background = ("#5424A2")) #Configura a cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
+       
+        self.cod_fornecedor_selecionado = None
+
         #Criação de Widgets
         self.create_widgets()
+
+
+        self.cod_fornecedor_selecionado = None
 
     def conectarBanco(self):
         self.conn = mysql.connector.connect(
@@ -33,9 +39,14 @@ class PRODUTO:
         print("Selecionado {}".format(selecionado))
 
     def selecionado_fornec(self, event):
-        selecionado_fornec = self.fornecedorCB.get()
-        print("Selecionado {}".format(selecionado_fornec))
+        nome_selecionado = self.fornecedorCB.get()
+        print("Selecionado {}".format(nome_selecionado))
 
+        self.cod_fornecedor_selecionado = obter_cod_fornecedor(nome_selecionado)
+
+        
+        print(f"Fornecedor selecionado: {nome_selecionado} (Código: {self.cod_fornecedor_selecionado})")
+    
     def create_widgets(self):
         #CRIANDO COMBO BOX:
         
@@ -44,11 +55,13 @@ class PRODUTO:
         self.TipoDePecaCB = ttk.Combobox (self.root,values= TipoDePecaLista, height=44, width=44, state="readonly")
         self.TipoDePecaCB.place(x=180,y=105)
         self.TipoDePecaCB.set("Selicione Um Tipo")
-
         self.TipoDePecaCB.bind("<<ComboboxSelected>>", self.selecionado)
 
+
         fornecedores = selecionar_fornecedores()
-        self.fornecedorCB = ttk.Combobox(self.root,values = fornecedores,height=44,width=44, state="readonly")
+        nome_fornecedores = [fornecedor[1] for fornecedor in fornecedores
+                             ]
+        self.fornecedorCB = ttk.Combobox(self.root,values = nome_fornecedores,height=44,width=44, state="readonly")
         self.fornecedorCB.place(x=166, y= 260)
         self.fornecedorCB.set("Selecione um Fornecedor")
         self.fornecedorCB.bind("<<ComboboxSelected>>", self.selecionado_fornec)
@@ -113,7 +126,7 @@ class PRODUTO:
 
         def cadastrarPeca():
             #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
-            
+            codigo_fornecedor = self.cod_fornecedor_selecionado
             tipoDePeca = self.TipoDePecaCB.get()
             descricao = self.DescricaoEntry.get()
             quantidade = self.QuantidadeEntry.get()
@@ -122,8 +135,8 @@ class PRODUTO:
             fornecedor = self.fornecedorCB.get()
 
             #VERIFICANDO SE TODOS OS CAMPOS ESTÂO PREENCHIDOS:
-            if tipoDePeca and descricao and quantidade and lote and valor and fornecedor:
-                create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor)
+            if tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor:
+                create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor)
             #Limpar campos:
                 self.TipoDePecaCB.set("Selicione Um Tipo")
                 self.DescricaoEntry.delete(0, tk.END)

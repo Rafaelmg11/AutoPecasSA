@@ -14,15 +14,91 @@ def get_connection():
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 #FUNCÕES Pecas:
-def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor):
+
+def selecionar_fornecedores():
 
     conn = get_connection()
     cursor = conn.cursor()
-    query = "insert peca (tipo_peca,desc_peca,qtde_estoque,lote,valor_unitario,fornecedor) VALUES ( %s, %s , %s, %s, %s, %s)"
-    cursor.execute(query, (tipoDePeca,desc,qtde,lote,valor,fornecedor))
+    query = "SELECT cod_fornec,nome_fornec FROM fornecedor"
+    cursor.execute(query)
+    fornecedores = cursor.fetchall()
+    # nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]
+    cursor.close()
+    conn.close()
+    return fornecedores
+
+def obter_cod_fornecedor(nome_fornecedor):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = ("SELECT cod_fornec FROM fornecedor WHERE nome_fornec = %s")
+    cursor.execute(query,(nome_fornecedor,))
+    resultado = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return resultado[0] if resultado else None
+
+def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT nome_fornec FROM fornecedor WHERE cod_fornec = %s",(codigo_fornecedor,))
+    fornecedor = cursor.fetchone()[0]
+    query = "insert into peca (tipo_peca,desc_peca,qtde_estoque,lote,valor_unitario,fornecedor,cod_fornecedor) VALUES ( %s, %s , %s, %s, %s, %s, %s)"
+    cursor.execute(query, (tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor))
     conn.commit()
     cursor.close()
     conn.close()
+
+
+
+# def selecionar_fornecedores():
+
+#     conn = get_connection()
+#     cursor = conn.cursor()
+#     query = "SELECT nome_fornec FROM fornecedor"
+#     cursor.execute(query)
+#     fornecedores = cursor.fetchall()
+#     nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]
+#     cursor.close()
+#     conn.close()
+#     return nome_fornecedores
+
+# def codigo_selecionado(codigo_fornecedor):
+#     conn = get_connection()
+#     cursor = conn.cursor()
+#     query = ("SELECT cod_fornec FROM fornecedor")
+#     cursor.execute(query,(codigo_fornecedor))
+#     resultado = cursor.fetchone()
+#     if resultado:
+#        codigo_fornecedor.set(resultado[0])
+#     cursor.close()
+#     conn.close()
+
+# def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor):
+
+#     conn = get_connection()
+#     cursor = conn.cursor()
+#     query = "insert into peca (tipo_peca,desc_peca,qtde_estoque,lote,valor_unitario,fornecedor,cod_fornec) VALUES ( %s, %s , %s, %s, %s, %s, %s)"
+#     cursor.execute(query, (tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor))
+#     conn.commit()
+#     cursor.close()
+    conn.close()
+
+
+
+
+# def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor):
+
+#     conn = get_connection()
+#     cursor = conn.cursor()
+#     query = "insert peca (tipo_peca,desc_peca,qtde_estoque,lote,valor_unitario,fornecedor) VALUES ( %s, %s , %s, %s, %s, %s)"
+#     cursor.execute(query, (tipoDePeca,desc,qtde,lote,valor,fornecedor))
+#     conn.commit()
+#     cursor.close()
+#     conn.close()
+
+
 
 def read_peca():
 
@@ -186,39 +262,20 @@ def listar_fornecedores():
     conn.close()
     return fornecedores
 
-def selecionar_fornecedores():
-
-    conn = get_connection()
-    cursor = conn.cursor()
-    query = "SELECT nome_fornec FROM fornecedor"
-    cursor.execute(query)
-    fornecedores = cursor.fetchall()
-
-    
-    nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]
-    cursor.close()
-    conn.close()
-    return nome_fornecedores
-
-
 # def selecionar_fornecedores():
-#     try:
-#         conn = get_connection()
-#         cursor = conn.cursor()
-#         query = "SELECT nome_fornec FROM fornecedor"
-#         cursor.execute(query)
-#         fornecedores = cursor.fetchall()
 
-#         # Transforma a lista de tuplas em lista simples de nomes
-#         return  [fornecedor[0] for fornecedor in fornecedores]
+#     conn = get_connection()
+#     cursor = conn.cursor()
+#     query = "SELECT nome_fornec FROM fornecedor"
+#     cursor.execute(query)
+#     fornecedores = cursor.fetchall()
+
     
-#     except Exception as e:
-#         print("ERRO",e)
-#         return []
-    
-#     finally:
-#         if 'conn' in locals():
-#             conn.close()
+#     nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]
+#     cursor.close()
+#     conn.close()
+#     return nome_fornecedores
+
             
     
     
