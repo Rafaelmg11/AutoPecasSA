@@ -2,7 +2,7 @@
 from tkinter import* #Importa tudo do tkinter
 from tkinter import messagebox #Importa as caixas de mensagem
 from tkinter import ttk #Importa o widgets tematicos do tkinter
-from crudPrincipal import get_connection,create_peca, read_peca , update_peca , delete_peca , selecionar_fornecedores, obter_cod_fornecedor
+from crudPrincipal import get_connection,create_peca, read_peca , update_peca , delete_peca , selecionar_fornecedores, obter_cod_fornecedor,selecionar_tipopeca
 import tkinter as tk
 import mysql.connector
 
@@ -33,10 +33,9 @@ class PRODUTO:
         self.cursor = self.conn.cursor()
 
 
-    def selecionado(self, event):
+    def selecionado_TipoDePeca(self, event):
         selecionado = self.TipoDePecaCB.get()
         print("Selecionado {}".format(selecionado))
-
     
 
     def selecionado_fornec(self, event):
@@ -48,35 +47,43 @@ class PRODUTO:
         
         print(f"Fornecedor selecionado: {nome_selecionado} (Código: {self.cod_fornecedor_selecionado})")
 
-
-
+    
 
     def create_widgets(self):
 
         def filtrar_fornecedores(event):
             texto = self.fornecedorCB.get().lower() #TEXTO DIGITADO
             if texto == '':
-                opcoes = nome_fornecedores #MONSTRA TODOS OS FORNECEDORES DA LISTA
+                opcoes = nome_fornecedoresLista #MONSTRA TODOS OS FORNECEDORES DA LISTA
             else:
-                opcoes = [item for item in nome_fornecedores if texto in item.lower()] #FILTRO
+                opcoes = [item for item in nome_fornecedoresLista if texto in item.lower()] #FILTRO
             
             self.fornecedorCB['values'] = opcoes
 
+        def filtrar_tipopeca(event):
+            texto = self.TipoDePecaCB.get().lower() #TEXTO DIGITADO
+            if texto == '':
+                opcoes = TipoPecaLista #MONSTRA TODOS OS TIPODES DE PEÇAS
+            else:
+                opcoes = [item for item in TipoPecaLista if texto in item.lower()] #FILTRO
+            self.TipoDePecaCB['values'] = opcoes
 
-        #CRIANDO COMBO BOX:
+         #CRIANDO COMBO BOX:
         
-        TipoDePecaLista = ['Mecanica','Interior','Lataria']
+        TipoDePecaTB = selecionar_tipopeca()
+        TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB]
 
-        self.TipoDePecaCB = ttk.Combobox (self.root,values= TipoDePecaLista, height=44, width=44, state="readonly")
+        self.TipoDePecaCB = ttk.Combobox (self.root,values= TipoPecaLista, height=44, width=44, state="normal")
         self.TipoDePecaCB.place(x=180,y=105)
         self.TipoDePecaCB.set("Selicione Um Tipo")
-        self.TipoDePecaCB.bind("<<ComboboxSelected>>", self.selecionado)
+        self.TipoDePecaCB.bind("<<ComboboxSelected>>", self.selecionado_TipoDePeca)
+        self.TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
 
 
-        fornecedores = selecionar_fornecedores()
-        nome_fornecedores = [fornecedor[1] for fornecedor in fornecedores
-                             ]
-        self.fornecedorCB = ttk.Combobox(self.root,values = nome_fornecedores,height=44,width=44, state="normal")
+        fornecedoresTB = selecionar_fornecedores()
+        nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB]
+
+        self.fornecedorCB = ttk.Combobox(self.root,values = nome_fornecedoresLista,height=44,width=44, state="normal")
         self.fornecedorCB.place(x=166, y= 260)
         self.fornecedorCB.set("Selecione um Fornecedor")
         self.fornecedorCB.bind("<<ComboboxSelected>>", self.selecionado_fornec)

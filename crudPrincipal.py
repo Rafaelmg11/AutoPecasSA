@@ -22,7 +22,6 @@ def selecionar_fornecedores():
     query = "SELECT cod_fornec,nome_fornec FROM fornecedor ORDER BY nome_fornec ASC"
     cursor.execute(query)
     fornecedores = cursor.fetchall()
-    # nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]
     cursor.close()
     conn.close()
     return fornecedores
@@ -36,6 +35,16 @@ def obter_cod_fornecedor(nome_fornecedor):
     cursor.close()
     conn.close()
     return resultado[0] if resultado else None
+
+def selecionar_tipopeca():
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "SELECT tipo_peca FROM peca ORDER BY tipo_peca ASC"
+    cursor.execute(query)
+    tipo_peca = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return tipo_peca
 
 def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor):
 
