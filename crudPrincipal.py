@@ -19,7 +19,7 @@ def selecionar_fornecedores():
 
     conn = get_connection()
     cursor = conn.cursor()
-    query = "SELECT cod_fornec,nome_fornec FROM fornecedor"
+    query = "SELECT cod_fornec,nome_fornec FROM fornecedor ORDER BY nome_fornec ASC"
     cursor.execute(query)
     fornecedores = cursor.fetchall()
     # nome_fornecedores = [fornecedor[0] for fornecedor in fornecedores]

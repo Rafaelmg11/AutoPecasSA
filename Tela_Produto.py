@@ -32,9 +32,12 @@ class PRODUTO:
         )
         self.cursor = self.conn.cursor()
 
+
     def selecionado(self, event):
         selecionado = self.TipoDePecaCB.get()
         print("Selecionado {}".format(selecionado))
+
+    
 
     def selecionado_fornec(self, event):
         nome_selecionado = self.fornecedorCB.get()
@@ -44,8 +47,22 @@ class PRODUTO:
 
         
         print(f"Fornecedor selecionado: {nome_selecionado} (Código: {self.cod_fornecedor_selecionado})")
-    
+
+
+
+
     def create_widgets(self):
+
+        def filtrar_fornecedores(event):
+            texto = self.fornecedorCB.get().lower() #TEXTO DIGITADO
+            if texto == '':
+                opcoes = nome_fornecedores #MONSTRA TODOS OS FORNECEDORES DA LISTA
+            else:
+                opcoes = [item for item in nome_fornecedores if texto in item.lower()] #FILTRO
+            
+            self.fornecedorCB['values'] = opcoes
+
+
         #CRIANDO COMBO BOX:
         
         TipoDePecaLista = ['Mecanica','Interior','Lataria']
@@ -59,10 +76,14 @@ class PRODUTO:
         fornecedores = selecionar_fornecedores()
         nome_fornecedores = [fornecedor[1] for fornecedor in fornecedores
                              ]
-        self.fornecedorCB = ttk.Combobox(self.root,values = nome_fornecedores,height=44,width=44, state="readonly")
+        self.fornecedorCB = ttk.Combobox(self.root,values = nome_fornecedores,height=44,width=44, state="normal")
         self.fornecedorCB.place(x=166, y= 260)
         self.fornecedorCB.set("Selecione um Fornecedor")
         self.fornecedorCB.bind("<<ComboboxSelected>>", self.selecionado_fornec)
+        self.fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
+
+
+        
 
 
         #CRIANDO LABELS:
@@ -117,10 +138,11 @@ class PRODUTO:
 
         voltar_button = tk.Button(self.root, text="VOLTAR", width=11, font=("Georgia", 10), command=voltar_para_principal)
         voltar_button.place(x=20, y=645)
-        
+
+       
 
     #FUNÇÃO PRA REGISTRAR NO BANCO DE DADOS:
-    
+
 
         def cadastrarPeca():
             #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
