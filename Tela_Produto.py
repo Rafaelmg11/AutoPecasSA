@@ -242,29 +242,29 @@ class PRODUTO:
         AlterarButton.place(x=164,y=335)  
 
         #FUNÇÃO DE EXCLUIR
-        def excluir_produto():
-            codigo_produto = self.CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O CODPRODUTO DA TABELA
+        def excluir_peca():
+            codigo_peca = self.CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O CODPECA DA TABELA
             conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
             self.cursor = conn.cursor() #sell.conn TRABALHAR COM A CONEXAO
             try:
-                self.cursor.execute("SELECT * FROM produto WHERE codproduto=%s ",(codigo_produto,)) 
+                self.cursor.execute("SELECT * FROM peca WHERE cod_peca=%s ",(codigo_peca,)) 
 
                 # CONSULTA NO BANCO
-                produto_pesquisa = self.cursor.fetchone()
+                peca_pesquisa = self.cursor.fetchone()
         
                 # Verificando se o produto foi encontrado
-                if produto_pesquisa:  # SE FOI ENCONTRADO...
-                    delete_peca(codigo_produto) #PUXANDO FUNÇÃO DO CRUD
+                if peca_pesquisa:  # SE FOI ENCONTRADO...
+                    delete_peca(codigo_peca) #PUXANDO FUNÇÃO DO CRUD
 
                     #LIMPAR CAMPOS
-                    self.ProdutoEntry.delete(0, tk.END)
+                    self.TipoDePecaCB.set("Selicione Um Tipo")
                     self.DescricaoEntry.delete(0, tk.END)
                     self.QuantidadeEntry.delete(0, tk.END)
-                    self.ValorDeCompraEntry.delete(0, tk.END)
-                    self.ValorDeVendaEntry.delete(0, tk.END)
-                    self.FornecedorEntry.delete(0, tk.END)
+                    self.LoteEntry.delete(0, tk.END)
+                    self.ValorEntry.delete(0, tk.END)
                     self.CodigoEntry.delete(0, tk.END)
-                    self.PesquisaEntry.delete(0, END)
+                    self.fornecedorCB.set("Selecione um Fornecedor")
+                    self.PesquisaEntry.delete(0, tk.END)
                     messagebox.showinfo("Success","Produto excluido com sucesso")
                 else:
                     messagebox.showerror("Error","Codigo de Produto não existe")
@@ -272,7 +272,7 @@ class PRODUTO:
                 print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
 
         #BOTAO DE EXCLUIR
-        ExcluirButton = tk.Button(self.root,text = "EXCLUIR",font= ("Georgia",10),width=13,command=excluir_produto)
+        ExcluirButton = tk.Button(self.root,text = "EXCLUIR",font= ("Georgia",10),width=13,command=excluir_peca)
         ExcluirButton.place(x=418,y=335)
   
 
