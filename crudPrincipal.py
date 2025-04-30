@@ -71,11 +71,11 @@ def read_peca():
     conn.close()
     return result
 
-def update_peca(Peca,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor,codigo_Peca):
+def update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,codigo_fornecedor):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "UPDATE Peca SET Peca = %s, descricao = %s, quantidade = %s, valorDeCompra = %s, valorDeVenda = %s, fornecedor = %s WHERE codPeca = %s"
-    cursor.execute(query,(Peca,descricao,quantidade,valorDeCompra,valorDeVenda,fornecedor,codigo_Peca))
+    query = "UPDATE peca SET tipo_peca = %s, desc_peca= %s, qtde_estoque = %s, lote = %s, valor_unitario = %s, fornecedor = %s, cod_fornecedor =%s WHERE cod_peca = %s"
+    cursor.execute(query,(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,codigo_fornecedor))
     conn.commit()
     cursor.close()
     conn.close()

@@ -197,6 +197,7 @@ class PRODUTO:
                 
                 #RECEBENDO VALORES
                 
+                codigo_fornecedor = self.cod_fornecedor_selecionado
                 tipoDePeca = self.TipoDePecaCB.get()
                 descricao = self.DescricaoEntry.get()
                 quantidade = self.QuantidadeEntry.get()
@@ -209,14 +210,14 @@ class PRODUTO:
                 self.cursor = conn.cursor() #sell.conn TRABALHAR COM A CONEXAO
 
                 try:
-                    self.cursor.execute("SELECT * FROM peca WHERE codproduto=%s ",(cod_peca)) 
+                    self.cursor.execute("SELECT * FROM peca WHERE cod_peca=%s ",(cod_peca,)) 
                     # CONSULTA NO BANCO
-                    produto_pesquisa = self.cursor.fetchone()
+                    peca_pesquisa = self.cursor.fetchone()
         
                     # Verificando se o produto foi encontrado
-                    if produto_pesquisa:  # SE FOI ENCONTRADO...
+                    if peca_pesquisa:  # SE FOI ENCONTRADO...
                         if cod_peca and tipoDePeca and descricao and quantidade and lote and valor and fornecedor:
-                            update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca) #PUXANDO A FUNÇÃO DO CRUD E AS VARIAVEIS
+                            update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,codigo_fornecedor) #PUXANDO A FUNÇÃO DO CRUD E AS VARIAVEIS
 
                             #LIMPAR CAMPOS
                             self.TipoDePecaCB.set("Selicione Um Tipo")
@@ -236,6 +237,8 @@ class PRODUTO:
 
                 except:
                     print("expect")
+
+                #PRECISO PREENCHER O CODIGO FORNECEDOR NA TABELA 
         
         #BOTÃO ALTERAR
         AlterarButton = tk.Button(self.root,text = "ALTERAR",font= ("Georgia",10),width=13,command=alterar_produto)
@@ -277,7 +280,7 @@ class PRODUTO:
   
 
         #FUNÇÃO DE PESQUISAR :) ;) OBS: NAO TEM RELAÇÃO COM O CRUD
-        def pesquisar_produto():
+        def pesquisar_peca():
             codigo_peca = self.PesquisaEntry.get() 
             conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
             self.cursor = conn.cursor() #sell.conn TRABALHAR COM A CONEXAO
@@ -308,9 +311,9 @@ class PRODUTO:
                     self.PesquisaEntry.delete(0, END)
 
                     # Inserindo os dados nas entradas (Entry)
-                    if tipoDePeca in TipoDePecaLista:
+                    if tipoDePeca in TipoPecaLista:
                         self.TipoDePecaCB.set(tipoDePeca)
-                    if fornecedor in nome_fornecedores:
+                    if fornecedor in nome_fornecedoresLista:
                         self.fornecedorCB.set(fornecedor)
                     self.DescricaoEntry.insert(0, descricao)
                     self.QuantidadeEntry.insert(0, quantidade)
@@ -327,7 +330,7 @@ class PRODUTO:
 
 
         #BOTAO DE PESQUISA :)
-        PesquisarButton = tk.Button(self.root,text = "Pesquisar",font= ("Georgia",10),width=13,command=pesquisar_produto)
+        PesquisarButton = tk.Button(self.root,text = "Pesquisar",font= ("Georgia",10),width=13,command=pesquisar_peca)
         PesquisarButton.place(x = 20,y=390)
 
         #FUNÇÃO DE LIMPAR
