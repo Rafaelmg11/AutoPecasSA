@@ -71,8 +71,8 @@ def filtrar_tipopeca(event):
         
 TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
 TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
-TipoDePecaCB = ttk.Combobox (values= TipoPecaLista, height=44, width=44, state="normal") #CRIANDO COMBO BOX
-TipoDePecaCB.place(x=180,y=105) #POSICIONANDO COMBO BOX
+TipoDePecaCB = ctk.CTkComboBox (master=app,values= TipoPecaLista, height=44, width=44, state="normal") #CRIANDO COMBO BOX
+TipoDePecaCB.grid(row=1, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
 TipoDePecaCB.set("Selicione Um Tipo") #FRASE DO FRONT END INICIAL
 TipoDePecaCB.bind("<<ComboboxSelected>>", selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
 TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
@@ -80,8 +80,8 @@ TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
 
 fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES
 nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB] #LISTA
-fornecedorCB = ttk.Combobox(values = nome_fornecedoresLista,height=44,width=44, state="normal")#CRIANDO COMBO BOX
-fornecedorCB.place(x=166, y= 260) #POSICIONANDO COMBO BOX
+fornecedorCB = ctk.CTkComboBox (master= app,values = nome_fornecedoresLista,height=44,width=44, state="normal")#CRIANDO COMBO BOX
+fornecedorCB.grid(row=6, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
 fornecedorCB.set("Selecione um Fornecedor") #FRASE DO FRONT END INICIAL
 fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
 fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
@@ -89,41 +89,41 @@ fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILT
 
 
 #CRIANDO LabelS:
-TituloLabel =ctk.CTkLabel(master=app,text="PEÇAS: ",font=("Georgia",25),fg_color = "#5424A2",text_color = "WHITE") 
-TipoDePecaLabel =ctk.CTkLabel(master=app,text = "Tipo de Peça: ",font = ("Georgia",16),fg_color = "#5424A2", text_color = "WHITE") 
-DescricaoLabel =ctk.CTkLabel(master=app,text= "Descrição: ",font= ("Georgia",16),fg_color = "#5424A2", text_color = "WHITE")
-QuantidadeLabel =ctk.CTkLabel (master=app,text= "Quantidade: ",font = ("Georgia",16),fg_color = "#5424A2", text_color = "WHITE") 
-LoteLabel =ctk.CTkLabel(master=app,text="Lote: ",font=("Georgia",16),fg_color = "#5424A2", text_color = "WHITE") 
-ValorLabel =ctk.CTkLabel (master=app,text="Valor: ",font=("Georgia",16),fg_color = "#5424A2", text_color = "WHITE") 
-FornecedorLabel =ctk.CTkLabel (master=app,text="Fornecedor: ",font = ("Georgia",16),fg_color = "#5424A2", text_color = "WHITE")
-CodigoLabel =ctk.CTkLabel (master=app,text="Codigo de Peça: ",font = ("Georgia",16),fg_color = "#5424A2", text_color = "WHITE")
+# TituloLabel =ctk.CTkLabel(master=app,text="PEÇAS: ",font=("Georgia",25),fg_color = "#5424A2",text_color = "WHITE") 
+TipoDePecaLabel =ctk.CTkLabel(master=app,text = "Tipo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
+DescricaoLabel =ctk.CTkLabel(master=app,text= "Descrição: ",font= ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
+QuantidadeLabel =ctk.CTkLabel (master=app,text= "Quantidade: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
+LoteLabel =ctk.CTkLabel(master=app,text="Lote: ",font=("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
+ValorLabel =ctk.CTkLabel (master=app,text="Valor: ",font=("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
+FornecedorLabel =ctk.CTkLabel (master=app,text="Fornecedor: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
+CodigoLabel =ctk.CTkLabel (master=app,text="Codigo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
 
 #POSICIONANDO LabelS:
-TituloLabel.pack(pady=40,anchor="center") #POSICIONANDO TITULO
+# TituloLabel.pack(pady=40,anchor="center") #POSICIONANDO TITULO
 
-TipoDePecaLabel.place(x=40,y=105)
-DescricaoLabel.place(x=40,y=135)
-QuantidadeLabel.place(x=40,y=165)
-LoteLabel.place(x=40,y=195)
-ValorLabel.place(x=40,y=225)
-FornecedorLabel.place(x=40,y=255)
-CodigoLabel.place(x=40,y=285)
+TipoDePecaLabel.grid(row=1, column=0, sticky="w", padx=5)
+DescricaoLabel.grid(row=2, column=0, sticky="w", padx=5)
+QuantidadeLabel.grid(row=3, column=0, sticky="w", padx=5)
+LoteLabel.grid(row=4, column=0, sticky="w", padx=5)
+ValorLabel.grid(row=5, column=0, sticky="w", padx=5)
+FornecedorLabel.grid(row=6, column=0, sticky="w", padx=5)
+CodigoLabel.grid(row=7,column = 0, sticky = "w", padx = 5)
 
 #CRIANDO CAMPOS DE ENTRADAS:
-DescricaoEntry = ctk.CTkEntry(master=app,width=48,font=("Georgia",12))
-QuantidadeEntry = ctk.CTkEntry(master=app,width=14,font=("Georgia",12))
-LoteEntry = ctk.CTkEntry(master=app,width=14,font=("Georgia",12))
-ValorEntry = ctk.CTkEntry(master=app,width=14,font=("Georgia",12))
-CodigoEntry = ctk.CTkEntry(master=app,width=10,font=("Georgia",12))
-PesquisaEntry = ctk.CTkEntry(master=app,width=53,font= ("Georgia",13))
+DescricaoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+QuantidadeEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+LoteEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+ValorEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+CodigoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+PesquisaEntry = ctk.CTkEntry(master=app,width=300,font= ("Georgia",13))
 
 #POSICIONA OS CAMPOS DE ENTRADAS:
-DescricaoEntry.place(x=151, y= 140)
-QuantidadeEntry.place(x=166, y= 170)
-LoteEntry.place(x=214, y= 200)
-ValorEntry.place(x=199, y= 230)
-CodigoEntry.place(x=230,y=290)
-PesquisaEntry.place(x=143,y=392)
+DescricaoEntry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
+QuantidadeEntry.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
+LoteEntry.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
+ValorEntry.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
+CodigoEntry.grid(row=7,column=1, padx=5,pady=5,sticky = "ew")
+PesquisaEntry.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
 #FUNÇÃO PARA CARREGAR IMAGEM:
 def carregar_imagem():
