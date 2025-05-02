@@ -40,7 +40,7 @@ def obter_cod_fornecedor(nome_fornecedor):
 def selecionar_tipopeca():
     conn = get_connection()
     cursor = conn.cursor()
-    query = "SELECT tipo_peca FROM peca ORDER BY tipo_peca ASC"
+    query = "SELECT distinct tipo_peca FROM peca ORDER BY tipo_peca ASC"
     cursor.execute(query)
     tipo_peca = cursor.fetchall()
     cursor.close()

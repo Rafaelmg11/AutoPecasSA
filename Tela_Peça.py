@@ -50,13 +50,16 @@ def selecionado_fornec(event): #FUNÇÃO QUE PREENCHE A CAMBO BOX
 
 #FILTRO DE CAMBO BOXS:
 def filtrar_fornecedores(event): #FUNÇÃO DE FILTRO NA CAMBO BOX
-    texto = fornecedorCB.get().lower() #TEXTO DIGITADO
+    texto = FiltroFornecedoresEntry.get().lower() #TEXTO DIGITADO
     if texto == '':
         opcoes = nome_fornecedoresLista #MONSTRA TODOS OS FORNECEDORES DA LISTA
     else:
         opcoes = [item for item in nome_fornecedoresLista if texto in item.lower()] #FILTRO
     fornecedorCB['values'] = opcoes #COMBO BOX RECEBENDO OS VALORES DA LISTA "OPÇOES"
-
+    if opcoes:
+        fornecedorCB.set(opcoes[0])  # DEFINE A PRIMEIRA COMO PADRÃO
+    else:
+        fornecedorCB.set("Nenhum resultado")
 
 def filtrar_tipopeca(event):
     texto = TipoDePecaCB.get().lower() #TEXTO DIGITADO
@@ -65,8 +68,13 @@ def filtrar_tipopeca(event):
     else:
         opcoes = [item for item in TipoPecaLista if texto in item.lower()] #FILTRO
     TipoDePecaCB['values'] = opcoes #COMBO BOX RECEBENDO OS VALORES DA LISTA "OPÇOES"
+    
 
-        
+
+#CRIANDO CAMPO DE FILTRO
+FiltroFornecedoresEntry = ctk.CTkEntry (master=app,placeholder_text = "Filtro de fornecedores",font=("Georgia",12))
+FiltroFornecedoresEntry.grid(row = 8,column = 1,sticky = "w",padx = 5)
+FiltroFornecedoresEntry.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
 
 
 #CRIANDO COMBO BOXS:
@@ -86,7 +94,6 @@ fornecedorCB = ctk.CTkComboBox (master= app,values = nome_fornecedoresLista,heig
 fornecedorCB.grid(row=6, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
 fornecedorCB.set("Selecione um Fornecedor") #FRASE DO FRONT END INICIAL
 fornecedorCB.configure(command= selecionado_fornec) #AÇÃO DE SELECIONAR
-fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
 
 
 #CRIANDO LabelS:

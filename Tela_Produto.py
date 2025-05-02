@@ -91,6 +91,8 @@ class PECA:
         self.fornecedorCB.bind("<<ComboboxSelected>>", self.selecionado_fornec) #AÇÃO DE SELECIONAR
         self.fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
 
+  
+
 
 
         #CRIANDO LABELS:
