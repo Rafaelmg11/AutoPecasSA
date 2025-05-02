@@ -16,7 +16,6 @@ def get_connection():
 #FUNCÕES PECA:
 
 
-#COMBO BOX:
 def selecionar_fornecedores():
 
     conn = get_connection()
@@ -48,3 +47,15 @@ def selecionar_tipopeca():
     conn.close()
     return tipo_peca
 
+def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT nome_fornec FROM fornecedor WHERE cod_fornec = %s",(codigo_fornecedor,))
+    fornecedor = cursor.fetchone()[0]
+    query = "insert into peca (tipo_peca,desc_peca,qtde_estoque,lote,valor_unitario,fornecedor,cod_fornecedor) VALUES ( %s, %s , %s, %s, %s, %s, %s)"
+    cursor.execute(query, (tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor))
+    conn.commit()
+    cursor.close()
+    conn.close()

@@ -4,8 +4,9 @@ from tkinter import messagebox,filedialog #filedialog abre janelas de seleção 
 from tkinter import ttk
 from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: converter em widgets para exibição 
 import io #Fluxo de bytes (transforma imagem em bytes)
-from Crud_novo import selecionar_fornecedores,selecionar_tipopeca,obter_cod_fornecedor
+from Crud_novo import selecionar_fornecedores,selecionar_tipopeca,obter_cod_fornecedor,create_peca
 
+ctk.set_appearance_mode("light")
 app = ctk.CTk()   
 
 app.title("CADASTRO DE PEÇAS") #Titulo
@@ -39,6 +40,7 @@ def selecionado_TipoDePeca(event): #FUNÇÃO QUE PREENCHE A CAMBO BOX
 
 
 def selecionado_fornec(event): #FUNÇÃO QUE PREENCHE A CAMBO BOX
+    global cod_fornecedor_selecionado 
     nome_selecionado = fornecedorCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
     print("Selecionado {}".format(nome_selecionado)) #PRINT DE CONFIRMAÇÃO APENAS
 
@@ -74,7 +76,7 @@ TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
 TipoDePecaCB = ctk.CTkComboBox (master=app,values= TipoPecaLista, height=44, width=44, state="normal") #CRIANDO COMBO BOX
 TipoDePecaCB.grid(row=1, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
 TipoDePecaCB.set("Selicione Um Tipo") #FRASE DO FRONT END INICIAL
-TipoDePecaCB.bind("<<ComboboxSelected>>", selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
+TipoDePecaCB.configure(command = selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
 TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
 
 
@@ -83,13 +85,11 @@ nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB] #LISTA
 fornecedorCB = ctk.CTkComboBox (master= app,values = nome_fornecedoresLista,height=44,width=44, state="normal")#CRIANDO COMBO BOX
 fornecedorCB.grid(row=6, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
 fornecedorCB.set("Selecione um Fornecedor") #FRASE DO FRONT END INICIAL
-fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
+fornecedorCB.configure(command= selecionado_fornec) #AÇÃO DE SELECIONAR
 fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
 
 
-
 #CRIANDO LabelS:
-# TituloLabel =ctk.CTkLabel(master=app,text="PEÇAS: ",font=("Georgia",25),fg_color = "#5424A2",text_color = "WHITE") 
 TipoDePecaLabel =ctk.CTkLabel(master=app,text = "Tipo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
 DescricaoLabel =ctk.CTkLabel(master=app,text= "Descrição: ",font= ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
 QuantidadeLabel =ctk.CTkLabel (master=app,text= "Quantidade: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
@@ -99,8 +99,6 @@ FornecedorLabel =ctk.CTkLabel (master=app,text="Fornecedor: ",font = ("Georgia",
 CodigoLabel =ctk.CTkLabel (master=app,text="Codigo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
 
 #POSICIONANDO LabelS:
-# TituloLabel.pack(pady=40,anchor="center") #POSICIONANDO TITULO
-
 TipoDePecaLabel.grid(row=1, column=0, sticky="w", padx=5)
 DescricaoLabel.grid(row=2, column=0, sticky="w", padx=5)
 QuantidadeLabel.grid(row=3, column=0, sticky="w", padx=5)
@@ -141,6 +139,15 @@ def carregar_imagem():
         messagebox.showwarning("Atenção","Imagem não selecionada")
     
 def cadastrar_peca():
+    global cod_fornecedor_selecionado
+    
+
+    # Verificação adicional de segurança
+    if cod_fornecedor_selecionado is None:
+        messagebox.showerror("Erro", "Selecione um fornecedor válido")
+        return
+    
+
     #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
     codigo_fornecedor = cod_fornecedor_selecionado
     tipoDePeca = TipoDePecaCB.get()
@@ -149,6 +156,28 @@ def cadastrar_peca():
     lote = LoteEntry.get()
     valor = ValorEntry.get()
     fornecedor = fornecedorCB.get()
+
+    #VERIFICANDO SE TODOS OS CAMPOS ESTÃO PREENCHIDOS:
+    if tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor:
+        create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor)
+
+        #LIMPAR CAMPOS:
+        TipoDePecaCB.set("Selicione Um Tipo")
+        DescricaoEntry.delete(0, ctk.END)
+        QuantidadeEntry.delete(0, ctk.END)
+        LoteEntry.delete(0, ctk.END)
+        ValorEntry.delete(0, ctk.END)
+        CodigoEntry.delete(0, ctk.END)
+        fornecedorCB.set("Selecione um Fornecedor")
+        PesquisaEntry.delete(0, ctk.END)
+
+        messagebox.showinfo("Success","Peça criado com sucesso!")
+    else:
+        messagebox.showerror("Error","Todos os campos são obrigatórios" )
+
+#BOTÃO DE CADASTRO
+CadastrarButton = ctk.CTkButton (master=app,text = "CADASTRAR",font= ("Georgia",10),width=13,command=cadastrar_peca)
+CadastrarButton.place(x=40,y=335)
 
 app.mainloop()
     
