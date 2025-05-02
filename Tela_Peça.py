@@ -50,16 +50,12 @@ def selecionado_fornec(event): #FUNÇÃO QUE PREENCHE A CAMBO BOX
 
 #FILTRO DE CAMBO BOXS:
 def filtrar_fornecedores(event): #FUNÇÃO DE FILTRO NA CAMBO BOX
-    texto = FiltroFornecedoresEntry.get().lower() #TEXTO DIGITADO
+    texto = fornecedorCB.get().lower() #TEXTO DIGITADO
     if texto == '':
         opcoes = nome_fornecedoresLista #MONSTRA TODOS OS FORNECEDORES DA LISTA
     else:
         opcoes = [item for item in nome_fornecedoresLista if texto in item.lower()] #FILTRO
     fornecedorCB['values'] = opcoes #COMBO BOX RECEBENDO OS VALORES DA LISTA "OPÇOES"
-    if opcoes:
-        fornecedorCB.set(opcoes[0])  # DEFINE A PRIMEIRA COMO PADRÃO
-    else:
-        fornecedorCB.set("Nenhum resultado")
 
 def filtrar_tipopeca(event):
     texto = TipoDePecaCB.get().lower() #TEXTO DIGITADO
@@ -71,29 +67,38 @@ def filtrar_tipopeca(event):
     
 
 
-#CRIANDO CAMPO DE FILTRO
-FiltroFornecedoresEntry = ctk.CTkEntry (master=app,placeholder_text = "Filtro de fornecedores",font=("Georgia",12))
-FiltroFornecedoresEntry.grid(row = 8,column = 1,sticky = "w",padx = 5)
-FiltroFornecedoresEntry.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
+# #CRIANDO CAMPO DE FILTRO
+# FiltroFornecedoresEntry = ctk.CTkEntry (master=app,placeholder_text = "Filtro de fornecedores",font=("Georgia",12))
+# FiltroFornecedoresEntry.grid(row = 8,column = 1,sticky = "w",padx = 5)
+# FiltroFornecedoresEntry.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
 
 
 #CRIANDO COMBO BOXS:
-        
+style = ttk.Style()
+style.configure("Rounded.TCombobox",
+    padding=7,
+    foreground="black",
+    background="white",
+    fieldbackground="#f5f5f5",  # cor interna parecida com CTk
+    )
+
 TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
 TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
-TipoDePecaCB = ctk.CTkComboBox (master=app,values= TipoPecaLista, height=44, width=44, state="normal") #CRIANDO COMBO BOX
+TipoDePecaCB = ttk.Combobox (style="Rounded.TCombobox",master=app,values= TipoPecaLista,font=("Georgia",12)) #CRIANDO COMBO BOX
 TipoDePecaCB.grid(row=1, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
 TipoDePecaCB.set("Selicione Um Tipo") #FRASE DO FRONT END INICIAL
-TipoDePecaCB.configure(command = selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
+TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
 TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
 
 
 fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES
 nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB] #LISTA
-fornecedorCB = ctk.CTkComboBox (master= app,values = nome_fornecedoresLista,height=44,width=44, state="normal")#CRIANDO COMBO BOX
+fornecedorCB = ttk.Combobox (style="Rounded.TCombobox",master= app,values = nome_fornecedoresLista,font=("Georgia",12))#CRIANDO COMBO BOX
 fornecedorCB.grid(row=6, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
-fornecedorCB.set("Selecione um Fornecedor") #FRASE DO FRONT END INICIAL
-fornecedorCB.configure(command= selecionado_fornec) #AÇÃO DE SELECIONAR
+fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
+fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
+fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
+
 
 
 #CRIANDO LabelS:
