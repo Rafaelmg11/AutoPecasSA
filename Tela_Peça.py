@@ -4,7 +4,7 @@ from tkinter import messagebox,filedialog #filedialog abre janelas de seleção 
 from tkinter import ttk
 from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: converter em widgets para exibição 
 import io #Fluxo de bytes (transforma imagem em bytes)
-from Crud_novo import selecionar_fornecedores,selecionar_tipopeca,obter_cod_fornecedor,create_peca
+from Crud_novo import get_connection,selecionar_fornecedores,selecionar_tipopeca,obter_cod_fornecedor,create_peca,update_peca
 
 ctk.set_appearance_mode("light")
 app = ctk.CTk()   
@@ -151,45 +151,141 @@ def carregar_imagem():
         messagebox.showwarning("Atenção","Imagem não selecionada")
     
 def cadastrar_peca():
-    global cod_fornecedor_selecionado
     
+    #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
+    codigo_fornecedor = cod_fornecedor_selecionado
+    tipoDePeca = TipoDePecaCB.get()
+    descricao = DescricaoEntry.get()
+    lote = LoteEntry.get()
+    fornecedor = fornecedorCB.get()
 
     # Verificação adicional de segurança
     if cod_fornecedor_selecionado is None:
         messagebox.showerror("Erro", "Selecione um fornecedor válido")
         return
-    
 
-    #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
-    codigo_fornecedor = cod_fornecedor_selecionado
-    tipoDePeca = TipoDePecaCB.get()
-    descricao = DescricaoEntry.get()
-    quantidade = QuantidadeEntry.get()
-    lote = LoteEntry.get()
-    valor = ValorEntry.get()
-    fornecedor = fornecedorCB.get()
+
+    #VERIFICAÇÕES DE SEGURANÇA
+    try:
+        quantidade = int(QuantidadeEntry.get())
+    except ValueError:
+        messagebox.showerror("Error","Quantidade invalida")
+
+    try:
+        valor = float(ValorEntry.get())
+    except ValueError:
+        messagebox.showerror("Error","Valor invalido")
+
+    if cod_fornecedor_selecionado is None:
+        messagebox.showerror("Error", "Selecione um fornecedor válido")
+        return
+
+    
 
     #VERIFICANDO SE TODOS OS CAMPOS ESTÃO PREENCHIDOS:
     if tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor:
-        create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor)
+        if tipoDePeca not in TipoPecaLista:
+            messagebox.showerror("Error", "Selecione um tipo de peça válido")
+        else:
+            create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor)
 
-        #LIMPAR CAMPOS:
-        TipoDePecaCB.set("Selicione Um Tipo")
-        DescricaoEntry.delete(0, ctk.END)
-        QuantidadeEntry.delete(0, ctk.END)
-        LoteEntry.delete(0, ctk.END)
-        ValorEntry.delete(0, ctk.END)
-        CodigoEntry.delete(0, ctk.END)
-        fornecedorCB.set("Selecione um Fornecedor")
-        PesquisaEntry.delete(0, ctk.END)
+            #LIMPAR CAMPOS:
+            TipoDePecaCB.set("Selicione Um Tipo")
+            DescricaoEntry.delete(0, ctk.END)
+            QuantidadeEntry.delete(0, ctk.END)
+            LoteEntry.delete(0, ctk.END)
+            ValorEntry.delete(0, ctk.END)
+            CodigoEntry.delete(0, ctk.END)
+            fornecedorCB.set("Selecione um Fornecedor")
+            PesquisaEntry.delete(0, ctk.END)
 
-        messagebox.showinfo("Success","Peça criado com sucesso!")
+            messagebox.showinfo("Success","Peça criado com sucesso!")
     else:
         messagebox.showerror("Error","Todos os campos são obrigatórios" )
 
 #BOTÃO DE CADASTRO
 CadastrarButton = ctk.CTkButton (master=app,text = "CADASTRAR",font= ("Georgia",10),width=13,command=cadastrar_peca)
 CadastrarButton.place(x=40,y=335)
+
+
+
+#FUNÇÃO DE ALTERAR PEÇA:
+def alterar_peca():
+
+    nome_selecionado = fornecedorCB.get() #VARIAVEL RECEBENDO O NOME DO FORNECEDOR(PARA OBTER O CODIGO FORNECEDOR)
+    cod_fornecedor_selecionado = obter_cod_fornecedor(nome_selecionado) #VARIAVEL RECEBENDO O CODIGO DO FORNECEDOR
+    codigo_fornecedor = cod_fornecedor_selecionado #VARIAVEL FINAL
+
+
+    #RECEBENDO VALORES
+    tipoDePeca = TipoDePecaCB.get()
+    descricao = DescricaoEntry.get()
+    lote = LoteEntry.get()
+    fornecedor = fornecedorCB.get()
+
+    cod_peca = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O CODPECA DA TABELA
+
+
+    #VERIFICAÇÕES DE SEGURANÇA
+    try:
+        quantidade = int(QuantidadeEntry.get())
+    except ValueError:
+        messagebox.showerror("Error","Quantidade invalida")
+
+    try:
+        valor = float(ValorEntry.get())
+    except ValueError:
+        messagebox.showerror("Error","Valor invalido")
+
+    if cod_fornecedor_selecionado is None:
+        messagebox.showerror("Error", "Selecione um fornecedor válido")
+        return
+
+
+
+    #CONEXÃO COM O BANCO DE DADOS
+    conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
+    cursor = conn.cursor() #self.conn TRABALHAR COM A CONEXAO
+    try:
+        # CONSULTA NO BANCO
+        cursor.execute("SELECT * FROM peca WHERE cod_peca=%s ",(cod_peca,))  
+        peca_pesquisa = cursor.fetchone()
+
+
+            
+        # Verificando se o peça foi encontrado
+        if peca_pesquisa:  # SE FOI ENCONTRADO...
+            if tipoDePeca not in TipoPecaLista:
+                messagebox.showerror("Error", "Selecione um tipo de peça válido")
+            else:
+                if cod_peca and tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor : #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
+                    update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,codigo_fornecedor) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+
+                    #LIMPAR CAMPOS
+                    TipoDePecaCB.set("Selicione Um Tipo")
+                    DescricaoEntry.delete(0, ctk.END)
+                    QuantidadeEntry.delete(0, ctk.END)
+                    LoteEntry.delete(0, ctk.END)
+                    ValorEntry.delete(0, ctk.END)
+                    CodigoEntry.delete(0, ctk.END)
+                    fornecedorCB.set("Selecione um Fornecedor")
+                    CodigoEntry.delete(0, ctk.END)
+                    PesquisaEntry.delete(0, ctk.END)
+                    messagebox.showinfo("Success","Peça alterado com sucesso!")
+
+                else:
+                    messagebox.showerror("Error","Todos os campos são obrigatórios")
+        else:
+            messagebox.showerror("Error","Cadastro de Peça não existe")
+
+    except Exception as e:
+        print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
+            
+#BOTÃO ALTERAR
+AlterarButton = ctk.CTkButton(master=app,text = "ALTERAR",font= ("Georgia",10),width=13,command=alterar_peca)
+AlterarButton.place(x=164,y=335)  
+
+
 
 app.mainloop()
     

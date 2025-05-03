@@ -59,3 +59,12 @@ def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor):
     conn.commit()
     cursor.close()
     conn.close()
+
+def update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,codigo_fornecedor):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "UPDATE peca SET tipo_peca = %s, desc_peca= %s, qtde_estoque = %s, lote = %s, valor_unitario = %s, fornecedor = %s, cod_fornecedor =%s WHERE cod_peca = %s"
+    cursor.execute(query,(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor,cod_peca))
+    conn.commit()
+    cursor.close()
+    conn.close()
