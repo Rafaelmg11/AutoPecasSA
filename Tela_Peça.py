@@ -12,7 +12,7 @@ app = ctk.CTk()
 app.title("CADASTRO DE PEÇAS") #Titulo
 app.geometry("775x780") #Tamanho da janela
 app.configure(fg_color = "#5424A2") #Cor de fundo da janela
-app.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
+# app.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
 #Declarando variaveis futuras:
 cod_fornecedor_selecionado = None
@@ -33,6 +33,8 @@ def conectarBanco(): #CONEXÃO COM O BANCO DE DADOS
     )
     cursor = conn.cursor()
 
+
+
 #FUNÇÕES QUE SELECIONAM X ITEM DA CAMBO BOX (NÃO NECESSARIO(EM TEORIA))
 def selecionado_TipoDePeca(event): #FUNÇÃO QUE PREENCHE A CAMBO BOX
     selecionado = TipoDePecaCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
@@ -46,7 +48,6 @@ def selecionado_fornec(event): #FUNÇÃO QUE PREENCHE A CAMBO BOX
 
     cod_fornecedor_selecionado = obter_cod_fornecedor(nome_selecionado) #VARIAVEL RECEBENDO FUNÇÃO DO CRUD DE PEGAR O COD DE FORNECEDOR
     print(f"Fornecedor selecionado: {nome_selecionado} (Código: {cod_fornecedor_selecionado})") #PRINT DE CONFIRMAÇÃO APENAS
-
 
 #FILTRO DE CAMBO BOXS:
 def filtrar_fornecedores(event): #FUNÇÃO DE FILTRO NA CAMBO BOX
@@ -65,8 +66,10 @@ def filtrar_tipopeca(event):
         opcoes = [item for item in TipoPecaLista if texto in item.lower()] #FILTRO
     TipoDePecaCB['values'] = opcoes #COMBO BOX RECEBENDO OS VALORES DA LISTA "OPÇOES"
     
-def selecionar_linha(event):
 
+
+
+def selecionar_linha(event):
     conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
     cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
 
@@ -74,20 +77,11 @@ def selecionar_linha(event):
     if item:
         valores = tabela.item(item,"values")
         cod_peca = valores[0]
-        cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, imagem, cod_peca FROM peca WHERE cod_peca=%s", (cod_peca,))
+        cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, imagem, cod_peca FROM peca WHERE ativo = TRUE and cod_peca=%s", (cod_peca,))
         resultado = cursor.fetchone()
         if resultado:
 
-            #LIMPA TODOS OS CAMPOS ANTES DE RECEBER AS INFORMAÇOES)
-            TipoDePecaCB.set("Selecione um Tipo")
-            DescricaoEntry.delete(0, ctk.END)
-            QuantidadeEntry.delete(0, ctk.END)
-            LoteEntry.delete(0, ctk.END)
-            ValorEntry.delete(0, ctk.END)
-            CodigoEntry.delete(0, ctk.END)
-            fornecedorCB.set("Selecione um Fornecedor")
-            CodigoEntry.delete(0, ctk.END)
-            PesquisaEntry.delete(0, ctk.END)
+            limparCampos()
 
             #INSERINDO DADOS NOS CAMPOS
             TipoDePecaCB.set(resultado[0])
@@ -98,13 +92,17 @@ def selecionar_linha(event):
             fornecedorCB.set(resultado[5])
             CodigoEntry.insert(0, resultado[7])
 
+            global imagem_bytes,imagem_display
             imagem_bytes = resultado[6]
             if imagem_bytes:
-                imagem_pil = Image.open(io.BytesIO(imagem_bytes).resize(120,120))
+                imagem_pil = Image.open(io.BytesIO(imagem_bytes))
+                imagem_pil = imagem_pil.resize((120,120))
                 imagem_display = ImageTk.PhotoImage(imagem_pil)
                 imagem_label.configure(image=imagem_display,text = "")
+                imagem_label.image = imagem_display
             else:
                 imagem_label.configure(image=imagem_padrao,text = "")
+                imagem_label.image = imagem_padrao
 
 
 #FUNÇÃO PARA CARREGAR IMAGEM:
@@ -133,12 +131,6 @@ def cadastrar_peca():
     lote = LoteEntry.get()
     fornecedor = fornecedorCB.get()
 
-    # Verificação adicional de segurança
-    if cod_fornecedor_selecionado is None:
-        messagebox.showerror("Erro", "Selecione um fornecedor válido")
-        return
-
-
     #VERIFICAÇÕES DE SEGURANÇA
     try:
         quantidade = int(QuantidadeEntry.get())
@@ -161,32 +153,23 @@ def cadastrar_peca():
         if tipoDePeca not in TipoPecaLista:
             messagebox.showerror("Error", "Selecione um tipo de peça válido")
         else:
-            create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor)
+            create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor,imagem_bytes)
 
-            #LIMPAR CAMPOS:
-            TipoDePecaCB.set("Selicione Um Tipo")
-            DescricaoEntry.delete(0, ctk.END)
-            QuantidadeEntry.delete(0, ctk.END)
-            LoteEntry.delete(0, ctk.END)
-            ValorEntry.delete(0, ctk.END)
-            CodigoEntry.delete(0, ctk.END)
-            fornecedorCB.set("Selecione um Fornecedor")
-            PesquisaEntry.delete(0, ctk.END)
+            limparCampos()
 
             messagebox.showinfo("Success","Peça criado com sucesso!")
     else:
         messagebox.showerror("Error","Todos os campos são obrigatórios" )
 
 
-
-
 #FUNÇÃO DE ALTERAR PEÇA:
 def alterar_peca():
+
+    global imagem_bytes
 
     nome_selecionado = fornecedorCB.get() #VARIAVEL RECEBENDO O NOME DO FORNECEDOR(PARA OBTER O CODIGO FORNECEDOR)
     cod_fornecedor_selecionado = obter_cod_fornecedor(nome_selecionado) #VARIAVEL RECEBENDO O CODIGO DO FORNECEDOR
     codigo_fornecedor = cod_fornecedor_selecionado #VARIAVEL FINAL
-
 
     #RECEBENDO VALORES
     tipoDePeca = TipoDePecaCB.get()
@@ -195,7 +178,6 @@ def alterar_peca():
     fornecedor = fornecedorCB.get()
 
     cod_peca = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O CODPECA DA TABELA
-
 
     #VERIFICAÇÕES DE SEGURANÇA
     try:
@@ -212,36 +194,24 @@ def alterar_peca():
         messagebox.showerror("Error", "Selecione um fornecedor válido")
         return
 
-
-
     #CONEXÃO COM O BANCO DE DADOS
     conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
     cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
     try:
         # CONSULTA NO BANCO
-        cursor.execute("SELECT * FROM peca WHERE cod_peca=%s ",(cod_peca,))  
+        cursor.execute("SELECT * FROM peca WHERE ativo = TRUE and cod_peca=%s ",(cod_peca,))  
         peca_pesquisa = cursor.fetchone()
-
-
             
         # Verificando se o peça foi encontrado
         if peca_pesquisa:  # SE FOI ENCONTRADO...
             if tipoDePeca not in TipoPecaLista:
                 messagebox.showerror("Error", "Selecione um tipo de peça válido")
             else:
-                if cod_peca and tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor : #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                    update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,codigo_fornecedor) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                if cod_peca and tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
+                    update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,codigo_fornecedor,imagem_bytes) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
 
-                    #LIMPAR CAMPOS
-                    TipoDePecaCB.set("Selicione Um Tipo")
-                    DescricaoEntry.delete(0, ctk.END)
-                    QuantidadeEntry.delete(0, ctk.END)
-                    LoteEntry.delete(0, ctk.END)
-                    ValorEntry.delete(0, ctk.END)
-                    CodigoEntry.delete(0, ctk.END)
-                    fornecedorCB.set("Selecione um Fornecedor")
-                    CodigoEntry.delete(0, ctk.END)
-                    PesquisaEntry.delete(0, ctk.END)
+                    limparCampos()
+
                     messagebox.showinfo("Success","Peça alterado com sucesso!")
 
                 else:
@@ -253,7 +223,6 @@ def alterar_peca():
         print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
             
 
-
 #FUNÇÃO DE EXCLUIR
 def excluir_peca():
     codigo_peca = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O CODPECA DA TABELA
@@ -261,29 +230,19 @@ def excluir_peca():
     cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
     try:
         # CONSULTA NO BANCO
-        cursor.execute("SELECT * FROM peca WHERE cod_peca=%s ",(codigo_peca,)) 
+        cursor.execute("SELECT * FROM peca WHERE ativo = TRUE and cod_peca=%s ",(codigo_peca,)) 
         peca_pesquisa = cursor.fetchone()
         
         # Verificando se o peça foi encontrado
         if peca_pesquisa:  # SE FOI ENCONTRADO...
             delete_peca(codigo_peca) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
 
-            #LIMPAR CAMPOS
-            TipoDePecaCB.set("Selicione Um Tipo")
-            DescricaoEntry.delete(0, ctk.END)
-            QuantidadeEntry.delete(0, ctk.END)
-            LoteEntry.delete(0, ctk.END)
-            ValorEntry.delete(0, ctk.END)
-            CodigoEntry.delete(0, ctk.END)
-            fornecedorCB.set("Selecione um Fornecedor")
-            PesquisaEntry.delete(0, ctk.END)
+            limparCampos()
             messagebox.showinfo("Success","Peça excluido com sucesso")
         else:
             messagebox.showerror("Error","Codigo de Peça não existe")
     except Exception as e:
         print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
-
-
 
 
 #FUNÇÃO DE PESQUISAR OBS: NAO TEM RELAÇÃO COM O CRUD
@@ -294,26 +253,17 @@ def pesquisar_peca():
     cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
     try:
         # CONSULTA NO BANCO
-        cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, cod_peca FROM peca WHERE cod_peca=%s or desc_peca=%s", (pesquisa,pesquisa)) 
+        cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, cod_peca ,imagem FROM peca WHERE ativo = TRUE and cod_peca=%s or desc_peca=%s", (pesquisa,pesquisa)) 
         # ACIMA SELECIONA AS COLUNAS DA TABELA SE codpeca OU descpeca == pesquisa (o que foi digitado no campo de pesquisa)
         # PERMITE PESQUISA POR DESCRICAO E CODIGO DA PECA
         peca_pesquisa = cursor.fetchone()
         
         # Verificando se o peça foi encontrado
         if peca_pesquisa:  # SE FOI ENCONTRADO...
-            tipoDePeca, descricao, quantidade, lote, valor, fornecedor, cod_peca = peca_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
+            tipoDePeca, descricao, quantidade, lote, valor, fornecedor, cod_peca,imagem_pesquisa = peca_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
 
-            #LIMPA TODOS OS CAMPOS ANTES DE RECEBER AS INFORMAÇOES)
-
-            TipoDePecaCB.set("Selecione um Tipo")
-            DescricaoEntry.delete(0, ctk.END)
-            QuantidadeEntry.delete(0, ctk.END)
-            LoteEntry.delete(0, ctk.END)
-            ValorEntry.delete(0, ctk.END)
-            CodigoEntry.delete(0, ctk.END)
-            fornecedorCB.set("Selecione um Fornecedor")
-            CodigoEntry.delete(0, ctk.END)
-            PesquisaEntry.delete(0, ctk.END)
+           
+            limparCampos()
 
             # Inserindo os dados nas entradas (Entry)
             DescricaoEntry.insert(0, descricao)
@@ -328,12 +278,25 @@ def pesquisar_peca():
             if fornecedor in nome_fornecedoresLista:
                 fornecedorCB.set(fornecedor)
 
+            global imagem_bytes,imagem_display
+            imagem_bytes = imagem_pesquisa
+            if imagem_bytes:
+                imagem_pil = Image.open(io.BytesIO(imagem_bytes))
+                imagem_pil = imagem_pil.resize((120,120))
+                imagem_display = ImageTk.PhotoImage(imagem_pil)
+                imagem_label.configure(image=imagem_display,text = "")
+                imagem_label.image = imagem_display
+            else:
+                imagem_label.configure(image=imagem_padrao,text = "")
+                imagem_label.image = imagem_padrao
+
             messagebox.showinfo("Success", "Peça encontrado")
         else:
             messagebox.showwarning("Não encontrado", "Peça não encontrado")
 
     except Exception as e:
         print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO (SALVOU O CODIGO)
+
 
 def pesquisa_tabela():
     conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
@@ -343,7 +306,7 @@ def pesquisa_tabela():
     pesquisa = PesquisaTabelaEntry.get()
     for linha in tabela.get_children():
         tabela.delete(linha)
-    cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca WHERE cod_peca = %s OR desc_peca LIKE %s ",(pesquisa,f"%{pesquisa}%"))
+    cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca WHERE ativo = TRUE and cod_peca = %s OR desc_peca LIKE %s ",(pesquisa,f"%{pesquisa}%"))
     consulta_tabela = cursor.fetchall()
 
     for linha in consulta_tabela:
@@ -356,15 +319,11 @@ def listar_pecas():
     cursor = conn.cursor()
     for linha in tabela.get_children():
         tabela.delete(linha)
-    cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca ")
+    cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca WHERE  ativo = TRUE ")
     consulta_tabela = cursor.fetchall()
 
     for linha in consulta_tabela:
         tabela.insert("","end",values = linha)
-
-#BOTAO DE LISTAR
-ListarButton = ctk.CTkButton(master=app,text = "Listar",font= ("Georgia",16),width=250,command=listar_pecas)
-ListarButton.grid(row = 14,column = 1,padx = 5,pady = 5)
 
 
 
@@ -373,15 +332,33 @@ ListarButton.grid(row = 14,column = 1,padx = 5,pady = 5)
 #WIDGETS:
 #FUNÇÃO DE LIMPAR
 def limparCampos():
-    TipoDePecaCB.set("Selicione Um Tipo")
+    TipoDePecaCB.set("Selecione Um Tipo")
     DescricaoEntry.delete(0, ctk.END)
     QuantidadeEntry.delete(0, ctk.END)
     LoteEntry.delete(0, ctk.END)
     ValorEntry.delete(0, ctk.END)
-    CodigoEntry.delete(0, ctk.END)
     fornecedorCB.set("Selecione um Fornecedor")
     CodigoEntry.delete(0, ctk.END)
     PesquisaEntry.delete(0, ctk.END)
+    global imagem_bytes
+    imagem_bytes = None
+    imagem_label.configure(image=imagem_padrao, text="")
+    imagem_label.image = imagem_padrao
+    PesquisaTabelaEntry.delete(0,ctk.END)
+    tabela.insert("","end",values="")
+
+    #TABELA
+    conn = get_connection()
+    cursor = conn.cursor()
+    for linha in tabela.get_children():
+        tabela.delete(linha)
+    cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca WHERE  ativo = TRUE ")
+    consulta_tabela = cursor.fetchall()
+
+    for linha in consulta_tabela:
+        tabela.insert("","end",values = "")
+
+
 
 #CRIANDO COMBO BOXS:
 style = ttk.Style()
@@ -392,7 +369,7 @@ TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS
 TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
 TipoDePecaCB = ttk.Combobox (style="Rounded.TCombobox",master=app,values= TipoPecaLista,font=("Georgia",12)) #CRIANDO COMBO BOX
 TipoDePecaCB.grid(row=1, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
-TipoDePecaCB.set("Selicione Um Tipo") #FRASE DO FRONT END INICIAL
+TipoDePecaCB.set("Selecione Um Tipo") #FRASE DO FRONT END INICIAL
 TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
 TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
 
@@ -404,8 +381,6 @@ fornecedorCB.grid(row=6, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
 fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
 fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
 fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
-
-
 
 #CRIANDO LabelS:
 TipoDePecaLabel =ctk.CTkLabel(master=app,text = "Tipo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
@@ -445,12 +420,13 @@ PesquisaEntry.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
 #TABELA:
 #Criando tabela:
-tabela = ttk.Treeview(master=app,columns=("cod","tipo","desc","estoque","lote","fornecedor"),show ="headings",height=10)
+tabela = ttk.Treeview(master=app,columns=("cod","tipo","desc","estoque","valor","lote","fornecedor"),show ="headings",height=10)
 #Cabeçalho de cada coluna
 tabela.heading("cod", text="Código")
 tabela.heading("tipo", text="Tipo")
 tabela.heading("desc", text="Descrição")
 tabela.heading("estoque", text="Estoque")
+tabela.heading("valor",text="Valor")
 tabela.heading("lote",text="Lote")
 tabela.heading("fornecedor",text="Fornecedor")
 #Tamanho de cada coluna
@@ -458,6 +434,7 @@ tabela.column("cod", width=55)
 tabela.column("tipo", width=120)
 tabela.column("desc", width=300)
 tabela.column("estoque", width=80)
+tabela.column("valor",width = 90)
 tabela.column("lote",width = 90)
 tabela.column("fornecedor",width = 300)
 #Posicionando
@@ -470,34 +447,31 @@ imagem_label = ctk.CTkLabel(master=app,text = "---Imagem---",font=("Georgia",12)
 imagem_label.grid(row=11,column=0,columnspan=2,pady=10)
 
 #BOTÕES:
-
 #BOTÃO DE CADASTRO
 CadastrarButton = ctk.CTkButton (master=app,text = "CADASTRAR",font= ("Georgia",10),width=13,command=cadastrar_peca)
 CadastrarButton.place(x=40,y=335)
-
 #BOTÃO ALTERAR
 AlterarButton = ctk.CTkButton(master=app,text = "ALTERAR",font= ("Georgia",10),width=13,command=alterar_peca)
 AlterarButton.place(x=164,y=335)  
-
 #BOTAO DE EXCLUIR
 ExcluirButton = ctk.CTkButton(master= app,text = "EXCLUIR",font= ("Georgia",10),width=13,command=excluir_peca)
 ExcluirButton.place(x=418,y=335)
-
 #BOTÃO DE LIMPAR
 limparButton = ctk.CTkButton(master = app,text = "LIMPAR",font= ("Georgia",10),width=13,command=limparCampos)
 limparButton.place(x = 547,y=335)
-
 #BOTÃO DE CARREGAR IMAGEM:
 botao_imagem = ctk.CTkButton(master=app, text="Carregar Imagem", command=carregar_imagem)
 botao_imagem.grid(row=12, column=0, columnspan=2, pady=5)
-
 #BOTÃO DE PESQUISA NA TABELA
 PesquisaTabelaButton = ctk.CTkButton(master=app, text="Pesquisar Tabela", command=pesquisa_tabela)
 PesquisaTabelaButton.grid(row=13,  column=0, sticky="w", columnspan=2, pady=5)
-
 #BOTAO DE PESQUISA
 PesquisarButton = ctk.CTkButton(master=app,text = "Pesquisar",font= ("Georgia",16),width=250,command=pesquisar_peca)
 PesquisarButton.grid(row = 0,column = 1,padx = 5,pady = 5)
+#BOTAO DE LISTAR
+ListarButton = ctk.CTkButton(master=app,text = "Listar",font= ("Georgia",16),width=250,command=listar_pecas)
+ListarButton.grid(row = 14,column = 1,padx = 5,pady = 5)
+
 
 
 
