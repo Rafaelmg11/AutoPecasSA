@@ -74,7 +74,7 @@ def selecionar_linha(event):
     if item:
         valores = tabela.item(item,"values")
         cod_peca = valores[0]
-        cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, imagem FROM peca WHERE cod_peca=%s", (cod_peca,))
+        cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, imagem, cod_peca FROM peca WHERE cod_peca=%s", (cod_peca,))
         resultado = cursor.fetchone()
         if resultado:
 
@@ -91,14 +91,13 @@ def selecionar_linha(event):
 
             #INSERINDO DADOS NOS CAMPOS
             TipoDePecaCB.set(resultado[0])
-            DescricaoEntry.insert(resultado[1])
-            QuantidadeEntry.insert(resultado[2])
-            LoteEntry.insert(resultado[3])
-            ValorEntry.insert(resultado[4])
+            DescricaoEntry.insert(0, resultado[1])
+            QuantidadeEntry.insert(0, resultado[2])
+            LoteEntry.insert(0, resultado[3])
+            ValorEntry.insert(0, resultado[4])
             fornecedorCB.set(resultado[5])
-            CodigoEntry.set(resultado[7])
+            CodigoEntry.insert(0, resultado[7])
 
-            imagem_bytes,imagem_display
             imagem_bytes = resultado[6]
             if imagem_bytes:
                 imagem_pil = Image.open(io.BytesIO(imagem_bytes).resize(120,120))
@@ -121,6 +120,7 @@ def carregar_imagem():
         imagem_display = ImageTk.PhotoImage(imagem_pil) #Converte em widget
         imagem_label.configure(image = imagem_display,text="") #Exibe
     else:
+        imagem_label.configure(image=imagem_padrao, text="")
         messagebox.showwarning("Atenção","Imagem não selecionada")
 
     
@@ -327,7 +327,7 @@ def pesquisar_peca():
                 TipoDePecaCB.set(tipoDePeca)
             if fornecedor in nome_fornecedoresLista:
                 fornecedorCB.set(fornecedor)
-            
+
             messagebox.showinfo("Success", "Peça encontrado")
         else:
             messagebox.showwarning("Não encontrado", "Peça não encontrado")
@@ -335,11 +335,42 @@ def pesquisar_peca():
     except Exception as e:
         print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO (SALVOU O CODIGO)
 
+def pesquisa_tabela():
+    conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
+    cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
 
-#BOTAO DE PESQUISA
-PesquisarButton = ctk.CTkButton(master=app,text = "Pesquisar",font= ("Georgia",16),width=250,command=pesquisar_peca)
-PesquisarButton.grid(row = 0,column = 1,padx = 5,pady = 5)
+    #PARTE DA TABELA:
+    pesquisa = PesquisaTabelaEntry.get()
+    for linha in tabela.get_children():
+        tabela.delete(linha)
+    cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca WHERE cod_peca = %s OR desc_peca LIKE %s ",(pesquisa,f"%{pesquisa}%"))
+    consulta_tabela = cursor.fetchall()
 
+    for linha in consulta_tabela:
+        tabela.insert("","end",values = linha)
+
+
+
+def listar_pecas():
+    conn = get_connection()
+    cursor = conn.cursor()
+    for linha in tabela.get_children():
+        tabela.delete(linha)
+    cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca ")
+    consulta_tabela = cursor.fetchall()
+
+    for linha in consulta_tabela:
+        tabela.insert("","end",values = linha)
+
+#BOTAO DE LISTAR
+ListarButton = ctk.CTkButton(master=app,text = "Listar",font= ("Georgia",16),width=250,command=listar_pecas)
+ListarButton.grid(row = 14,column = 1,padx = 5,pady = 5)
+
+
+
+
+
+#WIDGETS:
 #FUNÇÃO DE LIMPAR
 def limparCampos():
     TipoDePecaCB.set("Selicione Um Tipo")
@@ -401,6 +432,7 @@ LoteEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
 ValorEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
 CodigoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
 PesquisaEntry = ctk.CTkEntry(master=app,width=300,font= ("Georgia",13))
+PesquisaTabelaEntry = ctk.CTkEntry(master = app,width=300,font= ("Georgia",13))
 
 #POSICIONA OS CAMPOS DE ENTRADAS:
 DescricaoEntry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
@@ -408,6 +440,7 @@ QuantidadeEntry.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
 LoteEntry.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
 ValorEntry.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
 CodigoEntry.grid(row=7,column=1, padx=5,pady=5,sticky = "ew")
+PesquisaTabelaEntry.grid(row=13, column=1, padx=5, pady=5, sticky="ew")
 PesquisaEntry.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
 #TABELA:
@@ -457,6 +490,14 @@ limparButton.place(x = 547,y=335)
 #BOTÃO DE CARREGAR IMAGEM:
 botao_imagem = ctk.CTkButton(master=app, text="Carregar Imagem", command=carregar_imagem)
 botao_imagem.grid(row=12, column=0, columnspan=2, pady=5)
+
+#BOTÃO DE PESQUISA NA TABELA
+PesquisaTabelaButton = ctk.CTkButton(master=app, text="Pesquisar Tabela", command=pesquisa_tabela)
+PesquisaTabelaButton.grid(row=13,  column=0, sticky="w", columnspan=2, pady=5)
+
+#BOTAO DE PESQUISA
+PesquisarButton = ctk.CTkButton(master=app,text = "Pesquisar",font= ("Georgia",16),width=250,command=pesquisar_peca)
+PesquisarButton.grid(row = 0,column = 1,padx = 5,pady = 5)
 
 
 
