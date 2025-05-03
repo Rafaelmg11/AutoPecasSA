@@ -68,3 +68,12 @@ def update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,c
     conn.commit()
     cursor.close()
     conn.close()
+
+def delete_peca(codigo_Peca):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "DELETE FROM peca WHERE cod_peca = %s"
+    cursor.execute(query, (codigo_Peca,))
+    conn.commit()
+    cursor.close()
+    conn.close()
