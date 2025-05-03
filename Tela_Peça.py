@@ -10,7 +10,7 @@ ctk.set_appearance_mode("light")
 app = ctk.CTk()   
 
 app.title("CADASTRO DE PEÇAS") #Titulo
-app.geometry("700x680") #Tamanho da janela
+app.geometry("775x780") #Tamanho da janela
 app.configure(fg_color = "#5424A2") #Cor de fundo da janela
 app.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
@@ -65,75 +65,48 @@ def filtrar_tipopeca(event):
         opcoes = [item for item in TipoPecaLista if texto in item.lower()] #FILTRO
     TipoDePecaCB['values'] = opcoes #COMBO BOX RECEBENDO OS VALORES DA LISTA "OPÇOES"
     
+def selecionar_linha(event):
 
+    conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
+    cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
 
-# #CRIANDO CAMPO DE FILTRO
-# FiltroFornecedoresEntry = ctk.CTkEntry (master=app,placeholder_text = "Filtro de fornecedores",font=("Georgia",12))
-# FiltroFornecedoresEntry.grid(row = 8,column = 1,sticky = "w",padx = 5)
-# FiltroFornecedoresEntry.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
+    item = tabela.selection()
+    if item:
+        valores = tabela.item(item,"values")
+        cod_peca = valores[0]
+        cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, imagem FROM peca WHERE cod_peca=%s", (cod_peca,))
+        resultado = cursor.fetchone()
+        if resultado:
 
+            #LIMPA TODOS OS CAMPOS ANTES DE RECEBER AS INFORMAÇOES)
+            TipoDePecaCB.set("Selecione um Tipo")
+            DescricaoEntry.delete(0, ctk.END)
+            QuantidadeEntry.delete(0, ctk.END)
+            LoteEntry.delete(0, ctk.END)
+            ValorEntry.delete(0, ctk.END)
+            CodigoEntry.delete(0, ctk.END)
+            fornecedorCB.set("Selecione um Fornecedor")
+            CodigoEntry.delete(0, ctk.END)
+            PesquisaEntry.delete(0, ctk.END)
 
-#CRIANDO COMBO BOXS:
-style = ttk.Style()
-style.configure("Rounded.TCombobox",
-    padding=7,
-    foreground="black",
-    background="white",
-    fieldbackground="#f5f5f5",  # cor interna parecida com CTk
-    )
+            #INSERINDO DADOS NOS CAMPOS
+            TipoDePecaCB.set(resultado[0])
+            DescricaoEntry.insert(resultado[1])
+            QuantidadeEntry.insert(resultado[2])
+            LoteEntry.insert(resultado[3])
+            ValorEntry.insert(resultado[4])
+            fornecedorCB.set(resultado[5])
+            CodigoEntry.set(resultado[7])
 
-TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
-TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
-TipoDePecaCB = ttk.Combobox (style="Rounded.TCombobox",master=app,values= TipoPecaLista,font=("Georgia",12)) #CRIANDO COMBO BOX
-TipoDePecaCB.grid(row=1, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
-TipoDePecaCB.set("Selicione Um Tipo") #FRASE DO FRONT END INICIAL
-TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
-TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
+            imagem_bytes,imagem_display
+            imagem_bytes = resultado[6]
+            if imagem_bytes:
+                imagem_pil = Image.open(io.BytesIO(imagem_bytes).resize(120,120))
+                imagem_display = ImageTk.PhotoImage(imagem_pil)
+                imagem_label.configure(image=imagem_display,text = "")
+            else:
+                imagem_label.configure(image=imagem_padrao,text = "")
 
-
-fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES
-nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB] #LISTA
-fornecedorCB = ttk.Combobox (style="Rounded.TCombobox",master= app,values = nome_fornecedoresLista,font=("Georgia",12))#CRIANDO COMBO BOX
-fornecedorCB.grid(row=6, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
-fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
-fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
-fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
-
-
-
-#CRIANDO LabelS:
-TipoDePecaLabel =ctk.CTkLabel(master=app,text = "Tipo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
-DescricaoLabel =ctk.CTkLabel(master=app,text= "Descrição: ",font= ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
-QuantidadeLabel =ctk.CTkLabel (master=app,text= "Quantidade: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
-LoteLabel =ctk.CTkLabel(master=app,text="Lote: ",font=("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
-ValorLabel =ctk.CTkLabel (master=app,text="Valor: ",font=("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
-FornecedorLabel =ctk.CTkLabel (master=app,text="Fornecedor: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
-CodigoLabel =ctk.CTkLabel (master=app,text="Codigo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
-
-#POSICIONANDO LabelS:
-TipoDePecaLabel.grid(row=1, column=0, sticky="w", padx=5)
-DescricaoLabel.grid(row=2, column=0, sticky="w", padx=5)
-QuantidadeLabel.grid(row=3, column=0, sticky="w", padx=5)
-LoteLabel.grid(row=4, column=0, sticky="w", padx=5)
-ValorLabel.grid(row=5, column=0, sticky="w", padx=5)
-FornecedorLabel.grid(row=6, column=0, sticky="w", padx=5)
-CodigoLabel.grid(row=7,column = 0, sticky = "w", padx = 5)
-
-#CRIANDO CAMPOS DE ENTRADAS:
-DescricaoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-QuantidadeEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-LoteEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-ValorEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-CodigoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-PesquisaEntry = ctk.CTkEntry(master=app,width=300,font= ("Georgia",13))
-
-#POSICIONA OS CAMPOS DE ENTRADAS:
-DescricaoEntry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
-QuantidadeEntry.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
-LoteEntry.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
-ValorEntry.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
-CodigoEntry.grid(row=7,column=1, padx=5,pady=5,sticky = "ew")
-PesquisaEntry.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
 #FUNÇÃO PARA CARREGAR IMAGEM:
 def carregar_imagem():
@@ -149,6 +122,7 @@ def carregar_imagem():
         imagem_label.configure(image = imagem_display,text="") #Exibe
     else:
         messagebox.showwarning("Atenção","Imagem não selecionada")
+
     
 def cadastrar_peca():
     
@@ -203,9 +177,6 @@ def cadastrar_peca():
     else:
         messagebox.showerror("Error","Todos os campos são obrigatórios" )
 
-#BOTÃO DE CADASTRO
-CadastrarButton = ctk.CTkButton (master=app,text = "CADASTRAR",font= ("Georgia",10),width=13,command=cadastrar_peca)
-CadastrarButton.place(x=40,y=335)
 
 
 
@@ -281,9 +252,7 @@ def alterar_peca():
     except Exception as e:
         print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
             
-#BOTÃO ALTERAR
-AlterarButton = ctk.CTkButton(master=app,text = "ALTERAR",font= ("Georgia",10),width=13,command=alterar_peca)
-AlterarButton.place(x=164,y=335)  
+
 
 #FUNÇÃO DE EXCLUIR
 def excluir_peca():
@@ -314,9 +283,7 @@ def excluir_peca():
     except Exception as e:
         print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
 
-#BOTAO DE EXCLUIR
-ExcluirButton = ctk.CTkButton(master= app,text = "EXCLUIR",font= ("Georgia",10),width=13,command=excluir_peca)
-ExcluirButton.place(x=418,y=335)
+
 
 
 #FUNÇÃO DE PESQUISAR OBS: NAO TEM RELAÇÃO COM O CRUD
@@ -384,10 +351,112 @@ def limparCampos():
     fornecedorCB.set("Selecione um Fornecedor")
     CodigoEntry.delete(0, ctk.END)
     PesquisaEntry.delete(0, ctk.END)
+
+#CRIANDO COMBO BOXS:
+style = ttk.Style()
+style.configure("Rounded.TCombobox",padding=7,foreground="black",background="white",fieldbackground="#f5f5f5") # cor interna parecida com CTk
+
+
+TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
+TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
+TipoDePecaCB = ttk.Combobox (style="Rounded.TCombobox",master=app,values= TipoPecaLista,font=("Georgia",12)) #CRIANDO COMBO BOX
+TipoDePecaCB.grid(row=1, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
+TipoDePecaCB.set("Selicione Um Tipo") #FRASE DO FRONT END INICIAL
+TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
+TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
+
+
+fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES
+nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB] #LISTA
+fornecedorCB = ttk.Combobox (style="Rounded.TCombobox",master= app,values = nome_fornecedoresLista,font=("Georgia",12))#CRIANDO COMBO BOX
+fornecedorCB.grid(row=6, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
+fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
+fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
+fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
+
+
+
+#CRIANDO LabelS:
+TipoDePecaLabel =ctk.CTkLabel(master=app,text = "Tipo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
+DescricaoLabel =ctk.CTkLabel(master=app,text= "Descrição: ",font= ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
+QuantidadeLabel =ctk.CTkLabel (master=app,text= "Quantidade: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
+LoteLabel =ctk.CTkLabel(master=app,text="Lote: ",font=("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
+ValorLabel =ctk.CTkLabel (master=app,text="Valor: ",font=("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
+FornecedorLabel =ctk.CTkLabel (master=app,text="Fornecedor: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
+CodigoLabel =ctk.CTkLabel (master=app,text="Codigo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
+
+#POSICIONANDO LabelS:
+TipoDePecaLabel.grid(row=1, column=0, sticky="w", padx=5)
+DescricaoLabel.grid(row=2, column=0, sticky="w", padx=5)
+QuantidadeLabel.grid(row=3, column=0, sticky="w", padx=5)
+LoteLabel.grid(row=4, column=0, sticky="w", padx=5)
+ValorLabel.grid(row=5, column=0, sticky="w", padx=5)
+FornecedorLabel.grid(row=6, column=0, sticky="w", padx=5)
+CodigoLabel.grid(row=7,column = 0, sticky = "w", padx = 5)
+
+#CRIANDO CAMPOS DE ENTRADAS:
+DescricaoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+QuantidadeEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+LoteEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+ValorEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+CodigoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
+PesquisaEntry = ctk.CTkEntry(master=app,width=300,font= ("Georgia",13))
+
+#POSICIONA OS CAMPOS DE ENTRADAS:
+DescricaoEntry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
+QuantidadeEntry.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
+LoteEntry.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
+ValorEntry.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
+CodigoEntry.grid(row=7,column=1, padx=5,pady=5,sticky = "ew")
+PesquisaEntry.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
+
+#TABELA:
+#Criando tabela:
+tabela = ttk.Treeview(master=app,columns=("cod","tipo","desc","estoque","lote","fornecedor"),show ="headings",height=10)
+#Cabeçalho de cada coluna
+tabela.heading("cod", text="Código")
+tabela.heading("tipo", text="Tipo")
+tabela.heading("desc", text="Descrição")
+tabela.heading("estoque", text="Estoque")
+tabela.heading("lote",text="Lote")
+tabela.heading("fornecedor",text="Fornecedor")
+#Tamanho de cada coluna
+tabela.column("cod", width=55)
+tabela.column("tipo", width=120)
+tabela.column("desc", width=300)
+tabela.column("estoque", width=80)
+tabela.column("lote",width = 90)
+tabela.column("fornecedor",width = 300)
+#Posicionando
+tabela.grid(row=10, column=0, columnspan=2, pady=10, padx = 10)
+#Ação ao selecionar uma linha
+tabela.bind("<<TreeviewSelect>>", selecionar_linha)
+
+#IMAGEM:
+imagem_label = ctk.CTkLabel(master=app,text = "---Imagem---",font=("Georgia",12))
+imagem_label.grid(row=11,column=0,columnspan=2,pady=10)
+
+#BOTÕES:
+
+#BOTÃO DE CADASTRO
+CadastrarButton = ctk.CTkButton (master=app,text = "CADASTRAR",font= ("Georgia",10),width=13,command=cadastrar_peca)
+CadastrarButton.place(x=40,y=335)
+
+#BOTÃO ALTERAR
+AlterarButton = ctk.CTkButton(master=app,text = "ALTERAR",font= ("Georgia",10),width=13,command=alterar_peca)
+AlterarButton.place(x=164,y=335)  
+
+#BOTAO DE EXCLUIR
+ExcluirButton = ctk.CTkButton(master= app,text = "EXCLUIR",font= ("Georgia",10),width=13,command=excluir_peca)
+ExcluirButton.place(x=418,y=335)
+
 #BOTÃO DE LIMPAR
 limparButton = ctk.CTkButton(master = app,text = "LIMPAR",font= ("Georgia",10),width=13,command=limparCampos)
 limparButton.place(x = 547,y=335)
 
+#BOTÃO DE CARREGAR IMAGEM:
+botao_imagem = ctk.CTkButton(master=app, text="Carregar Imagem", command=carregar_imagem)
+botao_imagem.grid(row=12, column=0, columnspan=2, pady=5)
 
 
 
