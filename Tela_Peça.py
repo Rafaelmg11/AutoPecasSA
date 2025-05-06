@@ -10,9 +10,9 @@ ctk.set_appearance_mode("light")
 app = ctk.CTk()   
 
 app.title("CADASTRO DE PEÇAS") #Titulo
-app.geometry("740x740") #Tamanho da janela
+app.geometry("740x580") #Tamanho da janela
 app.configure(fg_color = "#5424A2") #Cor de fundo da janela
-# app.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
+app.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
 #Declarando variaveis futuras:
 cod_fornecedor_selecionado = None
@@ -313,27 +313,35 @@ def pesquisa_tabela():
     pesquisa = PesquisaTabelaEntry.get()
     for linha in tabela.get_children():
         tabela.delete(linha)
+
+    tabela.tag_configure('oddrow', background='#f2f2f2')
+    tabela.tag_configure('evenrow', background='#ffffff')
+    
     cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca WHERE ativo = TRUE and cod_peca = %s OR desc_peca LIKE %s ",(pesquisa,f"%{pesquisa}%"))
     consulta_tabela = cursor.fetchall()
 
-    for linha in consulta_tabela:
-        tabela.insert("","end",values = linha)
+    for i, linha in enumerate(consulta_tabela):
+        tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+        tabela.insert("", "end", values=linha, tags=(tag,))
 
 
 
 def listar_pecas():
     conn = get_connection()
     cursor = conn.cursor()
+    
     for linha in tabela.get_children():
         tabela.delete(linha)
+
+    tabela.tag_configure('oddrow', background='white')  # Linha cinza clara
+    tabela.tag_configure('evenrow', background='#DBE1FF')  # Linha branca
+
     cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca WHERE  ativo = TRUE ")
     consulta_tabela = cursor.fetchall()
 
-    for linha in consulta_tabela:
-        tabela.insert("","end",values = linha)
-
-
-
+    for i, linha in enumerate(consulta_tabela):
+        tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+        tabela.insert("", "end", values=linha, tags=(tag,))
 
 
 #WIDGETS:
@@ -372,9 +380,9 @@ style = ttk.Style()
 style.configure("Rounded.TCombobox",padding=6,foreground="black",background="white",fieldbackground="#f5f5f5") # cor interna parecida com CTk
 
 frame_img = ctk.CTkFrame(master=app, width=120, height=120, fg_color="#CCCCCC")  
-frame_img.place(x= 570, y = 195)
+frame_img.place(x= 570, y = 205)
 
-frame_tabela = ctk.CTkFrame (master=app,width= 700,height = 200)
+frame_tabela = ctk.CTkFrame (master=app,width= 700,height = 200, fg_color= "#5424A2")
 frame_tabela.place(x = 20, y = 330)
 
 
@@ -428,10 +436,17 @@ QuantidadeEntry.place(x = 150, y = 160)
 LoteEntry.place(x =150, y = 200)
 ValorEntry.place(x = 510, y =80)
 CodigoEntry.place(x = 530, y = 160)
-PesquisaTabelaEntry.place(x = 190, y =670)
+PesquisaTabelaEntry.place(x = 180, y =300)
 PesquisaEntry.place(x = 130,y = 25)
 
 #TABELA:
+# Estilo da Treeview
+style = ttk.Style()
+
+# Estilo geral da Treeview
+style.configure("Treeview",foreground="black",font=("Segoe UI", 10))
+# Estilo do cabeçalho
+style.configure("Treeview.Heading",foreground="black",font=("Segoe UI", 10))
 #Criando tabela:
 tabela = ttk.Treeview(frame_tabela,columns=("cod","tipo","desc","estoque","valor","lote","fornecedor"),show ="headings",height=10)
 #Cabeçalho de cada coluna
@@ -451,12 +466,12 @@ tabela.column("valor",width = 80)
 tabela.column("lote",width = 80)
 tabela.column("fornecedor",width = 150)
 #Posicionando
-tabela.place(relx=0.5, rely=0.5,anchor = "center")
+tabela.place(x = 5, y = 13)
 #Ação ao selecionar uma linha
 tabela.bind("<<TreeviewSelect>>", selecionar_linha)
 #Barra de Rolamento:
 BarraRolamento = ttk.Scrollbar(frame_tabela, orient="vertical")
-BarraRolamento.place(x = 850, y = 24, height=frame_tabela.winfo_height() + 200)  # Ajustando o tamanho da barra de rolagem
+BarraRolamento.place(x = 825, y = 14, height=frame_tabela.winfo_height() + 223)  # Ajustando o tamanho da barra de rolagem
 #Conectando barra com a tabela
 tabela.config(yscrollcommand=BarraRolamento.set)
 BarraRolamento.config(command=tabela.yview)
@@ -484,13 +499,13 @@ botao_imagem = ctk.CTkButton(master=app, text="Carregar Imagem",font= ("Georgia"
 botao_imagem.place(x= 380, y = 210)
 #BOTÃO DE PESQUISA NA TABELA
 PesquisaTabelaButton = ctk.CTkButton(master=app, text="Pesquisar Tabela", command=pesquisa_tabela)
-PesquisaTabelaButton.place(x = 20, y = 670)
+PesquisaTabelaButton.place(x = 25, y = 300)
 #BOTAO DE PESQUISA
 PesquisarButton = ctk.CTkButton(master=app,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_peca)
 PesquisarButton.place(x = 20,y = 25)
 #BOTAO DE LISTAR
 ListarButton = ctk.CTkButton(master=app,text = "Listar",font= ("Georgia",16),width=130,command=listar_pecas)
-ListarButton.place(x = 585 , y = 670)
+ListarButton.place(x = 570 , y = 530)
 
 
 
