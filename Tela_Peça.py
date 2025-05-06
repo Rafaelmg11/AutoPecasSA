@@ -10,7 +10,7 @@ ctk.set_appearance_mode("light")
 app = ctk.CTk()   
 
 app.title("CADASTRO DE PEÇAS") #Titulo
-app.geometry("775x780") #Tamanho da janela
+app.geometry("850x760") #Tamanho da janela
 app.configure(fg_color = "#5424A2") #Cor de fundo da janela
 # app.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
@@ -364,6 +364,9 @@ def limparCampos():
 style = ttk.Style()
 style.configure("Rounded.TCombobox",padding=7,foreground="black",background="white",fieldbackground="#f5f5f5") # cor interna parecida com CTk
 
+frame = ctk.CTkFrame(master=app, width=120, height=120, fg_color="#CCCCCC")  
+frame.grid(row=14,column = 0)
+
 
 TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
 TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
@@ -401,13 +404,13 @@ FornecedorLabel.grid(row=6, column=0, sticky="w", padx=5)
 CodigoLabel.grid(row=7,column = 0, sticky = "w", padx = 5)
 
 #CRIANDO CAMPOS DE ENTRADAS:
-DescricaoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-QuantidadeEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-LoteEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-ValorEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-CodigoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12))
-PesquisaEntry = ctk.CTkEntry(master=app,width=300,font= ("Georgia",13))
-PesquisaTabelaEntry = ctk.CTkEntry(master = app,width=300,font= ("Georgia",13))
+DescricaoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Descrição da Peça")
+QuantidadeEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Quantidade da Peça")
+LoteEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Lote da Peça")
+ValorEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Valor da Peça")
+CodigoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Codigo da Peça")
+PesquisaEntry = ctk.CTkEntry(master=app,width=300,font= ("Georgia",13),placeholder_text = "Pesquisa de Peça")
+PesquisaTabelaEntry = ctk.CTkEntry(master = app,width=300,font= ("Georgia",13),placeholder_text = "Pesquisa de Peça na Tabela")
 
 #POSICIONA OS CAMPOS DE ENTRADAS:
 DescricaoEntry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
@@ -416,7 +419,7 @@ LoteEntry.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
 ValorEntry.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
 CodigoEntry.grid(row=7,column=1, padx=5,pady=5,sticky = "ew")
 PesquisaTabelaEntry.grid(row=13, column=1, padx=5, pady=5, sticky="ew")
-PesquisaEntry.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
+# PesquisaEntry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
 #TABELA:
 #Criando tabela:
@@ -443,8 +446,8 @@ tabela.grid(row=10, column=0, columnspan=2, pady=10, padx = 10)
 tabela.bind("<<TreeviewSelect>>", selecionar_linha)
 
 #IMAGEM:
-imagem_label = ctk.CTkLabel(master=app,text = "---Imagem---",font=("Georgia",12))
-imagem_label.grid(row=11,column=0,columnspan=2,pady=10)
+imagem_label = ctk.CTkLabel(frame,text = "---Imagem---",font=("Georgia",12))
+imagem_label.place(relx=0.5, rely=0.5,anchor = "center")
 
 #BOTÕES:
 #BOTÃO DE CADASTRO
@@ -465,9 +468,9 @@ botao_imagem.grid(row=12, column=0, columnspan=2, pady=5)
 #BOTÃO DE PESQUISA NA TABELA
 PesquisaTabelaButton = ctk.CTkButton(master=app, text="Pesquisar Tabela", command=pesquisa_tabela)
 PesquisaTabelaButton.grid(row=13,  column=0, sticky="w", columnspan=2, pady=5)
-#BOTAO DE PESQUISA
-PesquisarButton = ctk.CTkButton(master=app,text = "Pesquisar",font= ("Georgia",16),width=250,command=pesquisar_peca)
-PesquisarButton.grid(row = 0,column = 1,padx = 5,pady = 5)
+# #BOTAO DE PESQUISA
+# PesquisarButton = ctk.CTkButton(master=app,text = "Pesquisar",font= ("Georgia",16),width=250,command=pesquisar_peca)
+# PesquisarButton.grid(row = 0,column = 0,padx = 5,pady = 5,sticky = "w")
 #BOTAO DE LISTAR
 ListarButton = ctk.CTkButton(master=app,text = "Listar",font= ("Georgia",16),width=250,command=listar_pecas)
 ListarButton.grid(row = 14,column = 1,padx = 5,pady = 5)
