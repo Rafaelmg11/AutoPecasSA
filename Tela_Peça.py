@@ -507,6 +507,15 @@ PesquisarButton.place(x = 20,y = 25)
 ListarButton = ctk.CTkButton(master=app,text = "Listar",font= ("Georgia",16),width=130,command=listar_pecas)
 ListarButton.place(x = 570 , y = 530)
 
+# def voltar_para_principal():
+#     # Fechar a janela atual de usuarios e voltar para a janela principal
+#     quit()  # Fecha a janela de usuarios
+#     #OS DOIS FECHAM AS JANELAS
+#     app.destroy()  # Fecha a janela de usuario
+#     app.main_window.deiconify()  # Reexibe a janela principal
+
+# voltar_button = ctk.CTkButton(master =app, text="VOLTAR", width=11, font=("Georgia", 10), command=voltar_para_principal)
+# voltar_button.place(x=20, y=545)
 
 
 

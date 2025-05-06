@@ -1,5 +1,5 @@
 import tkinter as tk
-from Tela_Produto import PRODUTO  # Importa a classe PRODUTO do arquivo produto.py
+from Tela_Produto import PECA  # Importa a classe PRODUTO do arquivo produto.py
 from Tela_Funcionario import FUNCIONARIO
 from Tela_Fornecedor import FORNECEDOR
 from Tela_Cadastro import CADASTRO
