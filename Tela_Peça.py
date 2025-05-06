@@ -10,7 +10,7 @@ ctk.set_appearance_mode("light")
 app = ctk.CTk()   
 
 app.title("CADASTRO DE PEÇAS") #Titulo
-app.geometry("850x760") #Tamanho da janela
+app.geometry("740x740") #Tamanho da janela
 app.configure(fg_color = "#5424A2") #Cor de fundo da janela
 # app.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
@@ -362,16 +362,19 @@ def limparCampos():
 
 #CRIANDO COMBO BOXS:
 style = ttk.Style()
-style.configure("Rounded.TCombobox",padding=7,foreground="black",background="white",fieldbackground="#f5f5f5") # cor interna parecida com CTk
+style.configure("Rounded.TCombobox",padding=6,foreground="black",background="white",fieldbackground="#f5f5f5") # cor interna parecida com CTk
 
-frame = ctk.CTkFrame(master=app, width=120, height=120, fg_color="#CCCCCC")  
-frame.grid(row=14,column = 0)
+frame_img = ctk.CTkFrame(master=app, width=120, height=120, fg_color="#CCCCCC")  
+frame_img.place(x= 305, y = 310)
+
+frame_tabela = ctk.CTkFrame (master=app,width= 700,height = 200)
+frame_tabela.place(x = 20, y = 450)
 
 
 TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
 TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
-TipoDePecaCB = ttk.Combobox (style="Rounded.TCombobox",master=app,values= TipoPecaLista,font=("Georgia",12)) #CRIANDO COMBO BOX
-TipoDePecaCB.grid(row=1, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
+TipoDePecaCB = ttk.Combobox (style="Rounded.TCombobox",master=app,values= TipoPecaLista,font=("Georgia",13),width= 22) #CRIANDO COMBO BOX
+TipoDePecaCB.place(x = 190,y = 100)
 TipoDePecaCB.set("Selecione Um Tipo") #FRASE DO FRONT END INICIAL
 TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
 TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
@@ -379,51 +382,51 @@ TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
 
 fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES
 nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB] #LISTA
-fornecedorCB = ttk.Combobox (style="Rounded.TCombobox",master= app,values = nome_fornecedoresLista,font=("Georgia",12))#CRIANDO COMBO BOX
-fornecedorCB.grid(row=6, column=1, padx=5, pady=5, sticky="ew") #POSICIONANDO
+fornecedorCB = ttk.Combobox (style="Rounded.TCombobox",master= app,values = nome_fornecedoresLista,font=("Georgia",13),width=22)#CRIANDO COMBO BOX
+fornecedorCB.place(x = 640, y = 150)
 fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
 fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
 fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
 
 #CRIANDO LabelS:
-TipoDePecaLabel =ctk.CTkLabel(master=app,text = "Tipo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
-DescricaoLabel =ctk.CTkLabel(master=app,text= "Descrição: ",font= ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
-QuantidadeLabel =ctk.CTkLabel (master=app,text= "Quantidade: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
-LoteLabel =ctk.CTkLabel(master=app,text="Lote: ",font=("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
-ValorLabel =ctk.CTkLabel (master=app,text="Valor: ",font=("Georgia",18),fg_color = "#5424A2", text_color = "WHITE") 
-FornecedorLabel =ctk.CTkLabel (master=app,text="Fornecedor: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
-CodigoLabel =ctk.CTkLabel (master=app,text="Codigo de Peça: ",font = ("Georgia",18),fg_color = "#5424A2", text_color = "WHITE")
+TipoDePecaLabel =ctk.CTkLabel(master=app,text = "Tipo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+DescricaoLabel =ctk.CTkLabel(master=app,text= "Descrição: ",font= ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+QuantidadeLabel =ctk.CTkLabel (master=app,text= "Quantidade: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+LoteLabel =ctk.CTkLabel(master=app,text="Lote: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+ValorLabel =ctk.CTkLabel (master=app,text="Valor: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+FornecedorLabel =ctk.CTkLabel (master=app,text="Fornecedor: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+CodigoLabel =ctk.CTkLabel (master=app,text="Codigo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
 
 #POSICIONANDO LabelS:
-TipoDePecaLabel.grid(row=1, column=0, sticky="w", padx=5)
-DescricaoLabel.grid(row=2, column=0, sticky="w", padx=5)
-QuantidadeLabel.grid(row=3, column=0, sticky="w", padx=5)
-LoteLabel.grid(row=4, column=0, sticky="w", padx=5)
-ValorLabel.grid(row=5, column=0, sticky="w", padx=5)
-FornecedorLabel.grid(row=6, column=0, sticky="w", padx=5)
-CodigoLabel.grid(row=7,column = 0, sticky = "w", padx = 5)
+TipoDePecaLabel.place(x = 20, y = 80)
+DescricaoLabel.place(x = 20, y = 120)
+QuantidadeLabel.place(x =20, y = 160 )
+LoteLabel.place(x= 20, y =200)
+ValorLabel.place(x = 380 , y = 80)
+FornecedorLabel.place (x = 380, y = 120 )
+CodigoLabel.place(x = 380, y = 200 )
 
 #CRIANDO CAMPOS DE ENTRADAS:
-DescricaoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Descrição da Peça")
-QuantidadeEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Quantidade da Peça")
-LoteEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Lote da Peça")
-ValorEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Valor da Peça")
-CodigoEntry = ctk.CTkEntry(master=app,width=300,font=("Georgia",12),placeholder_text = "Codigo da Peça")
-PesquisaEntry = ctk.CTkEntry(master=app,width=300,font= ("Georgia",13),placeholder_text = "Pesquisa de Peça")
-PesquisaTabelaEntry = ctk.CTkEntry(master = app,width=300,font= ("Georgia",13),placeholder_text = "Pesquisa de Peça na Tabela")
+DescricaoEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Descrição da Peça")
+QuantidadeEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Quantidade da Peça")
+LoteEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Lote da Peça")
+ValorEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Valor da Peça")
+CodigoEntry = ctk.CTkEntry(master=app,width=185,font=("Georgia",14),placeholder_text = "Codigo da Peça")
+PesquisaEntry = ctk.CTkEntry(master=app,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça")
+PesquisaTabelaEntry = ctk.CTkEntry(master = app,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça na Tabela")
 
 #POSICIONA OS CAMPOS DE ENTRADAS:
-DescricaoEntry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
-QuantidadeEntry.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
-LoteEntry.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
-ValorEntry.grid(row=5, column=1, padx=5, pady=5, sticky="ew")
-CodigoEntry.grid(row=7,column=1, padx=5,pady=5,sticky = "ew")
-PesquisaTabelaEntry.grid(row=13, column=1, padx=5, pady=5, sticky="ew")
-# PesquisaEntry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+DescricaoEntry.place(x = 150, y = 120)
+QuantidadeEntry.place(x = 150, y = 160)
+LoteEntry.place(x =150, y = 200)
+ValorEntry.place(x = 510, y =80)
+CodigoEntry.place(x = 530, y = 200)
+PesquisaTabelaEntry.place(x = 190, y =670)
+PesquisaEntry.place(x = 150,y = 25)
 
 #TABELA:
 #Criando tabela:
-tabela = ttk.Treeview(master=app,columns=("cod","tipo","desc","estoque","valor","lote","fornecedor"),show ="headings",height=10)
+tabela = ttk.Treeview(frame_tabela,columns=("cod","tipo","desc","estoque","valor","lote","fornecedor"),show ="headings",height=10)
 #Cabeçalho de cada coluna
 tabela.heading("cod", text="Código")
 tabela.heading("tipo", text="Tipo")
@@ -434,46 +437,53 @@ tabela.heading("lote",text="Lote")
 tabela.heading("fornecedor",text="Fornecedor")
 #Tamanho de cada coluna
 tabela.column("cod", width=55)
-tabela.column("tipo", width=120)
-tabela.column("desc", width=300)
-tabela.column("estoque", width=80)
-tabela.column("valor",width = 90)
-tabela.column("lote",width = 90)
-tabela.column("fornecedor",width = 300)
+tabela.column("tipo", width=100)
+tabela.column("desc", width=280)
+tabela.column("estoque", width=70)
+tabela.column("valor",width = 80)
+tabela.column("lote",width = 80)
+tabela.column("fornecedor",width = 150)
 #Posicionando
-tabela.grid(row=10, column=0, columnspan=2, pady=10, padx = 10)
+tabela.place(relx=0.5, rely=0.5,anchor = "center")
 #Ação ao selecionar uma linha
 tabela.bind("<<TreeviewSelect>>", selecionar_linha)
+#Barra de Rolamento:
+BarraRolamento = ttk.Scrollbar(frame_tabela, orient="vertical")
+BarraRolamento.place(x = 850, y = 24, height=frame_tabela.winfo_height() + 200)  # Ajustando o tamanho da barra de rolagem
+#Conectando barra com a tabela
+tabela.config(yscrollcommand=BarraRolamento.set)
+BarraRolamento.config(command=tabela.yview)
+
 
 #IMAGEM:
-imagem_label = ctk.CTkLabel(frame,text = "---Imagem---",font=("Georgia",12))
+imagem_label = ctk.CTkLabel(frame_img,text = "---Imagem---",font=("Georgia",14))
 imagem_label.place(relx=0.5, rely=0.5,anchor = "center")
 
 #BOTÕES:
 #BOTÃO DE CADASTRO
-CadastrarButton = ctk.CTkButton (master=app,text = "CADASTRAR",font= ("Georgia",10),width=13,command=cadastrar_peca)
-CadastrarButton.place(x=40,y=335)
+CadastrarButton = ctk.CTkButton (master=app,text = "CADASTRAR",font= ("Georgia",14),width=130,command=cadastrar_peca)
+CadastrarButton.place(x =20 , y = 250)
 #BOTÃO ALTERAR
-AlterarButton = ctk.CTkButton(master=app,text = "ALTERAR",font= ("Georgia",10),width=13,command=alterar_peca)
-AlterarButton.place(x=164,y=335)  
+AlterarButton = ctk.CTkButton(master=app,text = "ALTERAR",font= ("Georgia",14),width=130,command=alterar_peca)
+AlterarButton.place(x = 210,y = 250)
 #BOTAO DE EXCLUIR
-ExcluirButton = ctk.CTkButton(master= app,text = "EXCLUIR",font= ("Georgia",10),width=13,command=excluir_peca)
-ExcluirButton.place(x=418,y=335)
+ExcluirButton = ctk.CTkButton(master= app,text = "EXCLUIR",font= ("Georgia",14),width=130,command=excluir_peca)
+ExcluirButton.place(x = 400, y = 250)
 #BOTÃO DE LIMPAR
-limparButton = ctk.CTkButton(master = app,text = "LIMPAR",font= ("Georgia",10),width=13,command=limparCampos)
-limparButton.place(x = 547,y=335)
+limparButton = ctk.CTkButton(master = app,text = "LIMPAR",font= ("Georgia",14),width=130,command=limparCampos)
+limparButton.place(x = 585, y = 250)
 #BOTÃO DE CARREGAR IMAGEM:
 botao_imagem = ctk.CTkButton(master=app, text="Carregar Imagem", command=carregar_imagem)
-botao_imagem.grid(row=12, column=0, columnspan=2, pady=5)
+botao_imagem.place(x= 430, y = 355)
 #BOTÃO DE PESQUISA NA TABELA
 PesquisaTabelaButton = ctk.CTkButton(master=app, text="Pesquisar Tabela", command=pesquisa_tabela)
-PesquisaTabelaButton.grid(row=13,  column=0, sticky="w", columnspan=2, pady=5)
-# #BOTAO DE PESQUISA
-# PesquisarButton = ctk.CTkButton(master=app,text = "Pesquisar",font= ("Georgia",16),width=250,command=pesquisar_peca)
-# PesquisarButton.grid(row = 0,column = 0,padx = 5,pady = 5,sticky = "w")
+PesquisaTabelaButton.place(x = 20, y = 670)
+#BOTAO DE PESQUISA
+PesquisarButton = ctk.CTkButton(master=app,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_peca)
+PesquisarButton.place(x = 20,y = 25)
 #BOTAO DE LISTAR
-ListarButton = ctk.CTkButton(master=app,text = "Listar",font= ("Georgia",16),width=250,command=listar_pecas)
-ListarButton.grid(row = 14,column = 1,padx = 5,pady = 5)
+ListarButton = ctk.CTkButton(master=app,text = "Listar",font= ("Georgia",16),width=130,command=listar_pecas)
+ListarButton.place(x = 585 , y = 670)
 
 
 
