@@ -81,7 +81,14 @@ def selecionar_linha(event):
         resultado = cursor.fetchone()
         if resultado:
 
-            limparCampos()
+            TipoDePecaCB.set("Selecione Um Tipo")
+            DescricaoEntry.delete(0, ctk.END)
+            QuantidadeEntry.delete(0, ctk.END)
+            LoteEntry.delete(0, ctk.END)
+            ValorEntry.delete(0, ctk.END)
+            fornecedorCB.set("Selecione um Fornecedor")
+            CodigoEntry.delete(0, ctk.END)
+            PesquisaEntry.delete(0, ctk.END)
 
             #INSERINDO DADOS NOS CAMPOS
             TipoDePecaCB.set(resultado[0])
@@ -365,10 +372,10 @@ style = ttk.Style()
 style.configure("Rounded.TCombobox",padding=6,foreground="black",background="white",fieldbackground="#f5f5f5") # cor interna parecida com CTk
 
 frame_img = ctk.CTkFrame(master=app, width=120, height=120, fg_color="#CCCCCC")  
-frame_img.place(x= 305, y = 310)
+frame_img.place(x= 570, y = 195)
 
 frame_tabela = ctk.CTkFrame (master=app,width= 700,height = 200)
-frame_tabela.place(x = 20, y = 450)
+frame_tabela.place(x = 20, y = 330)
 
 
 TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
@@ -404,7 +411,7 @@ QuantidadeLabel.place(x =20, y = 160 )
 LoteLabel.place(x= 20, y =200)
 ValorLabel.place(x = 380 , y = 80)
 FornecedorLabel.place (x = 380, y = 120 )
-CodigoLabel.place(x = 380, y = 200 )
+CodigoLabel.place(x = 380, y = 160 )
 
 #CRIANDO CAMPOS DE ENTRADAS:
 DescricaoEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Descrição da Peça")
@@ -412,7 +419,7 @@ QuantidadeEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placehol
 LoteEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Lote da Peça")
 ValorEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Valor da Peça")
 CodigoEntry = ctk.CTkEntry(master=app,width=185,font=("Georgia",14),placeholder_text = "Codigo da Peça")
-PesquisaEntry = ctk.CTkEntry(master=app,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça")
+PesquisaEntry = ctk.CTkEntry(master=app,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça")
 PesquisaTabelaEntry = ctk.CTkEntry(master = app,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça na Tabela")
 
 #POSICIONA OS CAMPOS DE ENTRADAS:
@@ -420,9 +427,9 @@ DescricaoEntry.place(x = 150, y = 120)
 QuantidadeEntry.place(x = 150, y = 160)
 LoteEntry.place(x =150, y = 200)
 ValorEntry.place(x = 510, y =80)
-CodigoEntry.place(x = 530, y = 200)
+CodigoEntry.place(x = 530, y = 160)
 PesquisaTabelaEntry.place(x = 190, y =670)
-PesquisaEntry.place(x = 150,y = 25)
+PesquisaEntry.place(x = 130,y = 25)
 
 #TABELA:
 #Criando tabela:
@@ -465,16 +472,16 @@ CadastrarButton = ctk.CTkButton (master=app,text = "CADASTRAR",font= ("Georgia",
 CadastrarButton.place(x =20 , y = 250)
 #BOTÃO ALTERAR
 AlterarButton = ctk.CTkButton(master=app,text = "ALTERAR",font= ("Georgia",14),width=130,command=alterar_peca)
-AlterarButton.place(x = 210,y = 250)
+AlterarButton.place(x = 200,y = 250)
 #BOTAO DE EXCLUIR
 ExcluirButton = ctk.CTkButton(master= app,text = "EXCLUIR",font= ("Georgia",14),width=130,command=excluir_peca)
-ExcluirButton.place(x = 400, y = 250)
+ExcluirButton.place(x = 380, y = 250)
 #BOTÃO DE LIMPAR
-limparButton = ctk.CTkButton(master = app,text = "LIMPAR",font= ("Georgia",14),width=130,command=limparCampos)
-limparButton.place(x = 585, y = 250)
+limparButton = ctk.CTkButton(master = app,text = "LIMPAR",font= ("Georgia",14),width=160,command=limparCampos)
+limparButton.place(x = 555, y = 25)
 #BOTÃO DE CARREGAR IMAGEM:
-botao_imagem = ctk.CTkButton(master=app, text="Carregar Imagem", command=carregar_imagem)
-botao_imagem.place(x= 430, y = 355)
+botao_imagem = ctk.CTkButton(master=app, text="Carregar Imagem",font= ("Georgia",14),width=130, command=carregar_imagem)
+botao_imagem.place(x= 380, y = 210)
 #BOTÃO DE PESQUISA NA TABELA
 PesquisaTabelaButton = ctk.CTkButton(master=app, text="Pesquisar Tabela", command=pesquisa_tabela)
 PesquisaTabelaButton.place(x = 20, y = 670)
