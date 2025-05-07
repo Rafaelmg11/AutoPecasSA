@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from Tela_LoginNovo import abrir_tela_login
 import mysql.connector
 from tkinter import messagebox,filedialog #filedialog abre janelas de seleção de arquivos
 from tkinter import ttk
@@ -6,13 +7,13 @@ from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: 
 import io #Fluxo de bytes (transforma imagem em bytes)
 from Crud_novo import get_connection,selecionar_fornecedores,selecionar_tipopeca,obter_cod_fornecedor,create_peca,update_peca,delete_peca
 
-ctk.set_appearance_mode("light")
-app = ctk.CTk()   
 
-app.title("CADASTRO DE PEÇAS") #Titulo
-app.geometry("740x580") #Tamanho da janela
-app.configure(fg_color = "#5424A2") #Cor de fundo da janela
-app.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
+ctk.set_appearance_mode("light")
+app_peca = ctk.CTk()  
+app_peca.title("CADASTRO DE PEÇAS") #Titulo
+app_peca.geometry("740x580") #Tamanho da janela
+app_peca.configure(fg_color = "#5424A2") #Cor de fundo da janela
+app_peca.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
 #Declarando variaveis futuras:
 cod_fornecedor_selecionado = None
@@ -21,6 +22,22 @@ imagem_padrao = ImageTk.PhotoImage(imagem_padrao_pil) #Converte imagem
 
 #Imagem atual em bytes
 imagem_bytes = None
+
+def abrir_tela_peca():
+    global peca_app 
+    peca_app= ttk.Tk()
+    peca_app.title("CADASTRO DE PEÇAS")
+    peca_app.geometry("480x500")
+
+    def voltar_para_login():
+        global peca_app
+        peca_app.destroy() #Fecha a janela atual
+        abrir_tela_login #Reabre a tela de Login
+        peca_app.mainloop()
+
+    #BOTAO DE VOLTAR
+    voltar_button = ctk.CTkButton(master =app_peca, text="VOLTAR", width=11, font=("Georgia", 10), command=voltar_para_login)
+    voltar_button.place(x=20, y=10)
 
 
 #Conexão com banco de dados
@@ -379,16 +396,16 @@ def limparCampos():
 style = ttk.Style()
 style.configure("Rounded.TCombobox",padding=6,foreground="black",background="white",fieldbackground="#f5f5f5") # cor interna parecida com CTk
 
-frame_img = ctk.CTkFrame(master=app, width=120, height=120, fg_color="#CCCCCC")  
+frame_img = ctk.CTkFrame(master=app_peca, width=120, height=120, fg_color="#CCCCCC")  
 frame_img.place(x= 570, y = 205)
 
-frame_tabela = ctk.CTkFrame (master=app,width= 700,height = 200, fg_color= "#5424A2")
+frame_tabela = ctk.CTkFrame (master=app_peca,width= 700,height = 200, fg_color= "#5424A2")
 frame_tabela.place(x = 20, y = 330)
 
 
 TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
 TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
-TipoDePecaCB = ttk.Combobox (style="Rounded.TCombobox",master=app,values= TipoPecaLista,font=("Georgia",13),width= 22) #CRIANDO COMBO BOX
+TipoDePecaCB = ttk.Combobox (style="Rounded.TCombobox",master=app_peca,values= TipoPecaLista,font=("Georgia",13),width= 22) #CRIANDO COMBO BOX
 TipoDePecaCB.place(x = 190,y = 100)
 TipoDePecaCB.set("Selecione Um Tipo") #FRASE DO FRONT END INICIAL
 TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
@@ -397,20 +414,20 @@ TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
 
 fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES
 nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB] #LISTA
-fornecedorCB = ttk.Combobox (style="Rounded.TCombobox",master= app,values = nome_fornecedoresLista,font=("Georgia",13),width=22)#CRIANDO COMBO BOX
+fornecedorCB = ttk.Combobox (style="Rounded.TCombobox",master= app_peca,values = nome_fornecedoresLista,font=("Georgia",13),width=22)#CRIANDO COMBO BOX
 fornecedorCB.place(x = 640, y = 150)
 fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
 fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
 fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
 
 #CRIANDO LabelS:
-TipoDePecaLabel =ctk.CTkLabel(master=app,text = "Tipo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-DescricaoLabel =ctk.CTkLabel(master=app,text= "Descrição: ",font= ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
-QuantidadeLabel =ctk.CTkLabel (master=app,text= "Quantidade: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-LoteLabel =ctk.CTkLabel(master=app,text="Lote: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-ValorLabel =ctk.CTkLabel (master=app,text="Valor: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-FornecedorLabel =ctk.CTkLabel (master=app,text="Fornecedor: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
-CodigoLabel =ctk.CTkLabel (master=app,text="Codigo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+TipoDePecaLabel =ctk.CTkLabel(master=app_peca,text = "Tipo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+DescricaoLabel =ctk.CTkLabel(master=app_peca,text= "Descrição: ",font= ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+QuantidadeLabel =ctk.CTkLabel (master=app_peca,text= "Quantidade: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+LoteLabel =ctk.CTkLabel(master=app_peca,text="Lote: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+ValorLabel =ctk.CTkLabel (master=app_peca,text="Valor: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+FornecedorLabel =ctk.CTkLabel (master=app_peca,text="Fornecedor: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+CodigoLabel =ctk.CTkLabel (master=app_peca,text="Codigo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
 
 #POSICIONANDO LabelS:
 TipoDePecaLabel.place(x = 20, y = 80)
@@ -422,13 +439,13 @@ FornecedorLabel.place (x = 380, y = 120 )
 CodigoLabel.place(x = 380, y = 160 )
 
 #CRIANDO CAMPOS DE ENTRADAS:
-DescricaoEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Descrição da Peça")
-QuantidadeEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Quantidade da Peça")
-LoteEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Lote da Peça")
-ValorEntry = ctk.CTkEntry(master=app,width=207,font=("Georgia",14),placeholder_text = "Valor da Peça")
-CodigoEntry = ctk.CTkEntry(master=app,width=185,font=("Georgia",14),placeholder_text = "Codigo da Peça")
-PesquisaEntry = ctk.CTkEntry(master=app,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça")
-PesquisaTabelaEntry = ctk.CTkEntry(master = app,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça na Tabela")
+DescricaoEntry = ctk.CTkEntry(master=app_peca,width=207,font=("Georgia",14),placeholder_text = "Descrição da Peça")
+QuantidadeEntry = ctk.CTkEntry(master=app_peca,width=207,font=("Georgia",14),placeholder_text = "Quantidade da Peça")
+LoteEntry = ctk.CTkEntry(master=app_peca,width=207,font=("Georgia",14),placeholder_text = "Lote da Peça")
+ValorEntry = ctk.CTkEntry(master=app_peca,width=207,font=("Georgia",14),placeholder_text = "Valor da Peça")
+CodigoEntry = ctk.CTkEntry(master=app_peca,width=185,font=("Georgia",14),placeholder_text = "Codigo da Peça")
+PesquisaEntry = ctk.CTkEntry(master=app_peca,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça")
+PesquisaTabelaEntry = ctk.CTkEntry(master = app_peca,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça na Tabela")
 
 #POSICIONA OS CAMPOS DE ENTRADAS:
 DescricaoEntry.place(x = 150, y = 120)
@@ -483,43 +500,34 @@ imagem_label.place(relx=0.5, rely=0.5,anchor = "center")
 
 #BOTÕES:
 #BOTÃO DE CADASTRO
-CadastrarButton = ctk.CTkButton (master=app,text = "CADASTRAR",font= ("Georgia",14),width=130,command=cadastrar_peca)
+CadastrarButton = ctk.CTkButton (master=app_peca,text = "CADASTRAR",font= ("Georgia",14),width=130,command=cadastrar_peca)
 CadastrarButton.place(x =20 , y = 250)
 #BOTÃO ALTERAR
-AlterarButton = ctk.CTkButton(master=app,text = "ALTERAR",font= ("Georgia",14),width=130,command=alterar_peca)
+AlterarButton = ctk.CTkButton(master=app_peca,text = "ALTERAR",font= ("Georgia",14),width=130,command=alterar_peca)
 AlterarButton.place(x = 200,y = 250)
 #BOTAO DE EXCLUIR
-ExcluirButton = ctk.CTkButton(master= app,text = "EXCLUIR",font= ("Georgia",14),width=130,command=excluir_peca)
+ExcluirButton = ctk.CTkButton(master= app_peca,text = "EXCLUIR",font= ("Georgia",14),width=130,command=excluir_peca)
 ExcluirButton.place(x = 380, y = 250)
 #BOTÃO DE LIMPAR
-limparButton = ctk.CTkButton(master = app,text = "LIMPAR",font= ("Georgia",14),width=160,command=limparCampos)
+limparButton = ctk.CTkButton(master = app_peca,text = "LIMPAR",font= ("Georgia",14),width=160,command=limparCampos)
 limparButton.place(x = 555, y = 25)
 #BOTÃO DE CARREGAR IMAGEM:
-botao_imagem = ctk.CTkButton(master=app, text="Carregar Imagem",font= ("Georgia",14),width=130, command=carregar_imagem)
+botao_imagem = ctk.CTkButton(master=app_peca, text="Carregar Imagem",font= ("Georgia",14),width=130, command=carregar_imagem)
 botao_imagem.place(x= 380, y = 210)
 #BOTÃO DE PESQUISA NA TABELA
-PesquisaTabelaButton = ctk.CTkButton(master=app, text="Pesquisar Tabela", command=pesquisa_tabela)
+PesquisaTabelaButton = ctk.CTkButton(master=app_peca, text="Pesquisar Tabela", command=pesquisa_tabela)
 PesquisaTabelaButton.place(x = 25, y = 300)
 #BOTAO DE PESQUISA
-PesquisarButton = ctk.CTkButton(master=app,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_peca)
+PesquisarButton = ctk.CTkButton(master=app_peca,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_peca)
 PesquisarButton.place(x = 20,y = 25)
 #BOTAO DE LISTAR
-ListarButton = ctk.CTkButton(master=app,text = "Listar",font= ("Georgia",16),width=130,command=listar_pecas)
+ListarButton = ctk.CTkButton(master=app_peca,text = "Listar",font= ("Georgia",16),width=130,command=listar_pecas)
 ListarButton.place(x = 570 , y = 530)
 
-# def voltar_para_principal():
-#     # Fechar a janela atual de usuarios e voltar para a janela principal
-#     quit()  # Fecha a janela de usuarios
-#     #OS DOIS FECHAM AS JANELAS
-#     app.destroy()  # Fecha a janela de usuario
-#     app.main_window.deiconify()  # Reexibe a janela principal
-
-# voltar_button = ctk.CTkButton(master =app, text="VOLTAR", width=11, font=("Georgia", 10), command=voltar_para_principal)
-# voltar_button.place(x=20, y=545)
 
 
 
-app.mainloop()
+app_peca.mainloop()
     
 
 
