@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from Tela_LoginNovo import abrir_tela_login
+# from Tela_LoginNovo import abrir_tela_login
 import mysql.connector
 from tkinter import messagebox,filedialog #filedialog abre janelas de seleção de arquivos
 from tkinter import ttk
@@ -23,21 +23,21 @@ imagem_padrao = ImageTk.PhotoImage(imagem_padrao_pil) #Converte imagem
 #Imagem atual em bytes
 imagem_bytes = None
 
-def abrir_tela_peca():
-    global peca_app 
-    peca_app= ttk.Tk()
-    peca_app.title("CADASTRO DE PEÇAS")
-    peca_app.geometry("480x500")
+# def abrir_tela_peca():
+#     global peca_app 
+#     peca_app= ttk.Tk()
+#     peca_app.title("CADASTRO DE PEÇAS")
+#     peca_app.geometry("480x500")
 
-    def voltar_para_login():
-        global peca_app
-        peca_app.destroy() #Fecha a janela atual
-        abrir_tela_login #Reabre a tela de Login
-        peca_app.mainloop()
+#     def voltar_para_login():
+#         global peca_app
+#         peca_app.destroy() #Fecha a janela atual
+#         abrir_tela_login #Reabre a tela de Login
+#         peca_app.mainloop()
 
-    #BOTAO DE VOLTAR
-    voltar_button = ctk.CTkButton(master =app_peca, text="VOLTAR", width=11, font=("Georgia", 10), command=voltar_para_login)
-    voltar_button.place(x=20, y=10)
+#     #BOTAO DE VOLTAR
+#     voltar_button = ctk.CTkButton(master =app_peca, text="VOLTAR", width=11, font=("Georgia", 10), command=voltar_para_login)
+#     voltar_button.place(x=20, y=10)
 
 
 #Conexão com banco de dados

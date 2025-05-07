@@ -1,5 +1,5 @@
 import tkinter as tk
-from Tela_Login import Tela_Login
+from TL import Tela_Login
 from tkinter import*
 
 #AVISOS PARA O PROFESSOR:
