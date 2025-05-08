@@ -5,12 +5,13 @@ from tkinter import ttk
 from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: converter em widgets para exibição 
 import io #Fluxo de bytes (transforma imagem em bytes)
 from Crud_novo import get_connection,selecionar_fornecedores,selecionar_tipopeca,obter_cod_fornecedor,create_peca,update_peca,delete_peca
+from StyleComboBox import style_combobox
 
 class PECA:
 
-    def __init__(self,root,main_window): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"
+    def __init__(self,rootX): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
         self.root = root
-        self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
+        #self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
         ctk.set_appearance_mode("light")
         self.root = root
         self.root.title("CADASTRO DE PEÇAS") #Titulo
@@ -329,6 +330,7 @@ class PECA:
                     messagebox.showinfo("Success", "Peça encontrado")
                 else:
                     messagebox.showwarning("Não encontrado", "Peça não encontrado")
+                    limparCampos()
 
             except Exception as e:
                 print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO (SALVOU O CODIGO)
@@ -407,13 +409,13 @@ class PECA:
 
 
         #CRIANDO COMBO BOXS:
-        style = ttk.Style()
-        style.configure("Rounded.TCombobox",padding=6,foreground="black",background="white",fieldbackground="#f5f5f5") # cor interna parecida com CTk
+
+        style_combobox(self.root)
 
 
         TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
         TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
-        TipoDePecaCB = ttk.Combobox (self.root,style="Rounded.TCombobox",values= TipoPecaLista,font=("Georgia",13),width= 22) #CRIANDO COMBO BOX
+        TipoDePecaCB = ttk.Combobox (self.root,style="CBPecas.TCombobox",values= TipoPecaLista,font=("Georgia",13),width= 22) #CRIANDO COMBO BOX
         TipoDePecaCB.place(x = 190,y = 100)
         TipoDePecaCB.set("Selecione Um Tipo") #FRASE DO FRONT END INICIAL
         TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
@@ -422,7 +424,7 @@ class PECA:
 
         fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES
         nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB] #LISTA
-        fornecedorCB = ttk.Combobox (self.root,style="Rounded.TCombobox",values = nome_fornecedoresLista,font=("Georgia",13),width=22)#CRIANDO COMBO BOX
+        fornecedorCB = ttk.Combobox (self.root,style="CBPecas.TCombobox",values = nome_fornecedoresLista,font=("Georgia",13),width=22)#CRIANDO COMBO BOX
         fornecedorCB.place(x = 640, y = 150)
         fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
         fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR

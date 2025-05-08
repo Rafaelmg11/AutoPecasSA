@@ -1,9 +1,9 @@
 from tkinter import* #Importa tudo do tkinter
 from tkinter import messagebox #Importa as caixas de mensagem
 from Crud_novo import get_connection
-from Tela_Peca import PECA
+from Tela_PrincipalADMNovo import Menu
 import mysql.connector
-import tkinter as tk
+import tkinter as ttk
 import customtkinter as ctk
 
 
@@ -41,9 +41,9 @@ class Tela_Login:
                                                 "Matheus Golanowski\n"
                                                 "Matheus Eduardo Souza",font=("Georgia",8),bg = "#5424A2",fg = "WHITE")
         #CRIANDO AS CAIXAS DE ENTRADA:
-        UsuarioEntry = tk.Entry(self.root, width=19,font=("Georgia",13))
+        UsuarioEntry = ttk.Entry(self.root, width=19,font=("Georgia",13))
         UsuarioEntry.place(x=110,y=230)
-        SenhaEntry = tk.Entry (self.root, width=19,font=("Georgia",13))
+        SenhaEntry = ttk.Entry (self.root, width=19,font=("Georgia",13))
         SenhaEntry.place(x=110,y=290)
         InformaçãoLabel.place(x=110,y=400)
 
@@ -64,25 +64,25 @@ class Tela_Login:
             if VerifyLogin:
                 if not "ADM" in usuario:
                     messagebox.showinfo(title = "INFO LOGIN",message="Acesso Confirmado, Bem Vindo!")#Exibe mensagem de sucesso
-                    self.root.quit()  # Fecha a janela de cadastro de produtos (destrói a instância)
-                    self.root.destroy()  # Fecha a janela de cadastro de produtos, liberando recursos
-                    root_user = ctk.CTk()  
-                    app_user = PECA(root_user, self.root) 
-                    root_user.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
-                    root_user.mainloop()
+                    # self.root.quit()  # Fecha a janela de cadastro de produtos (destrói a instância)
+                    # self.root.destroy()  # Fecha a janela de cadastro de produtos, liberando recursos
+                    # root_user = ctk.CTk()  
+                    # app_user = PECA(root_user, self.root) 
+                    # root_user.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
+                    # root_user.mainloop()
 
                 else:
                     messagebox.showinfo(title = "INFO LOGIN",message="Acesso Confirmado, Bem Vindo!")#Ebibe mensagem de sucesso
                     self.root.quit()  # Fecha a janela de cadastro de produtos (destrói a instância)
                     self.root.destroy()  # Fecha a janela de cadastro de produtos, liberando recursos
-                    root_adm = ctk.CTk()  
-                    app_adm = PECA(root_adm, self.root) 
+                    root_adm = ttk.Tk()  
+                    app_adm = Menu(root_adm, self.root) 
                     root_adm.mainloop()
                 
             else:messagebox.showerror(title = "INFO LOGIN",message = "Acesso Negado. Usuario Inválido!")#Exibe mensagem de erro
 
         #CRIANDO BOTAO:
-        LoginButton =  tk.Button(self.root, text="LOGIN",  width=12, font=("Georgia", 11),command=login)
+        LoginButton =  ttk.Button(self.root, text="LOGIN",  width=12, font=("Georgia", 11),command=login)
         LoginButton.place(x=150, y=350)
 
     
@@ -90,6 +90,6 @@ class Tela_Login:
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = ttk.Tk()
     app = Tela_Login(root)
     root.mainloop()
