@@ -10,9 +10,9 @@ from customtkinter import CTkImage
 
 class PECA:
 
-    def __init__(self,root,main_window): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
+    def __init__(self,root): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
         self.root = root
-        self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
+        #self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
         ctk.set_appearance_mode("light")
         # self.root.title("CADASTRO DE PEÇAS") #Titulo
         self.root.geometry("740x580") #Tamanho da janela
@@ -464,6 +464,7 @@ class PECA:
         FornecedorLabel.place (x = 380, y = 120 )
         CodigoLabel.place(x = 380, y = 160 )
 
+
         #CRIANDO CAMPOS DE ENTRADAS:
         DescricaoEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Descrição da Peça")
         QuantidadeEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Quantidade da Peça")
@@ -522,11 +523,19 @@ class PECA:
         tabela.config(yscrollcommand=BarraRolamento.set)
         BarraRolamento.config(command=tabela.yview)
 
+        # #ICONS:
+        # iconCadastrar = CTkImage(light_image= Image.open("icons/IconCadastrar.png"),size = (20, 20))
+        # iconExcluir = CTkImage(light_image= Image.open("icons/IconExcluir.png"),size = (20, 20))
+        # iconImagem = CTkImage(light_image= Image.open("icons/IconImagem.png"),size= (20, 20))
+        # iconLista = CTkImage(light_image=Image.open("icons/IconLista.png"),size = (20, 20))
+        # iconLupa = CTkImage(light_image= Image.open("icons/IconLupa.png"),size = (20, 20))
+        # iconLupaLista = CTkImage(light_image= Image.open("icons/IconLupaLista.png"),size = (20, 20))
+        # iconVassoura = CTkImage(light_image=Image.open("icons/IconVassoura.png"),size = (20, 20))
 
 
         #BOTÕES:
         #BOTÃO DE CADASTRO
-        CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=130,command=cadastrar_peca)
+        CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=130, command=cadastrar_peca)
         CadastrarButton.place(x =20 , y = 250)
         #BOTÃO ALTERAR
         AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=130,command=alterar_peca)
@@ -547,17 +556,17 @@ class PECA:
         PesquisarButton = ctk.CTkButton(self.root,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_peca)
         PesquisarButton.place(x = 20,y = 25)
         #BOTAO DE LISTAR
-        ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=130,command=listar_pecas)
+        ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),command=listar_pecas)
         ListarButton.place(x = 570 , y = 530)
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=130, font=("Georgia", 16), command=voltar_para_principal) #AÇÃO PARA O BOTÃO
         voltar_button.place(x=20, y=540)
 
 
-# if __name__ == "__main__":
-#     root = ctk.CTk()
-#     app = PECA(root)
-#     root.mainloop()
+if __name__ == "__main__":
+    root = ctk.CTk()
+    app = PECA(root)
+    root.mainloop()
     
 
 
