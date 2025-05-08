@@ -6,6 +6,7 @@ from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: 
 import io #Fluxo de bytes (transforma imagem em bytes)
 from Crud_novo import get_connection,selecionar_fornecedores,selecionar_tipopeca,obter_cod_fornecedor,create_peca,update_peca,delete_peca
 from StyleComboBox import style_combobox
+from customtkinter import CTkImage
 
 class PECA:
 
@@ -13,8 +14,7 @@ class PECA:
         self.root = root
         self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
         ctk.set_appearance_mode("light")
-        self.root = root
-        self.root.title("CADASTRO DE PEÇAS") #Titulo
+        # self.root.title("CADASTRO DE PEÇAS") #Titulo
         self.root.geometry("740x580") #Tamanho da janela
         self.root.configure(fg_color = "#5424A2") #Cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
@@ -22,8 +22,8 @@ class PECA:
         #Declarando variaveis futuras:
         cod_fornecedor_selecionado = None
 
-        self.imagem_padrao_pil = Image.open("sem_imagem.png").resize((120,120)) #Puxa imagem
-        self.imagem_padrao = ImageTk.PhotoImage(self.imagem_padrao_pil) #Converte imagem 
+        self.imagem_padrao_pil = Image.open("sem_imagem.png") #Puxa imagem
+        self.imagem_padrao = CTkImage(self.imagem_padrao_pil,size= (110 , 110)) #Converte imagem 
 
         #Imagem atual em bytes
         self.imagem_bytes = None
@@ -64,7 +64,7 @@ class PECA:
 
         def voltar_para_principal():
             # Fechar a janela atual de cadastro de peças e voltar para a janela principal
-            self.root.quit()  # Fecha a janela de cadastro de peças (destrói a instância)
+            # self.root.quit()  # Fecha a janela de cadastro de peças (destrói a instância)
             self.root.destroy()  # Fecha a janela de cadastro de peças, liberando recursos
             self.main_window.deiconify()  # Reexibe a janela principal
 
@@ -136,8 +136,8 @@ class PECA:
                     imagem_bytes = resultado[6]
                     if imagem_bytes:
                         imagem_pil = Image.open(io.BytesIO(imagem_bytes))
-                        imagem_pil = imagem_pil.resize((120,120))
-                        imagem_display = ImageTk.PhotoImage(imagem_pil)
+                        imagem_pil = imagem_pil
+                        imagem_display = CTkImage(imagem_pil,size = (110 , 110))
                         imagem_label.configure(image=imagem_display,text = "")
                         imagem_label.image = imagem_display
                     else:
@@ -154,8 +154,8 @@ class PECA:
                     imagem_bytes = f.read() #Recebe a leitura e fecha o arquivo
 
                 imagem_pil = Image.open(io.BytesIO(imagem_bytes)) #Transforma os bytes num objeto de manipulação do pyhton e abre a imagem
-                imagem_pil = imagem_pil.resize((120,120)) #Redimenziona a imagem
-                imagem_display = ImageTk.PhotoImage(imagem_pil) #Converte em widget
+                imagem_pil = imagem_pil #Redimenziona a imagem
+                imagem_display = CTkImage(imagem_pil,size = (110 , 110)) #Converte em widget
                 imagem_label.configure(image = imagem_display,text="") #Exibe
             else:
                 imagem_label.configure(image=self.imagem_padrao, text="")
@@ -249,6 +249,8 @@ class PECA:
                     else:
                         if cod_peca and tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
                             update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,codigo_fornecedor,imagem_bytes) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                            
+                          
 
                             limparCampos()
 
@@ -322,8 +324,8 @@ class PECA:
                     imagem_bytes = imagem_pesquisa
                     if imagem_bytes:
                         imagem_pil = Image.open(io.BytesIO(imagem_bytes))
-                        imagem_pil = imagem_pil.resize((120,120))
-                        imagem_display = ImageTk.PhotoImage(imagem_pil)
+                        imagem_pil = imagem_pil
+                        imagem_display = CTkImage(imagem_pil,size = (110 , 110))
                         imagem_label.configure(image=imagem_display,text = "")
                         imagem_label.image = imagem_display
                     else:
@@ -552,10 +554,10 @@ class PECA:
         voltar_button.place(x=20, y=540)
 
 
-if __name__ == "__main__":
-    root = ctk.CTk()
-    app = PECA(root)
-    root.mainloop()
+# if __name__ == "__main__":
+#     root = ctk.CTk()
+#     app = PECA(root)
+#     root.mainloop()
     
 
 

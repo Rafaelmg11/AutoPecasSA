@@ -37,14 +37,16 @@ class Menu:
         self.root.withdraw()
 
         # Cria uma nova janela Tkinter para o cadastro de peca
-
-        root_peca = ctk.CTk()  # Cria a nova instância da janela para o cadastro de peca
+  
+        root_peca = ctk.CTkToplevel(self.root)
+        root_peca.title("CADASTRO DE PEÇAS") #Titulo
+        root_peca.geometry("740x580") #Tamanho da janela
         # Aplica o estilo na nova janela
         style_combobox(root_peca)
         app_peca = PECA(root_peca, self.root)  # Passa a referência da janela principal (self.root)
         
         root_peca.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
-        root_peca.mainloop()  # Inicia a execução da janela do PECA
+        #root_peca.mainloop()  # Inicia a execução da janela do PECA
 
 
     def reabrir_janela(self):
