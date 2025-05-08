@@ -31,6 +31,8 @@ class PECA:
         #Criação de Widgets
         self.create_widgets()
 
+        
+
     #Conexão com banco de dados
     def conectarBanco(): #CONEXÃO COM O BANCO DE DADOS
         conn = mysql.connector.connect(
@@ -52,7 +54,8 @@ class PECA:
         frame_tabela.place(x = 20, y = 330)
 
         #IMAGEM:
-        imagem_label = ctk.CTkLabel(frame_img,text = "---Imagem---",font=("Georgia",14))
+        imagem_label = ctk.CTkLabel(frame_img,text = "",font=("Georgia",14))
+        imagem_label.configure(image=self.imagem_padrao, text="")
         imagem_label.place(relx=0.5, rely=0.5,anchor = "center")
 
         def reabrir_janela(self):
@@ -118,7 +121,7 @@ class PECA:
                     ValorEntry.delete(0, ctk.END)
                     fornecedorCB.set("Selecione um Fornecedor")
                     CodigoEntry.delete(0, ctk.END)
-                    PesquisaEntry.delete(0, ctk.END)
+    
 
                     #INSERINDO DADOS NOS CAMPOS
                     TipoDePecaCB.set(resultado[0])
@@ -380,17 +383,28 @@ class PECA:
         def limparCampos():
             TipoDePecaCB.set("Selecione Um Tipo")
             DescricaoEntry.delete(0, ctk.END)
+            DescricaoEntry.focus()
             QuantidadeEntry.delete(0, ctk.END)
+            QuantidadeEntry.focus()
             LoteEntry.delete(0, ctk.END)
+            LoteEntry.focus()
             ValorEntry.delete(0, ctk.END)
+            ValorEntry.focus()
             fornecedorCB.set("Selecione um Fornecedor")
             CodigoEntry.delete(0, ctk.END)
+            CodigoEntry.focus()
             PesquisaEntry.delete(0, ctk.END)
+            PesquisaEntry.focus()
+            PesquisaTabelaEntry.delete(0, ctk.END)
+            PesquisaTabelaEntry.focus()
+            
+            FocusIvisivelEntry.focus()
+            
+
             global imagem_bytes
             imagem_bytes = None
             imagem_label.configure(image=self.imagem_padrao, text="")
             imagem_label.image = self.imagem_padrao
-            PesquisaTabelaEntry.delete(0,ctk.END)
             tabela.insert("","end",values="")
 
             #TABELA
@@ -456,6 +470,8 @@ class PECA:
         CodigoEntry = ctk.CTkEntry(self.root,width=185,font=("Georgia",14),placeholder_text = "Codigo da Peça")
         PesquisaEntry = ctk.CTkEntry(self.root,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça")
         PesquisaTabelaEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça na Tabela")
+        FocusIvisivelEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Focus")
+
 
         #POSICIONA OS CAMPOS DE ENTRADAS:
         DescricaoEntry.place(x = 150, y = 120)
@@ -465,6 +481,7 @@ class PECA:
         CodigoEntry.place(x = 530, y = 160)
         PesquisaTabelaEntry.place(x = 180, y =300)
         PesquisaEntry.place(x = 130,y = 25)
+        FocusIvisivelEntry.place(x = 330000000, y = 300000000)
 
         #TABELA:
         # Estilo da Treeview
@@ -533,6 +550,7 @@ class PECA:
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=130, font=("Georgia", 16), command=voltar_para_principal) #AÇÃO PARA O BOTÃO
         voltar_button.place(x=20, y=540)
+
 
 if __name__ == "__main__":
     root = ctk.CTk()
