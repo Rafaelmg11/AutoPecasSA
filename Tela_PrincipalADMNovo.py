@@ -20,6 +20,7 @@ class Menu:
         abrir_peca_button = ttk.Button(self.root, text="Abrir Cadastro de Peça", width=30, font=("Century Gothic", 13), command=self.abrir_peca)
         abrir_peca_button.place(x=150,y=350)
 
+
         #LOGO:
         # CARREGAR IMAGEM
         self.logo = ttk.PhotoImage(file="icons/LogoMobiliaria.png") #Carrega a imagem da logo
@@ -37,6 +38,9 @@ class Menu:
         self.root.withdraw()
 
         # Cria uma nova janela Tkinter para o cadastro de peca
+        
+        ctk.set_appearance_mode("light")
+          
   
         root_peca = ctk.CTkToplevel(self.root)
         root_peca.title("CADASTRO DE PEÇAS") #Titulo

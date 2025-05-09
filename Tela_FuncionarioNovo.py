@@ -10,9 +10,9 @@ from customtkinter import CTkImage
 
 class PECA:
 
-    def __init__(self,root,main_window): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
+    def __init__(self,root): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
         self.root = root
-        self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
+        #self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
         ctk.set_appearance_mode("light")
         # self.root.title("CADASTRO DE PEÇAS") #Titulo
         self.root.geometry("740x580") #Tamanho da janela
@@ -20,7 +20,6 @@ class PECA:
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
         #Declarando variaveis futuras:
-        cod_fornecedor_selecionado = None
 
         self.imagem_padrao_pil = Image.open("sem_imagem.png") #Puxa imagem
         self.imagem_padrao = CTkImage(self.imagem_padrao_pil,size= (110 , 110)) #Converte imagem 
@@ -48,7 +47,7 @@ class PECA:
         #Criando frames
 
         frame_img = ctk.CTkFrame(self.root, width=120, height=120, fg_color="#CCCCCC")  
-        frame_img.place(x= 570, y = 205)
+        frame_img.place(x= 570, y = 305)
 
         frame_tabela = ctk.CTkFrame (self.root,width= 700,height = 200, fg_color= "#5424A2")
         frame_tabela.place(x = 20, y = 330)
@@ -71,33 +70,19 @@ class PECA:
 
         #FUNÇÕES QUE SELECIONAM X ITEM DA CAMBO BOX (NÃO NECESSARIO(EM TEORIA))
         def selecionado_TipoDePeca(event): #FUNÇÃO QUE PREENCHE A CAMBO BOX
-            selecionado = TipoDePecaCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
+            selecionado = CargoCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
             print("Selecionado {}".format(selecionado)) #PRINT DE CONFIRMAÇÃO APENAS
 
-        def selecionado_fornec(event): #FUNÇÃO QUE PREENCHE A CAMBO BOX
-            global cod_fornecedor_selecionado 
-            nome_selecionado = fornecedorCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
-            print("Selecionado {}".format(nome_selecionado)) #PRINT DE CONFIRMAÇÃO APENAS
-
-            cod_fornecedor_selecionado = obter_cod_fornecedor(nome_selecionado) #VARIAVEL RECEBENDO FUNÇÃO DO CRUD DE PEGAR O COD DE FORNECEDOR
-            print(f"Fornecedor selecionado: {nome_selecionado} (Código: {cod_fornecedor_selecionado})") #PRINT DE CONFIRMAÇÃO APENAS
-
+    
         #FILTRO DE CAMBO BOXS:
-        def filtrar_fornecedores(event): #FUNÇÃO DE FILTRO NA CAMBO BOX
-            texto = fornecedorCB.get().lower() #TEXTO DIGITADO
-            if texto == '':
-                opcoes = nome_fornecedoresLista #MONSTRA TODOS OS FORNECEDORES DA LISTA
-            else:
-                opcoes = [item for item in nome_fornecedoresLista if texto in item.lower()] #FILTRO
-            fornecedorCB['values'] = opcoes #COMBO BOX RECEBENDO OS VALORES DA LISTA "OPÇOES"
 
         def filtrar_tipopeca(event):
-            texto = TipoDePecaCB.get().lower() #TEXTO DIGITADO
+            texto = CargoCB.get().lower() #TEXTO DIGITADO
             if texto == '':
-                opcoes = TipoPecaLista #MONSTRA TODOS OS TIPODES DE PEÇAS
+                opcoes = CargoLista #MONSTRA TODOS OS TIPODES DE PEÇAS
             else:
-                opcoes = [item for item in TipoPecaLista if texto in item.lower()] #FILTRO
-            TipoDePecaCB['values'] = opcoes #COMBO BOX RECEBENDO OS VALORES DA LISTA "OPÇOES"
+                opcoes = [item for item in CargoLista if texto in item.lower()] #FILTRO
+            CargoCB['values'] = opcoes #COMBO BOX RECEBENDO OS VALORES DA LISTA "OPÇOES"
             
 
 
@@ -114,22 +99,20 @@ class PECA:
                 resultado = cursor.fetchone()
                 if resultado:
 
-                    TipoDePecaCB.set("Selecione Um Tipo")
-                    DescricaoEntry.delete(0, ctk.END)
-                    QuantidadeEntry.delete(0, ctk.END)
-                    LoteEntry.delete(0, ctk.END)
-                    ValorEntry.delete(0, ctk.END)
-                    fornecedorCB.set("Selecione um Fornecedor")
+                    CargoCB.set("Selecione Um Tipo")
+                    NomeEntry.delete(0, ctk.END)
+                    CPFEntry.delete(0, ctk.END)
+                    TelefoneEntry.delete(0, ctk.END)
+                    EmailEntry.delete(0, ctk.END)
                     CodigoEntry.delete(0, ctk.END)
     
 
                     #INSERINDO DADOS NOS CAMPOS
-                    TipoDePecaCB.set(resultado[0])
-                    DescricaoEntry.insert(0, resultado[1])
-                    QuantidadeEntry.insert(0, resultado[2])
-                    LoteEntry.insert(0, resultado[3])
-                    ValorEntry.insert(0, resultado[4])
-                    fornecedorCB.set(resultado[5])
+                    CargoCB.set(resultado[0])
+                    NomeEntry.insert(0, resultado[1])
+                    CPFEntry.insert(0, resultado[2])
+                    TelefoneEntry.insert(0, resultado[3])
+                    EmailEntry.insert(0, resultado[4])
                     CodigoEntry.insert(0, resultado[7])
 
                     global imagem_bytes,imagem_display
@@ -165,35 +148,31 @@ class PECA:
         def cadastrar_peca():
             
             #OBTENDO AS INFORMAÇÕES DOS CAMPOS DE TEXTOS
-            codigo_fornecedor = cod_fornecedor_selecionado
-            tipoDePeca = TipoDePecaCB.get()
-            descricao = DescricaoEntry.get()
-            lote = LoteEntry.get()
-            fornecedor = fornecedorCB.get()
+            tipoDePeca = CargoCB.get()
+            descricao = NomeEntry.get()
+            lote = TelefoneEntry.get()
 
             #VERIFICAÇÕES DE SEGURANÇA
             try:
-                quantidade = int(QuantidadeEntry.get())
+                quantidade = int(CPFEntry.get())
             except ValueError:
                 messagebox.showerror("Error","Quantidade invalida")
 
             try:
-                valor = float(ValorEntry.get())
+                valor = float(EmailEntry.get())
             except ValueError:
                 messagebox.showerror("Error","Valor invalido")
 
-            if cod_fornecedor_selecionado is None:
-                messagebox.showerror("Error", "Selecione um fornecedor válido")
-                return
+
 
             
 
             #VERIFICANDO SE TODOS OS CAMPOS ESTÃO PREENCHIDOS:
-            if tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor:
-                if tipoDePeca not in TipoPecaLista:
+            if tipoDePeca and descricao and quantidade and lote and valor:
+                if tipoDePeca not in CargoLista:
                     messagebox.showerror("Error", "Selecione um tipo de peça válido")
                 else:
-                    create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor,imagem_bytes)
+                    create_peca(tipoDePeca,descricao,quantidade,lote,valor,imagem_bytes)
 
                     limparCampos()
 
@@ -207,32 +186,24 @@ class PECA:
 
             global imagem_bytes
 
-            nome_selecionado = fornecedorCB.get() #VARIAVEL RECEBENDO O NOME DO FORNECEDOR(PARA OBTER O CODIGO FORNECEDOR)
-            cod_fornecedor_selecionado = obter_cod_fornecedor(nome_selecionado) #VARIAVEL RECEBENDO O CODIGO DO FORNECEDOR
-            codigo_fornecedor = cod_fornecedor_selecionado #VARIAVEL FINAL
 
             #RECEBENDO VALORES
-            tipoDePeca = TipoDePecaCB.get()
-            descricao = DescricaoEntry.get()
-            lote = LoteEntry.get()
-            fornecedor = fornecedorCB.get()
+            tipoDePeca = CargoCB.get()
+            descricao = NomeEntry.get()
+            lote = TelefoneEntry.get()
 
             cod_peca = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O CODPECA DA TABELA
 
             #VERIFICAÇÕES DE SEGURANÇA
             try:
-                quantidade = int(QuantidadeEntry.get())
+                quantidade = int(CPFEntry.get())
             except ValueError:
                 messagebox.showerror("Error","Quantidade invalida")
 
             try:
-                valor = float(ValorEntry.get())
+                valor = float(EmailEntry.get())
             except ValueError:
                 messagebox.showerror("Error","Valor invalido")
-
-            if cod_fornecedor_selecionado is None:
-                messagebox.showerror("Error", "Selecione um fornecedor válido")
-                return
 
             #CONEXÃO COM O BANCO DE DADOS
             conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
@@ -244,11 +215,11 @@ class PECA:
                     
                 # Verificando se o peça foi encontrado
                 if peca_pesquisa:  # SE FOI ENCONTRADO...
-                    if tipoDePeca not in TipoPecaLista:
+                    if tipoDePeca not in CargoLista:
                         messagebox.showerror("Error", "Selecione um tipo de peça válido")
                     else:
-                        if cod_peca and tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                            update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,codigo_fornecedor,imagem_bytes) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                        if cod_peca and tipoDePeca and descricao and quantidade and lote and valor: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
+                            update_peca(tipoDePeca,descricao,quantidade,lote,valor,cod_peca,imagem_bytes) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
                             
                           
 
@@ -308,17 +279,15 @@ class PECA:
                     limparCampos()
 
                     # Inserindo os dados nas entradas (Entry)
-                    DescricaoEntry.insert(0, descricao)
-                    QuantidadeEntry.insert(0, quantidade)
-                    LoteEntry.insert(0, lote)
-                    ValorEntry.insert(0, valor)
+                    NomeEntry.insert(0, descricao)
+                    CPFEntry.insert(0, quantidade)
+                    TelefoneEntry.insert(0, lote)
+                    EmailEntry.insert(0, valor)
                     CodigoEntry.insert(0, cod_peca)
 
                     #Inserindo os dados nas combo box:
-                    if tipoDePeca in TipoPecaLista:
-                        TipoDePecaCB.set(tipoDePeca)
-                    if fornecedor in nome_fornecedoresLista:
-                        fornecedorCB.set(fornecedor)
+                    if tipoDePeca in CargoLista:
+                        CargoCB.set(tipoDePeca)
 
                     global imagem_bytes,imagem_display
                     imagem_bytes = imagem_pesquisa
@@ -383,16 +352,15 @@ class PECA:
         #WIDGETS:
         #FUNÇÃO DE LIMPAR
         def limparCampos():
-            TipoDePecaCB.set("Selecione Um Tipo")
-            DescricaoEntry.delete(0, ctk.END)
-            DescricaoEntry.focus()
-            QuantidadeEntry.delete(0, ctk.END)
-            QuantidadeEntry.focus()
-            LoteEntry.delete(0, ctk.END)
-            LoteEntry.focus()
-            ValorEntry.delete(0, ctk.END)
-            ValorEntry.focus()
-            fornecedorCB.set("Selecione um Fornecedor")
+            CargoCB.set("Selecione Um Tipo")
+            NomeEntry.delete(0, ctk.END)
+            NomeEntry.focus()
+            CPFEntry.delete(0, ctk.END)
+            CPFEntry.focus()
+            TelefoneEntry.delete(0, ctk.END)
+            TelefoneEntry.focus()
+            EmailEntry.delete(0, ctk.END)
+            EmailEntry.focus()
             CodigoEntry.delete(0, ctk.END)
             CodigoEntry.focus()
             PesquisaEntry.delete(0, ctk.END)
@@ -429,59 +397,56 @@ class PECA:
         style_combobox(self.root)
 
 
-        TipoDePecaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
-        TipoPecaLista = [TipoDePeca[0] for TipoDePeca in TipoDePecaTB] #LISTA
-        TipoDePecaCB = ttk.Combobox (self.root,style="CBPecas.TCombobox",values= TipoPecaLista,font=("Georgia",13),width= 22) #CRIANDO COMBO BOX
-        TipoDePecaCB.place(x = 190,y = 100)
-        TipoDePecaCB.set("Selecione Um Tipo") #FRASE DO FRONT END INICIAL
-        TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
-        TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
-
-
-        fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES
-        nome_fornecedoresLista = [fornecedor[1] for fornecedor in fornecedoresTB] #LISTA
-        fornecedorCB = ttk.Combobox (self.root,style="CBPecas.TCombobox",values = nome_fornecedoresLista,font=("Georgia",13),width=22)#CRIANDO COMBO BOX
-        fornecedorCB.place(x = 640, y = 150)
-        fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
-        fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
-        fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
+        CargoTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
+        CargoLista = [TipoDePeca[0] for TipoDePeca in CargoTB] #LISTA
+        CargoCB = ttk.Combobox (self.root,style="CBPecas.TCombobox",values= CargoLista,font=("Georgia",13),width= 22) #CRIANDO COMBO BOX
+        CargoCB.place(x = 190,y = 100)
+        CargoCB.set("Selecione Um Tipo") #FRASE DO FRONT END INICIAL
+        CargoCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
+        CargoCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
 
         #CRIANDO LabelS:
-        TipoDePecaLabel =ctk.CTkLabel(self.root,text = "Tipo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-        DescricaoLabel =ctk.CTkLabel(self.root,text= "Descrição: ",font= ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
-        QuantidadeLabel =ctk.CTkLabel (self.root,text= "Quantidade: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-        LoteLabel =ctk.CTkLabel(self.root,text="Lote: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-        ValorLabel =ctk.CTkLabel (self.root,text="Valor: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-        FornecedorLabel =ctk.CTkLabel (self.root,text="Fornecedor: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
-        CodigoLabel =ctk.CTkLabel (self.root,text="Codigo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        CargoLabel =ctk.CTkLabel(self.root,text = "Cargo: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+        NomeLabel =ctk.CTkLabel(self.root,text= "Nome: ",font= ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        CPFLabel =ctk.CTkLabel (self.root,text= "CPF: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+        TelefoneLabel =ctk.CTkLabel(self.root,text="Telefone: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+        EmailLabel =ctk.CTkLabel (self.root,text="Email: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+        CodigoLabel =ctk.CTkLabel (self.root,text="Codigo de Funcionario: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        SalarioLabel = ctk.CTkLabel (self.root,text="Salario: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        EnderecoLabel = ctk.CTkLabel (self.root,text="Endereco: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
 
         #POSICIONANDO LabelS:
-        TipoDePecaLabel.place(x = 20, y = 80)
-        DescricaoLabel.place(x = 20, y = 120)
-        QuantidadeLabel.place(x =20, y = 160 )
-        LoteLabel.place(x= 20, y =200)
-        ValorLabel.place(x = 380 , y = 80)
-        FornecedorLabel.place (x = 380, y = 120 )
-        CodigoLabel.place(x = 380, y = 160 )
+        CargoLabel.place(x = 20, y = 80)
+        NomeLabel.place(x = 20, y = 120)
+        CPFLabel.place(x =20, y = 160 )
+        TelefoneLabel.place(x= 20, y =200)
+        EmailLabel.place(x = 380 , y = 80)
+        SalarioLabel.place (x = 380, y = 120 )
+        EnderecoLabel.place (x=380, y = 160)
+        CodigoLabel.place(x = 380, y = 200 )
 
 
         #CRIANDO CAMPOS DE ENTRADAS:
-        DescricaoEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Descrição da Peça")
-        QuantidadeEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Quantidade da Peça")
-        LoteEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Lote da Peça")
-        ValorEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Valor da Peça")
-        CodigoEntry = ctk.CTkEntry(self.root,width=185,font=("Georgia",14),placeholder_text = "Codigo da Peça")
+        NomeEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Nome do Funcionario")
+        CPFEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "CPF do Funcionario")
+        TelefoneEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Telefone do Funcionario")
+        EmailEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "E-mail do Funcionario")
+        SalarioEntry = ctk.CTkEntry (self.root,width=207,font=("Georgia",14),placeholder_text = "Salario do Funcionario")
+        EnderecoEntry = ctk.CTkEntry (self.root,width=207,font=("Georgia",14),placeholder_text = "Endereço do Funcionario")
+        CodigoEntry = ctk.CTkEntry(self.root,width=185,font=("Georgia",14),placeholder_text = "Codigo do Funcionario")
         PesquisaEntry = ctk.CTkEntry(self.root,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça")
         PesquisaTabelaEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Peça na Tabela")
         FocusIvisivelEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Focus")
 
 
         #POSICIONA OS CAMPOS DE ENTRADAS:
-        DescricaoEntry.place(x = 150, y = 120)
-        QuantidadeEntry.place(x = 150, y = 160)
-        LoteEntry.place(x =150, y = 200)
-        ValorEntry.place(x = 510, y =80)
-        CodigoEntry.place(x = 530, y = 160)
+        NomeEntry.place(x = 150, y = 120)
+        CPFEntry.place(x = 150, y = 160)
+        TelefoneEntry.place(x =150, y = 200)
+        EmailEntry.place(x = 510, y =80)
+        SalarioEntry.place(x = 510, y = 120)
+        EnderecoEntry.place(x = 510 , y = 160)
+        CodigoEntry.place(x = 530, y = 200)
         PesquisaTabelaEntry.place(x = 180, y =300)
         PesquisaEntry.place(x = 130,y = 25)
         FocusIvisivelEntry.place(x = 330000000, y = 300000000)
@@ -548,7 +513,7 @@ class PECA:
         limparButton.place(x = 555, y = 25)
         #BOTÃO DE CARREGAR IMAGEM:
         botao_imagem = ctk.CTkButton(self.root, text="Carregar Imagem",font= ("Georgia",14),width=130, command=carregar_imagem)
-        botao_imagem.place(x= 380, y = 210)
+        botao_imagem.place(x= 380, y = 310)
         #BOTÃO DE PESQUISA NA TABELA
         PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela", command=pesquisa_tabela)
         PesquisaTabelaButton.place(x = 25, y = 300)
@@ -563,10 +528,10 @@ class PECA:
         voltar_button.place(x=20, y=540)
 
 
-# if __name__ == "__main__":
-#     root = ctk.CTk()
-#     app = PECA(root)
-#     root.mainloop()
+if __name__ == "__main__":
+    root = ctk.CTk()
+    app = PECA(root)
+    root.mainloop()
     
 
 
