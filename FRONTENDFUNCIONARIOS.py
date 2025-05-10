@@ -15,7 +15,7 @@ class PECA:
         #self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
         ctk.set_appearance_mode("light")
         # self.root.title("CADASTRO DE PEÇAS") #Titulo
-        self.root.geometry("740x710") #Tamanho da janela
+        self.root.geometry("860x600") #Tamanho da janela
         self.root.configure(fg_color = "#5424A2") #Cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
@@ -47,10 +47,10 @@ class PECA:
         #Criando frames
 
         frame_img = ctk.CTkFrame(self.root, width=120, height=120, fg_color="#CCCCCC")  
-        frame_img.place(x = 190, y = 250)
+        frame_img.place(x= 20, y = 80)
 
         frame_tabela = ctk.CTkFrame (self.root,width= 700,height = 200, fg_color= "#5424A2")
-        frame_tabela.place(x = 30, y = 460)
+        frame_tabela.place(x = 100, y = 340)
 
         #IMAGEM:
         imagem_label = ctk.CTkLabel(frame_img,text = "",font=("Georgia",14))
@@ -397,7 +397,7 @@ class PECA:
         CargoTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
         CargoLista = [TipoDePeca[0] for TipoDePeca in CargoTB] #LISTA
         CargoCB = ttk.Combobox (self.root,style="CBPecas.TCombobox",values= CargoLista,font=("Georgia",13),width= 22) #CRIANDO COMBO BOX
-        CargoCB.place(x = 640 ,y = 153)
+        CargoCB.place(x = 802 ,y = 153)
         CargoCB.set("Selecione Um Tipo") #FRASE DO FRONT END INICIAL
         CargoCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
         CargoCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
@@ -413,14 +413,14 @@ class PECA:
         EnderecoLabel = ctk.CTkLabel (self.root,text="Endereco: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
 
         #POSICIONANDO LabelS:
-        CargoLabel.place(x = 380, y = 120)
-        NomeLabel.place(x = 20, y = 80)
-        CPFLabel.place(x =20, y = 120 )
-        TelefoneLabel.place(x= 20, y =160)
-        EmailLabel.place(x = 20 , y = 200)
-        SalarioLabel.place (x = 380, y = 160 )
-        EnderecoLabel.place (x=380, y = 80)
-        CodigoLabel.place(x = 380, y = 200 )
+        CargoLabel.place(x = 530, y = 120)
+        NomeLabel.place(x = 170, y = 80)
+        CPFLabel.place(x =170, y = 120 )
+        TelefoneLabel.place(x= 170, y =160)
+        EmailLabel.place(x = 170 , y = 200)
+        SalarioLabel.place (x = 530, y = 160 )
+        EnderecoLabel.place (x=530, y = 80)
+        CodigoLabel.place(x = 530, y = 200 )
 
 
         #CRIANDO CAMPOS DE ENTRADAS:
@@ -437,14 +437,14 @@ class PECA:
 
 
         #POSICIONA OS CAMPOS DE ENTRADAS:
-        NomeEntry.place(x = 150, y = 80)
-        CPFEntry.place(x = 150, y = 120)
-        TelefoneEntry.place(x =150, y = 160)
-        EmailEntry.place(x = 150, y =200)
-        SalarioEntry.place(x = 510, y = 160)
-        EnderecoEntry.place(x = 510 , y = 80)
-        CodigoEntry.place(x = 570, y = 200)
-        PesquisaTabelaEntry.place(x = 190, y =430)
+        NomeEntry.place(x = 270, y = 80)
+        CPFEntry.place(x = 270, y = 120)
+        TelefoneEntry.place(x =270, y = 160)
+        EmailEntry.place(x = 270, y =200)
+        SalarioEntry.place(x = 640, y = 160)
+        EnderecoEntry.place(x = 640 , y = 80)
+        CodigoEntry.place(x = 700, y = 200)
+        PesquisaTabelaEntry.place(x = 265, y =315)
         PesquisaEntry.place(x = 130,y = 25)
         FocusIvisivelEntry.place(x = 330000000, y = 300000000)
 
@@ -498,31 +498,31 @@ class PECA:
         #BOTÕES:
         #BOTÃO DE CADASTRO
         CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=160, command=cadastrar_peca)
-        CadastrarButton.place(x =390 , y = 270)
+        CadastrarButton.place(x =180 , y = 260)
         #BOTÃO ALTERAR
         AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=160,command=alterar_peca)
-        AlterarButton.place(x = 390,y = 315)
+        AlterarButton.place(x = 370,y = 260)
         #BOTAO DE EXCLUIR
         ExcluirButton = ctk.CTkButton(self.root,text = "EXCLUIR",font= ("Georgia",14),width=160,command=excluir_peca)
-        ExcluirButton.place(x = 390, y = 360)
+        ExcluirButton.place(x = 560, y = 260)
         #BOTÃO DE LIMPAR
         limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=160,command=limparCampos)
         limparButton.place(x = 555, y = 25)
         #BOTÃO DE CARREGAR IMAGEM:
         botao_imagem = ctk.CTkButton(self.root, text="Carregar Imagem",font= ("Georgia",14),width=130, command=carregar_imagem)
-        botao_imagem.place(x= 185, y = 380)
+        botao_imagem.place(x= 16, y = 210)
         #BOTÃO DE PESQUISA NA TABELA
         PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela", command=pesquisa_tabela)
-        PesquisaTabelaButton.place(x = 35, y = 430)
+        PesquisaTabelaButton.place(x = 100, y = 315)
         #BOTAO DE PESQUISA
         PesquisarButton = ctk.CTkButton(self.root,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_peca)
         PesquisarButton.place(x = 20,y = 25)
         #BOTAO DE LISTAR
-        ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),command=listar_pecas)
-        ListarButton.place(x = 565 , y = 430)
+        ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_pecas)
+        ListarButton.place(x = 630 , y = 315)
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=130, font=("Georgia", 16), command=voltar_para_principal) #AÇÃO PARA O BOTÃO
-        voltar_button.place(x=20, y=670)
+        voltar_button.place(x=20, y=555)
 
 
 
@@ -531,5 +531,3 @@ if __name__ == "__main__":
     app = PECA(root)
     root.mainloop()
     
-
-

@@ -4,6 +4,7 @@ from Tela_Funcionario import FUNCIONARIO
 from Tela_Fornecedor import FORNECEDOR
 from Tela_Cadastro import CADASTRO
 
+#LIXO--------------------
 
 class Menu:
     def __init__(self, root):

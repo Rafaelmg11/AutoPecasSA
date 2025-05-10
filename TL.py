@@ -6,6 +6,8 @@ import mysql.connector
 import tkinter as tk
 import customtkinter as ctk
 
+#LIXO _----------------------
+
 
 # OBSERVAÇÕES  SOBRE O LOGIN (para diferenciar o adm de usuario, o adm tem que ter ADM no usuario, qualquer outro usuario sem ADM é apenas um usuario comum)
 

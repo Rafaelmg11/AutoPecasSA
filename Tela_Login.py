@@ -6,6 +6,8 @@ from Tela_PrincipalUSER import Menu2
 import mysql.connector
 import tkinter as tk
 
+#LIXO --------------------------------
+
 
 # OBSERVAÇÕES  SOBRE O LOGIN (para diferenciar o adm de usuario, o adm tem que ter ADM no usuario, qualquer outro usuario sem ADM é apenas um usuario comum)
 

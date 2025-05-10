@@ -6,6 +6,7 @@ from crudPrincipal import get_connection,create_peca, read_peca , update_peca , 
 import tkinter as tk
 import mysql.connector
 
+#LIXO---------------------------------
 
 class PECA:  
 
