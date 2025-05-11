@@ -74,8 +74,7 @@ class FUNCIONARIO:
             root_endereco = ctk.CTkToplevel(self.root)
             root_endereco.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
             root_endereco.geometry("400x400") #Tamanho da janela
-            # Aplica o estilo na nova janela
-            app_endereco= ENDERECO(root_endereco, self)  # self é a main_window aqui
+            app_endereco= ENDERECO(root_endereco, self.root)  # self é a main_window aqui
             root.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
 
 

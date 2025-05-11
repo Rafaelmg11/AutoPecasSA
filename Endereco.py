@@ -19,6 +19,8 @@ class ENDERECO:
         #Criação de Widgets
         self.create_widgets()
 
+        global endereco_completo, cod_endereco
+
 
     def create_widgets(self):
 
@@ -66,7 +68,8 @@ class ENDERECO:
             self.root.destroy()  # Fecha a janela de endereco, liberando recursos
             self.main_window.deiconify()  # Reexibe a janela principal
 
-        def cadastrar_endereco(self):
+
+        def cadastrar_endereco():
             CEP = CEPEntry.get()
             Estado = EstadoEntry.get()
             Cidade = CidadeEntry.get()
@@ -74,20 +77,31 @@ class ENDERECO:
             Logradouro = LogradouroEntry.get()
             Numero = NumeroEntry.get()
 
+            global endereco_completo,cod_endereco
+
             if CEP and Estado and Cidade and Bairro and Logradouro and Numero:
                 
-                #Salva no banco e pega o cod
+                #Salva no banco e pega o cod_endereco
                 cod_endereco = create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero)
 
-                endereco_completo = f'{Logradouro},{Numero},{Bairro},{Cidade},{Estado}'
+                print(cod_endereco)
 
-                #Passa o cod_endereco e o endereco_completo para a tela de funcionario
-                self.main_window.receber_endereco(cod_endereco, endereco_completo)
+                conn = get_connection()
+                cursor = conn.cursor()
+                try:
+                    #Faz uma consulta no banco 
+                    cursor.execute("SELECT CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado) as endereco_completo FROM endereco_funcionario WHERE cod_endereco = %s",(cod_endereco,))
+                    #Rcebe a consulta
+                    endereco_completo = cursor.fetchone()
+                    #Recebe a consulta (só pra tirar uma virgula que ficava no final pois é uma tupla)
+                    endereco_completo = endereco_completo[0]
+                    messagebox.showinfo("Succes","Endereco cadastrado com sucesso")
+                    print(endereco_completo)
+                    #Limpa os campos depois do cadastro
+                    limpar_Campos()
+                except Exception as e:
+                    print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO
 
-                messagebox.showinfo("Succes","Endereco cadastrado com sucesso")
-                
-                #Limpa os campos depois do cadastro
-                limpar_Campos()
             else:
                 messagebox.showerror("Error","Todos os campos deveme estar preenchidos")
 
@@ -161,6 +175,6 @@ class ENDERECO:
 
 if __name__ == "__main__":
     root = ctk.CTk()
-    app = ENDERECO(root)
+    app = ENDERECO(root,main_window=None)
     root.mainloop()
     
