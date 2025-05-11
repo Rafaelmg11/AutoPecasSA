@@ -129,7 +129,12 @@ def create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
     query = "INSERT INTO endereco_funcionario (cep,estado,cidade,bairro,logradouro,numero) VALUES (%s, %s , %s, %s, %s, %s)"
     cursor.execute(query, (CEP,Estado,Cidade,Bairro,Logradouro,Numero))
     conn.commit()
+    cod_endereco = cursor.lastrowid #PEGA O ID DA ULTIMA LINHA ADICIONADA (OU SEJA O CADASTRADO FEITO) 
     cursor.close()
     conn.close()
+    return cod_endereco
+
+
+
 
 

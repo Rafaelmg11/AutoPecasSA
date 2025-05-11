@@ -8,9 +8,9 @@ import requests
 
 class ENDERECO:
 
-    def __init__(self,root): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
+    def __init__(self,root,main_window): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
         self.root = root
-        #self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
+        self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
         ctk.set_appearance_mode("light")
         # self.root.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
         self.root.geometry("400x400") #Tamanho da janela
@@ -62,7 +62,11 @@ class ENDERECO:
                 BairroEntry.insert(0, Bairro)
                 LogradouroEntry.insert(0, Logradouro)
 
-        def cadastrar_endereco():
+        def reabrir_janela():
+            self.root.destroy()  # Fecha a janela de endereco, liberando recursos
+            self.main_window.deiconify()  # Reexibe a janela principal
+
+        def cadastrar_endereco(self):
             CEP = CEPEntry.get()
             Estado = EstadoEntry.get()
             Cidade = CidadeEntry.get()
@@ -71,8 +75,14 @@ class ENDERECO:
             Numero = NumeroEntry.get()
 
             if CEP and Estado and Cidade and Bairro and Logradouro and Numero:
+                
+                #Salva no banco e pega o cod
+                cod_endereco = create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero)
 
-                create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero)
+                endereco_completo = f'{Logradouro},{Numero},{Bairro},{Cidade},{Estado}'
+
+                #Passa o cod_endereco e o endereco_completo para a tela de funcionario
+                self.main_window.receber_endereco(cod_endereco, endereco_completo)
 
                 messagebox.showinfo("Succes","Endereco cadastrado com sucesso")
                 
@@ -138,7 +148,7 @@ class ENDERECO:
         CEPButton = ctk.CTkButton(self.root,text = "CEP:",font= ("Georgia",18),width=80,command=cep)
         CEPButton.place(x = 40,y = 80)
         #BOTÃO DE VOLTAR:
-        voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=120, font=("Georgia", 16)) #AÇÃO PARA O BOTÃO
+        voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=120, font=("Georgia", 16),command=reabrir_janela) #AÇÃO PARA O BOTÃO
         voltar_button.place(x=20, y = 355)
         #BOTÃO DE LIMPAR:
         limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=150,command=limpar_Campos)

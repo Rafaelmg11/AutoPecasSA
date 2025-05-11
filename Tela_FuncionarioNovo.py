@@ -7,6 +7,7 @@ import io #Fluxo de bytes (transforma imagem em bytes)
 from Crud_novo import get_connection,selecionar_cargo,create_funcionario,update_funcionario,delete_funcionario
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
+from Endereco import ENDERECO
 
 class FUNCIONARIO:
 
@@ -32,6 +33,8 @@ class FUNCIONARIO:
 
         #Criação de Widgets
         self.create_widgets()
+
+    
 
         
 
@@ -60,9 +63,26 @@ class FUNCIONARIO:
         imagem_label.configure(image=self.imagem_padrao, text="")
         imagem_label.place(relx=0.5, rely=0.5,anchor = "center")
 
+
+        def abrir_tela_endereco():
+
+            #Oculta a janela
+            self.root.withdraw()
+
+            #Cria uma nova janela tkinter para endereco de funcionionario
+            ctk.set_appearance_mode("ligth")
+            root_endereco = ctk.CTkToplevel(self.root)
+            root_endereco.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
+            root_endereco.geometry("400x400") #Tamanho da janela
+            # Aplica o estilo na nova janela
+            app_endereco= ENDERECO(root_endereco, self)  # self é a main_window aqui
+            root.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
+
+
         def reabrir_janela(self):
             self.root.deiconify()  # Reexibe a janela principal
             self.root.quit()  # Encerra o loop de eventos da janela de cadastro
+
 
         def voltar_para_principal():
             # Fechar a janela atual de cadastro de funcionarios e voltar para a janela principal
@@ -76,9 +96,10 @@ class FUNCIONARIO:
             selecionado = CargoCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
             print("Selecionado {}".format(selecionado)) #PRINT DE CONFIRMAÇÃO APENAS
 
+
+
     
         #FILTRO DE CAMBO BOXS:
-
         def filtrar_Cargo(event):
             texto = CargoCB.get().lower() #TEXTO DIGITADO
             if texto == '':
@@ -151,6 +172,13 @@ class FUNCIONARIO:
             else:
                 imagem_label.configure(image=self.imagem_padrao, text="")
                 messagebox.showwarning("Atenção","Imagem não selecionada")
+
+
+        def receber_endereco(self, cod_endereco, endereco_completo):
+            self.cod_endereco = cod_endereco #RECEBE O ENDERECO_ID
+            EnderecoEntry.delete(0, ctk.END) #Limpa o campo de texto
+            EnderecoEntry.insert(0, endereco_completo) #Preenche o campo de texto
+
 
             
         def cadastrar_funcionario():
@@ -344,6 +372,9 @@ class FUNCIONARIO:
                 tabela.insert("", "end", values=linha, tags=(tag,))
 
 
+
+            
+
         #WIDGETS:
         #FUNÇÃO DE LIMPAR
         def limparCampos():
@@ -409,7 +440,7 @@ class FUNCIONARIO:
         EmailLabel =ctk.CTkLabel (self.root,text="Email: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         CodigoLabel =ctk.CTkLabel (self.root,text="Cod. Funcionario: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
         SalarioLabel = ctk.CTkLabel (self.root,text="Salario: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
-        EnderecoLabel = ctk.CTkLabel (self.root,text="Endereco: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        # EnderecoLabel = ctk.CTkLabel (self.root,text="Endereco: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
 
         #POSICIONANDO LabelS:
         CargoLabel.place(x = 530, y = 120)
@@ -418,7 +449,7 @@ class FUNCIONARIO:
         TelefoneLabel.place(x= 170, y =160)
         EmailLabel.place(x = 170 , y = 200)
         SalarioLabel.place (x = 530, y = 160 )
-        EnderecoLabel.place (x=530, y = 80)
+        # EnderecoLabel.place (x=530, y = 80)
         CodigoLabel.place(x = 530, y = 200 )
 
 
@@ -428,6 +459,7 @@ class FUNCIONARIO:
         TelefoneEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Telefone do Funcionario")
         EmailEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "E-mail do Funcionario")
         SalarioEntry = ctk.CTkEntry (self.root,width=207,font=("Georgia",14),placeholder_text = "Salario do Funcionario")
+        global EnderecoEntry
         EnderecoEntry = ctk.CTkEntry (self.root,width=207,font=("Georgia",14),placeholder_text = "Endereço do Funcionario")
         CodigoEntry = ctk.CTkEntry(self.root,width=148,font=("Georgia",14),placeholder_text = "Codigo do Funcionario")
         PesquisaEntry = ctk.CTkEntry(self.root,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Funcionário")
@@ -498,6 +530,9 @@ class FUNCIONARIO:
 
 
         #BOTÕES:
+        #BOTÃO DE ENDEREÇO
+        EnderecoButton = ctk.CTkButton (self.root, text= "Endereço:",font= ("Georgia",19.5),width=10, command=abrir_tela_endereco)
+        EnderecoButton.place (x=525, y = 80)
         #BOTÃO DE CADASTRO
         CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=160, command=cadastrar_funcionario)
         CadastrarButton.place(x =180 , y = 260)
