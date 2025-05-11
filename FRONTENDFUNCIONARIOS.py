@@ -8,6 +8,8 @@ from Crud_novo import get_connection,selecionar_fornecedores,selecionar_tipopeca
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
 
+#LIXOOO----------------------------------------------
+
 class PECA:
 
     def __init__(self,root): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window

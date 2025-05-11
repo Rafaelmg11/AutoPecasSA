@@ -51,9 +51,10 @@ def create_peca(tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor,ima
 
     conn = get_connection()
     cursor = conn.cursor()
-
+    #PEGANDO O FORNECEDOR E SEU CODIGO PRIMEIRO:
     cursor.execute("SELECT nome_fornec FROM fornecedor WHERE cod_fornec = %s",(codigo_fornecedor,))
     fornecedor = cursor.fetchone()[0]
+    #CONTINUANDO O CODIGO NORMALMENTE
     query = "insert into peca (tipo_peca,desc_peca,qtde_estoque,lote,valor_unitario,fornecedor,cod_fornecedor,imagem) VALUES ( %s, %s , %s, %s, %s, %s, %s,%s)"
     cursor.execute(query, (tipoDePeca,desc,qtde,lote,valor,fornecedor,codigo_fornecedor,imagem_bytes))
     conn.commit()
@@ -83,3 +84,40 @@ def delete_peca(codigo_Peca):
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 #FUNCÕES FUNCIONARIO:
+
+def selecionar_cargo():
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "SELECT cargo FROM funcionario ORDER BY cargo ASC"
+    cursor.execute(query)
+    cargos = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return cargos
+
+def create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO funcionario (nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem) VALUES ( %s, %s , %s, %s, %s, %s, %s,%s)"
+    cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes))
+    conn.commit ()
+    cursor.close()
+    conn.close()
+
+def update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "UPDATE funcionario SET nome = %s, telefone = %s, email = %s, cpf = %s, endereco = %s, cargo = %s, salario = %s, imagem = %s WHERE cod_func = %s"
+    cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,Cod_Funcionario))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def delete_funcionario(Cod_Funcionario):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "UPDATE funcionario SET ativo = FALSE WHERE cod_peca = %s"
+    cursor.execute(query,(Cod_Funcionario,))
+    conn.commit()
+    cursor.close()
+    conn.close()
