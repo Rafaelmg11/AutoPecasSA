@@ -25,8 +25,12 @@ class PECA:
         self.imagem_padrao_pil = Image.open("sem_imagem.png") #Puxa imagem
         self.imagem_padrao = CTkImage(self.imagem_padrao_pil,size= (110 , 110)) #Converte imagem 
 
+
         #Imagem atual em bytes
-        self.imagem_bytes = None
+        global imagem_bytes
+
+        with open("sem_imagem.png","rb") as f: #Abre a imagem padrao em modo de leitura binaria(bytes)
+            imagem_bytes = f.read() #Recebe a leitura e fecha o arquivo
 
         #Criação de Widgets
         self.create_widgets()

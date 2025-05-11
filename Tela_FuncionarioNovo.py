@@ -25,7 +25,10 @@ class FUNCIONARIO:
         self.imagem_padrao = CTkImage(self.imagem_padrao_pil,size= (110 , 110)) #Converte imagem 
 
         #Imagem atual em bytes
-        self.imagem_bytes = None
+        global imagem_bytes
+
+        with open("sem_imagem.png","rb") as f: #Abre a imagem padrao em modo de leitura binaria(bytes)
+            imagem_bytes = f.read() #Recebe a leitura e fecha o arquivo
 
         #Criação de Widgets
         self.create_widgets()
@@ -49,8 +52,8 @@ class FUNCIONARIO:
         frame_img = ctk.CTkFrame(self.root, width=120, height=120, fg_color="#CCCCCC")  
         frame_img.place(x= 20, y = 80)
 
-        frame_tabela = ctk.CTkFrame (self.root,width= 700,height = 200, fg_color= "#5424A2")
-        frame_tabela.place(x = 100, y = 340)
+        frame_tabela = ctk.CTkFrame (self.root,width= 855,height = 200, fg_color= "#5424A2")
+        frame_tabela.place(x = 5, y = 340)
 
         #IMAGEM:
         imagem_label = ctk.CTkLabel(frame_img,text = "",font=("Georgia",14))
@@ -110,14 +113,14 @@ class FUNCIONARIO:
     
 
                     #INSERINDO DADOS NOS CAMPOS
-                    NomeEntry.insert(resultado[0])
-                    TelefoneEntry.insert(resultado[1])
-                    EmailEntry.insert(resultado[2])
-                    CPFEntry.insert(resultado[3])
-                    EnderecoEntry.insert(resultado[4])
+                    NomeEntry.insert(0, resultado[0])
+                    TelefoneEntry.insert(0, resultado[1])
+                    EmailEntry.insert(0, resultado[2])
+                    CPFEntry.insert(0, resultado[3])
+                    EnderecoEntry.insert(0, resultado[4])
                     CargoCB.set(resultado[5])
-                    SalarioEntry.insert(resultado[6])
-                    CodigoEntry.insert(resultado[8])
+                    SalarioEntry.insert(0, resultado[6])
+                    CodigoEntry.insert(0, resultado[8])
 
 
                     global imagem_bytes,imagem_display
@@ -163,13 +166,16 @@ class FUNCIONARIO:
 
             #VERIFICAÇÕES DE SEGURANÇA
 
-            if "@" not in Email:
+            if "@" not in Email or "." not in Email:
                 messagebox.showerror("Error","E-mail Inválido")
-
+                return
+            if Cargo == "Selecione Um Cargo":
+                messagebox.showerror("Error","Cargo Inválido")
+                return
             
             #VERIFICANDO SE TODOS OS CAMPOS ESTÃO PREENCHIDOS:
-            if Nome and CPF and Telefone and Email and Endereco and Cargo and Salario:
-                create_funcionario(Nome,CPF,Telefone,Email,Endereco,Cargo,Salario,imagem_bytes)
+            if Nome and Telefone and Email and CPF and Endereco and Cargo and Salario:
+                create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes)
 
                 limparCampos()
 
@@ -193,8 +199,12 @@ class FUNCIONARIO:
             Salario = SalarioEntry.get()
             Cod_Funcionario = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O COD_FUNC DA TABELA
 
-            if "@" not in Email:
+            if "@" not in Email or "." not in Email:
                 messagebox.showerror("Error","E-mail Inválido")
+                return
+            if Cargo == "Selecione Um Cargo":
+                messagebox.showerror("Error","Cargo Inválido")
+                return
 
 
             #CONEXÃO COM O BANCO DE DADOS
@@ -207,8 +217,8 @@ class FUNCIONARIO:
                     
                 # Verificando se o funcionario foi encontrado
                 if funcionario_pesquisa:  # SE FOI ENCONTRADO...
-                    if Cod_Funcionario and Nome and CPF and Telefone and Email and Endereco and Cargo and Salario: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                        update_funcionario(Cod_Funcionario,Nome,CPF,Telefone,Email,Endereco,Cargo,Salario,imagem_bytes) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                    if Cod_Funcionario and Nome and Telefone and Email and CPF and Endereco and Cargo and Salario: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
+                        update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
                             
                         limparCampos()
 
@@ -326,7 +336,7 @@ class FUNCIONARIO:
             tabela.tag_configure('oddrow', background='white')  # Linha cinza clara
             tabela.tag_configure('evenrow', background='#DBE1FF')  # Linha branca
 
-            cursor.execute(" SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario FROM funcionario WHERE  ativo = TRUE ")
+            cursor.execute(" SELECT cod_func,nome_func,cpf_func,telefone_func,email_func,endereco_func,cargo,salario FROM funcionario WHERE  ativo = TRUE ")
             consulta_tabela = cursor.fetchall()
 
             for i, linha in enumerate(consulta_tabela):
@@ -346,6 +356,10 @@ class FUNCIONARIO:
             TelefoneEntry.focus()
             EmailEntry.delete(0, ctk.END)
             EmailEntry.focus()
+            EnderecoEntry.delete(0, ctk.END)
+            EnderecoEntry.focus()
+            SalarioEntry.delete(0, ctk.END)
+            SalarioEntry.focus()
             CodigoEntry.delete(0, ctk.END)
             CodigoEntry.focus()
             PesquisaEntry.delete(0, ctk.END)
@@ -456,19 +470,19 @@ class FUNCIONARIO:
         #Tamanho de cada coluna
         tabela.column("cod", width=55)
         tabela.column("nome", width=150)
-        tabela.column("cpf", width=40)
-        tabela.column("telefone", width=40)
-        tabela.column("email",width = 150)
-        tabela.column("endereco",width = 150)
-        tabela.column("cargo",width = 60)
-        tabela.column("salario",width = 30)
+        tabela.column("cpf", width=100)
+        tabela.column("telefone", width=110)
+        tabela.column("email",width = 190)
+        tabela.column("endereco",width = 230)
+        tabela.column("cargo",width = 110)
+        tabela.column("salario",width = 80)
         #Posicionando
         tabela.place(x = 5, y = 13)
         #Ação ao selecionar uma linha
         tabela.bind("<<TreeviewSelect>>", selecionar_linha)
         #Barra de Rolamento:
         BarraRolamento = ttk.Scrollbar(frame_tabela, orient="vertical")
-        BarraRolamento.place(x = 825, y = 14, height=frame_tabela.winfo_height() + 223)  # Ajustando o tamanho da barra de rolagem
+        BarraRolamento.place(x = 1035, y = 14, height=frame_tabela.winfo_height() + 223)  # Ajustando o tamanho da barra de rolagem
         #Conectando barra com a tabela
         tabela.config(yscrollcommand=BarraRolamento.set)
         BarraRolamento.config(command=tabela.yview)

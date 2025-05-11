@@ -88,7 +88,7 @@ def delete_peca(codigo_Peca):
 def selecionar_cargo():
     conn = get_connection()
     cursor = conn.cursor()
-    query = "SELECT cargo FROM funcionario ORDER BY cargo ASC"
+    query = "SELECT DISTINCT cargo FROM funcionario ORDER BY cargo ASC"
     cursor.execute(query)
     cargos = cursor.fetchall()
     cursor.close()
@@ -107,7 +107,7 @@ def create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_byt
 def update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "UPDATE funcionario SET nome = %s, telefone = %s, email = %s, cpf = %s, endereco = %s, cargo = %s, salario = %s, imagem = %s WHERE cod_func = %s"
+    query = "UPDATE funcionario SET nome_func = %s, telefone_func = %s, email_func = %s, cpf_func = %s, endereco_func = %s, cargo = %s, salario = %s, imagem = %s WHERE cod_func = %s"
     cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,Cod_Funcionario))
     conn.commit()
     cursor.close()
@@ -116,7 +116,7 @@ def update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Sa
 def delete_funcionario(Cod_Funcionario):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "UPDATE funcionario SET ativo = FALSE WHERE cod_peca = %s"
+    query = "UPDATE funcionario SET ativo = FALSE WHERE cod_func = %s"
     cursor.execute(query,(Cod_Funcionario,))
     conn.commit()
     cursor.close()
