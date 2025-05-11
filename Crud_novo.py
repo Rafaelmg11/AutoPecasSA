@@ -121,3 +121,15 @@ def delete_funcionario(Cod_Funcionario):
     conn.commit()
     cursor.close()
     conn.close()
+
+#ENDERECO FUNCIONARIO:
+def create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO endereco_funcionario (cep,estado,cidade,bairro,logradouro,numero) VALUES (%s, %s , %s, %s, %s, %s)"
+    cursor.execute(query, (CEP,Estado,Cidade,Bairro,Logradouro,Numero))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+

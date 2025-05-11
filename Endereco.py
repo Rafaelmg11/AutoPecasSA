@@ -2,7 +2,7 @@ import customtkinter as ctk
 import mysql.connector
 from tkinter import messagebox
 from tkinter import ttk
-from Crud_novo import get_connection
+from Crud_novo import get_connection,create_endereco_func
 from customtkinter import CTkImage
 import requests
 
@@ -45,11 +45,15 @@ class ENDERECO:
                 #RECEBENDO O DICIONARIO DE RESPOSTA
                 dicionario_requisição = requisição.json()
 
-                #VARIAVEIS QUE RECEBEM SEUS DEVIDOS VALORES DO DICIONARIO
-                Estado = dicionario_requisição['estado']
-                Cidade = dicionario_requisição['localidade']
-                Bairro = dicionario_requisição['bairro']
-                Logradouro = dicionario_requisição['logradouro']
+                try:
+                    #VARIAVEIS QUE RECEBEM SEUS DEVIDOS VALORES DO DICIONARIO
+                    Estado = dicionario_requisição['estado']
+                    Cidade = dicionario_requisição['localidade']
+                    Bairro = dicionario_requisição['bairro']
+                    Logradouro = dicionario_requisição['logradouro']
+                except:
+                     messagebox.showerror("Error","CEP não encontrado!")
+
 
                 #PREENCHENDO CAMPO DE TEXTOS COM AS VARIAVEIS
                 CEPEntry.insert(0, cep)
@@ -57,6 +61,25 @@ class ENDERECO:
                 CidadeEntry.insert(0, Cidade)
                 BairroEntry.insert(0, Bairro)
                 LogradouroEntry.insert(0, Logradouro)
+
+        def cadastrar_endereco():
+            CEP = CEPEntry.get()
+            Estado = EstadoEntry.get()
+            Cidade = CidadeEntry.get()
+            Bairro = BairroEntry.get()
+            Logradouro = LogradouroEntry.get()
+            Numero = NumeroEntry.get()
+
+            if CEP and Estado and Cidade and Bairro and Logradouro and Numero:
+
+                create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero)
+
+                messagebox.showinfo("Succes","Endereco cadastrado com sucesso")
+                
+                #Limpa os campos depois do cadastro
+                limpar_Campos()
+            else:
+                messagebox.showerror("Error","Todos os campos deveme estar preenchidos")
 
             
         def limpar_Campos():
@@ -115,11 +138,14 @@ class ENDERECO:
         CEPButton = ctk.CTkButton(self.root,text = "CEP:",font= ("Georgia",18),width=80,command=cep)
         CEPButton.place(x = 40,y = 80)
         #BOTÃO DE VOLTAR:
-        voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=130, font=("Georgia", 16)) #AÇÃO PARA O BOTÃO
+        voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=120, font=("Georgia", 16)) #AÇÃO PARA O BOTÃO
         voltar_button.place(x=20, y = 355)
         #BOTÃO DE LIMPAR:
-        limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=207,command=limpar_Campos)
-        limparButton.place(x = 160, y = 35)
+        limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=150,command=limpar_Campos)
+        limparButton.place(x = 209, y = 35)
+        #BOTÃO DE CADASTRAR
+        cadastrarButton = ctk.CTkButton(self.root,text = "CADASTRAR",font= ("Georgia",14),width=150,command=cadastrar_endereco)
+        cadastrarButton.place( x = 48 , y = 35)
 
 
 
