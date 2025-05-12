@@ -10,9 +10,9 @@ from customtkinter import CTkImage
 
 class PECA:
 
-    def __init__(self,root,main_window): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
+    def __init__(self,root,main_window= None): 
         self.root = root
-        self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
+        self.main_window = main_window 
         ctk.set_appearance_mode("light")
         # self.root.title("CADASTRO DE PEÇAS") #Titulo
         self.root.geometry("740x580") #Tamanho da janela
@@ -567,10 +567,10 @@ class PECA:
         voltar_button.place(x=20, y=540)
 
 
-# if __name__ == "__main__":
-#     root = ctk.CTk()
-#     app = PECA(root)
-#     root.mainloop()
+if __name__ == "__main__":
+    root = ctk.CTk()
+    app = PECA(root)
+    root.mainloop()
     
 
 

@@ -8,9 +8,9 @@ import requests
 
 class ENDERECO:
 
-    def __init__(self,root,main_window,callback): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
+    def __init__(self,root,main_window,callback): 
         self.root = root
-        self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
+        self.main_window = main_window
         self.callback = callback
         ctk.set_appearance_mode("light")
         # self.root.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
@@ -76,7 +76,11 @@ class ENDERECO:
             Cidade = CidadeEntry.get()
             Bairro = BairroEntry.get()
             Logradouro = LogradouroEntry.get()
-            Numero = NumeroEntry.get()
+
+            try:
+                Numero = int(NumeroEntry.get())
+            except:
+                messagebox.showerror("Error", "Numero de enderço inválido")
 
             global endereco_completo,cod_endereco
 
@@ -109,7 +113,7 @@ class ENDERECO:
                         #Limpa os campos depois do cadastro
                         limpar_Campos()
                         # Chama a função da tela principal e fecha a janela
-                        self.callback(endereco_completo,cod_endereco)
+                        self.callback(endereco_completo,cod_endereco,CEP,Logradouro,Numero)
                     except Exception as e:
                         print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO
 
@@ -205,6 +209,6 @@ def valor_endereco_completo():
 
 if __name__ == "__main__":
     root = ctk.CTk()
-    app = ENDERECO(root,main_window=None)
+    app = ENDERECO(root,main_window=None,callback=None)
     root.mainloop()
     

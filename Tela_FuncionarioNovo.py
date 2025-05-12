@@ -4,7 +4,7 @@ from tkinter import messagebox,filedialog #filedialog abre janelas de seleção 
 from tkinter import ttk
 from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: converter em widgets para exibição 
 import io #Fluxo de bytes (transforma imagem em bytes)
-from Crud_novo import get_connection,selecionar_cargo,create_funcionario,update_funcionario,delete_funcionario
+from Crud_novo import verificacao_endereco,get_connection,selecionar_cargo,create_funcionario,update_funcionario,delete_funcionario
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
 from Endereco import ENDERECO
@@ -12,9 +12,9 @@ from Endereco import ENDERECO
 
 class FUNCIONARIO:
 
-    def __init__(self,root,main_window = None): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
+    def __init__(self,root,main_window = None): 
         self.root = root
-        self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
+        self.main_window = main_window 
         ctk.set_appearance_mode("light")
         # self.root.title("CADASTRO DE FUNCIONARIOS") #Titulo
         self.root.geometry("860x600") #Tamanho da janela
@@ -34,11 +34,6 @@ class FUNCIONARIO:
 
         #Criação de Widgets
         self.create_widgets()
-
-
-
-
-    
 
         
 
@@ -67,14 +62,20 @@ class FUNCIONARIO:
         app_endereco= ENDERECO(root_endereco, self.root , self.receber_endereco)  # self é a main_window aqui
         root_endereco.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
 
-    def receber_endereco(self, endereco_completo,cod_endereco):
+    def receber_endereco(self, endereco_completo,cod_endereco,CEP,Logradouro,Numero):
         # Esta função será chamada pela outra tela
+        self.endereco_completo = endereco_completo
+        self.cod_endereco = cod_endereco
+        self.CEP = CEP
+        self.Logradouro = Logradouro
+        self.Numero = Numero
+        print("print",self.CEP,self.Logradouro,self.Numero)
+
         self.entry_endereco.delete(0, ctk.END)
-        self.entry_endereco.insert(0, endereco_completo)
-        print(cod_endereco)
+        self.entry_endereco.insert(0, self.endereco_completo)
+        print(self.cod_endereco)
 
-        
-
+    
 
     def create_widgets(self):
 
@@ -134,7 +135,7 @@ class FUNCIONARIO:
             if item:
                 valores = tabela.item(item,"values")
                 Cod_Funcionario = valores[0]
-                cursor.execute("SELECT nome_func, telefone_func, email_func, cpf_func, endereco_func, cargo, salario, imagem, cod_func FROM funcionario WHERE ativo = TRUE and cod_func=%s", (Cod_Funcionario,))
+                cursor.execute("SELECT nome_func, telefone_func, email_func, cpf_func, endereco_func, cargo, salario, imagem, cod_func, cod_endereco FROM funcionario WHERE ativo = TRUE and cod_func=%s", (Cod_Funcionario,))
                 resultado = cursor.fetchone()
                 if resultado:
 
@@ -157,6 +158,8 @@ class FUNCIONARIO:
                     CargoCB.set(resultado[5])
                     SalarioEntry.insert(0, resultado[6])
                     CodigoEntry.insert(0, resultado[8])
+                    self.cod_endereco = resultado[9]
+                    print(self.cod_endereco)
 
 
                     global imagem_bytes,imagem_display
@@ -170,6 +173,7 @@ class FUNCIONARIO:
                     else:
                         imagem_label.configure(image=self.imagem_padrao,text = "")
                         imagem_label.image = self.imagem_padrao
+            
 
 
         #FUNÇÃO PARA CARREGAR IMAGEM:
@@ -189,12 +193,6 @@ class FUNCIONARIO:
                 messagebox.showwarning("Atenção","Imagem não selecionada")
 
 
-        def receber_endereco(self, cod_endereco, endereco_completo):
-            self.cod_endereco = cod_endereco #RECEBE O ENDERECO_ID
-            self.entry_endereco.delete(0, ctk.END) #Limpa o campo de texto
-            self.entry_endereco.insert(0, endereco_completo) #Preenche o campo de texto
-
-
             
         def cadastrar_funcionario():
             
@@ -206,19 +204,10 @@ class FUNCIONARIO:
             Endereco =  self.entry_endereco.get()
             Cargo = CargoCB.get()
             Salario = SalarioEntry.get()
+            CodEndereco = self.cod_endereco
 
-            #VERIFICAÇÕES DE SEGURANÇA
-
-            if "@" not in Email or "." not in Email:
-                messagebox.showerror("Error","E-mail Inválido")
-                return
-            if Cargo == "Selecione Um Cargo":
-                messagebox.showerror("Error","Cargo Inválido")
-                return
-            
-            #VERIFICANDO SE TODOS OS CAMPOS ESTÃO PREENCHIDOS:
-            if Nome and Telefone and Email and CPF and Endereco and Cargo and Salario:
-                create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes)
+            if Nome and Telefone and Email and CPF and Endereco and Cargo and Salario and CodEndereco:
+                create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco)
 
                 limparCampos()
 
@@ -241,6 +230,7 @@ class FUNCIONARIO:
             Cargo = CargoCB.get()
             Salario = SalarioEntry.get()
             Cod_Funcionario = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O COD_FUNC DA TABELA
+            CodEndereco = self.cod_endereco
 
             if "@" not in Email or "." not in Email:
                 messagebox.showerror("Error","E-mail Inválido")
@@ -260,8 +250,8 @@ class FUNCIONARIO:
                     
                 # Verificando se o funcionario foi encontrado
                 if funcionario_pesquisa:  # SE FOI ENCONTRADO...
-                    if Cod_Funcionario and Nome and Telefone and Email and CPF and Endereco and Cargo and Salario: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                        update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                    if Cod_Funcionario and Nome and Telefone and Email and CPF and Endereco and Cargo and Salario and CodEndereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
+                        update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
                             
                         limparCampos()
 
@@ -305,14 +295,14 @@ class FUNCIONARIO:
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem FROM funcionario WHERE ativo = TRUE and cod_func=%s OR nome_func=%s", (pesquisa,pesquisa)) 
+                cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE ativo = TRUE and cod_func=%s OR nome_func=%s", (pesquisa,pesquisa)) 
                 # ACIMA SELECIONA AS COLUNAS DA TABELA SE cod_func OU nome_func == pesquisa (o que foi digitado no campo de pesquisa)
                 # PERMITE PESQUISA POR NOME E CODIGO DO FUNCIONARIO
                 funcionario_pesquisa = cursor.fetchone()
                 
                 # Verificando se o funcionario foi encontrado
                 if funcionario_pesquisa:  # SE FOI ENCONTRADO...
-                    Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,Imagem_Pesquisa = funcionario_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
+                    Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,Imagem_Pesquisa,CodEndereco = funcionario_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
                 
                     limparCampos()
 
@@ -324,6 +314,7 @@ class FUNCIONARIO:
                     CPFEntry.insert(0, CPF)
                     self.entry_endereco.insert(0, Endereco)
                     SalarioEntry.insert(0, Salario)
+                    CodEndereco = CodEndereco
                     #Inserindo os dado na combo box:
                     CargoCB.set(Cargo)
 
@@ -341,7 +332,7 @@ class FUNCIONARIO:
 
                     messagebox.showinfo("Success", "Funcionário encontrado")
                 else:
-                    messagebox.showwarning("Error", "Funcionário não encontrado")
+                    messagebox.showerror("Error", "Funcionário não encontrado")
                     limparCampos()
 
             except Exception as e:
@@ -360,12 +351,17 @@ class FUNCIONARIO:
             tabela.tag_configure('oddrow', background='#f2f2f2')
             tabela.tag_configure('evenrow', background='#ffffff')
             
-            cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem FROM funcionario WHERE ativo = TRUE and cod_func=%s OR nome_func=%s OR nome_func LIKE %s ",(pesquisa,pesquisa,f"%{pesquisa}%"))
+            cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE ativo = TRUE and cod_func=%s OR nome_func=%s OR nome_func LIKE %s ",(pesquisa,pesquisa,f"%{pesquisa}%"))
             consulta_tabela = cursor.fetchall()
 
-            for i, linha in enumerate(consulta_tabela):
-                tag = 'evenrow' if i % 2 == 0 else 'oddrow'
-                tabela.insert("", "end", values=linha, tags=(tag,))
+            if consulta_tabela:
+
+                for i, linha in enumerate(consulta_tabela):
+                    tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+                    tabela.insert("", "end", values=linha, tags=(tag,))
+
+            else:
+                messagebox.showerror("Error", "Nenhum resultado encontrado")
 
 
 
@@ -440,8 +436,11 @@ class FUNCIONARIO:
             for linha in consulta_tabela:
                 tabela.insert("","end",values = "")
 
-
-
+        def bloquear_tudo_exceto_setas(event):
+            # Permitir apenas as teclas de seta
+            if event.keysym in ["Left", "Right", "Up", "Down"]:
+                return  # deixa passar
+            return "break"  # bloqueia tudo o resto
 
 
         #CRIANDO COMBO BOXS:
@@ -482,6 +481,8 @@ class FUNCIONARIO:
         EmailEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "E-mail do Funcionario")
         SalarioEntry = ctk.CTkEntry (self.root,width=207,font=("Georgia",14),placeholder_text = "Salario do Funcionario")
         self.entry_endereco = ctk.CTkEntry (self.root,width=207,font=("Georgia",14),placeholder_text = "Endereço do Funcionario")
+        # Bloqueia a digitação
+        self.entry_endereco.bind("<Key>", bloquear_tudo_exceto_setas)
         CodigoEntry = ctk.CTkEntry(self.root,width=148,font=("Georgia",14),placeholder_text = "Codigo do Funcionario")
         PesquisaEntry = ctk.CTkEntry(self.root,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Funcionário")
         PesquisaTabelaEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Funcionário na Tabela")

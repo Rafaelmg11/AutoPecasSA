@@ -95,20 +95,20 @@ def selecionar_cargo():
     conn.close()
     return cargos
 
-def create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes):
+def create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "INSERT INTO funcionario (nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem) VALUES ( %s, %s , %s, %s, %s, %s, %s,%s)"
-    cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes))
+    query = "INSERT INTO funcionario (nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco) VALUES ( %s, %s , %s, %s, %s, %s, %s,%s,%s)"
+    cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco))
     conn.commit ()
     cursor.close()
     conn.close()
 
-def update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes):
+def update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "UPDATE funcionario SET nome_func = %s, telefone_func = %s, email_func = %s, cpf_func = %s, endereco_func = %s, cargo = %s, salario = %s, imagem = %s WHERE cod_func = %s"
-    cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,Cod_Funcionario))
+    query = "UPDATE funcionario SET nome_func = %s, telefone_func = %s, email_func = %s, cpf_func = %s, endereco_func = %s, cargo = %s, salario = %s, imagem = %s, cod_endereco = %s WHERE cod_func = %s"
+    cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco,Cod_Funcionario))
     conn.commit()
     cursor.close()
     conn.close()
@@ -133,3 +133,14 @@ def create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
     cursor.close()
     conn.close()
     return cod_endereco
+
+def verificacao_endereco(CodEndereco):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "SELECT * FROM endereco_funcionario WHERE cod_endereco = %s"
+    cursor.execute(query,(CodEndereco))
+    vericacao = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return vericacao
+
