@@ -8,9 +8,10 @@ import requests
 
 class ENDERECO:
 
-    def __init__(self,root,main_window): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
+    def __init__(self,root,main_window,callback): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
         self.root = root
         self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
+        self.callback = callback
         ctk.set_appearance_mode("light")
         # self.root.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
         self.root.geometry("400x400") #Tamanho da janela
@@ -79,31 +80,52 @@ class ENDERECO:
 
             global endereco_completo,cod_endereco
 
-            if CEP and Estado and Cidade and Bairro and Logradouro and Numero:
-                
-                #Salva no banco e pega o cod_endereco
-                cod_endereco = create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero)
+            cep = CEPEntry.get()
+            cep= cep.replace("-","").replace(".","").replace(" ","") #Retirando caracteres indesejados e substituindo por espaços vazios
 
-                print(cod_endereco)
-
-                conn = get_connection()
-                cursor = conn.cursor()
-                try:
-                    #Faz uma consulta no banco 
-                    cursor.execute("SELECT CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado) as endereco_completo FROM endereco_funcionario WHERE cod_endereco = %s",(cod_endereco,))
-                    #Rcebe a consulta
-                    endereco_completo = cursor.fetchone()
-                    #Recebe a consulta (só pra tirar uma virgula que ficava no final pois é uma tupla)
-                    endereco_completo = endereco_completo[0]
-                    messagebox.showinfo("Succes","Endereco cadastrado com sucesso")
-                    print(endereco_completo)
-                    #Limpa os campos depois do cadastro
-                    limpar_Campos()
-                except Exception as e:
-                    print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO
-
+            #Verificação de Segurança
+            if len(cep) != 8 or not cep.isdigit(): #isdigit() verifica se é numero
+                messagebox.showerror("Error","CEP Inválido")
             else:
-                messagebox.showerror("Error","Todos os campos deveme estar preenchidos")
+
+                if CEP and Estado and Cidade and Bairro and Logradouro and Numero:
+                    
+                    #Salva no banco e pega o cod_endereco
+                    cod_endereco = create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero)
+
+                    print(cod_endereco)
+
+                    conn = get_connection()
+                    cursor = conn.cursor()
+                    try:
+                        #Faz uma consulta no banco 
+                        cursor.execute("SELECT CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado) as endereco_completo FROM endereco_funcionario WHERE cod_endereco = %s",(cod_endereco,))
+                        #Rcebe a consulta
+                        endereco_completo = cursor.fetchone()
+                        #Recebe a consulta (só pra tirar uma virgula que ficava no final pois é uma tupla)
+                        endereco_completo = endereco_completo[0]
+                        messagebox.showinfo("Succes","Endereco cadastrado com sucesso")
+                        print(endereco_completo)
+                        #Limpa os campos depois do cadastro
+                        limpar_Campos()
+                        # Chama a função da tela principal e fecha a janela
+                        self.callback(endereco_completo,cod_endereco)
+                    except Exception as e:
+                        print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO
+
+                else:
+                    messagebox.showerror("Error","Todos os campos deveme estar preenchidos")
+
+
+        #TESTES:
+        # def valor_cod_endereco():
+        #     global cod_endereco
+        #     print(cod_endereco)
+
+        # def valor_endereco_completo():
+        #     global endereco_completo
+        #     print(endereco_completo)
+        
 
             
         def limpar_Campos():
@@ -170,6 +192,14 @@ class ENDERECO:
         #BOTÃO DE CADASTRAR
         cadastrarButton = ctk.CTkButton(self.root,text = "CADASTRAR",font= ("Georgia",14),width=150,command=cadastrar_endereco)
         cadastrarButton.place( x = 48 , y = 35)
+
+def valor_cod_endereco():
+    global cod_endereco
+    return cod_endereco
+
+def valor_endereco_completo():
+    global endereco_completo
+    return endereco_completo
 
 
 

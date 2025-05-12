@@ -133,35 +133,3 @@ def create_endereco_func(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
     cursor.close()
     conn.close()
     return cod_endereco
-
-# def selecionar_enderecos_funcionarios():
-
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     query = "SELECT cod_endereco, CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado, ' / CEP: ',cep) FROM endereco_funcionario ORDER BY cidade,bairro" 
-#     cursor.execute(query)
-#     enderecos = cursor.fetchall()
-#     cursor.close()
-#     conn.close()
-#     return enderecos
-
-# def obter_cod_endereco(CEP,Numero,Logradouro):
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     query = ("SELECT cod_endereco FROM endereco_funcionario WHERE cep = %s AND numero = %s AND logradouro = %s")
-#     cursor.execute(query,(CEP,Numero,Logradouro))
-#     resultado = cursor.fetchone()
-#     cursor.close()
-#     conn.close()
-    return resultado[0] if resultado else None 
-
-# def endereco_completo(cod_endereco):
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     query = ("SELECT SELECT cod_endereco, CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado, ' / CEP: ',cep) FROM endereco_funcionario ORDER BY cidade,bairro")
-#     cursor.execute(query,(cod_endereco))
-#     resultado = cursor.fetchone()
-#     cursor.close()
-#     conn.close()
-#     return resultado[0] if resultado else None 
-

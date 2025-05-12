@@ -8,12 +8,13 @@ from Crud_novo import get_connection,selecionar_cargo,create_funcionario,update_
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
 from Endereco import ENDERECO
+# from Endereco import valor_cod_endereco,valor_endereco_completo #TESTES
 
 class FUNCIONARIO:
 
-    def __init__(self,root): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
+    def __init__(self,root,main_window = None): #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE TIRAR O "main_window"  ,main_window
         self.root = root
-        #self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
+        self.main_window = main_window #PARA EXECUTAR ESSE CODIGO SEPAPARADEMENTE DEVE COMENTAR ESSA LINHA DE CODIGO IRA DAR UM ERROR NO BOTAO VOLTAR
         ctk.set_appearance_mode("light")
         # self.root.title("CADASTRO DE FUNCIONARIOS") #Titulo
         self.root.geometry("860x600") #Tamanho da janela
@@ -34,6 +35,9 @@ class FUNCIONARIO:
         #Criação de Widgets
         self.create_widgets()
 
+
+
+
     
 
         
@@ -47,6 +51,30 @@ class FUNCIONARIO:
             database = "autopecassa_db"
         )
         cursor = conn.cursor()
+
+
+
+    def abrir_tela_endereco(self):
+
+        #Oculta a janela
+        self.root.withdraw()
+
+        #Cria uma nova janela tkinter para endereco de funcionionario
+        ctk.set_appearance_mode("ligth")
+        root_endereco = ctk.CTkToplevel(self.root)
+        root_endereco.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
+        root_endereco.geometry("400x400") #Tamanho da janela
+        app_endereco= ENDERECO(root_endereco, self.root , self.receber_endereco)  # self é a main_window aqui
+        root_endereco.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
+
+    def receber_endereco(self, endereco_completo,cod_endereco):
+        # Esta função será chamada pela outra tela
+        self.entry_endereco.delete(0, ctk.END)
+        self.entry_endereco.insert(0, endereco_completo)
+        print(cod_endereco)
+
+        
+
 
     def create_widgets(self):
 
@@ -64,18 +92,6 @@ class FUNCIONARIO:
         imagem_label.place(relx=0.5, rely=0.5,anchor = "center")
 
 
-        def abrir_tela_endereco():
-
-            #Oculta a janela
-            self.root.withdraw()
-
-            #Cria uma nova janela tkinter para endereco de funcionionario
-            ctk.set_appearance_mode("ligth")
-            root_endereco = ctk.CTkToplevel(self.root)
-            root_endereco.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
-            root_endereco.geometry("400x400") #Tamanho da janela
-            app_endereco= ENDERECO(root_endereco, self.root)  # self é a main_window aqui
-            root.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
 
 
         def reabrir_janela(self):
@@ -127,7 +143,7 @@ class FUNCIONARIO:
                     CPFEntry.delete(0, ctk.END)
                     TelefoneEntry.delete(0, ctk.END)
                     EmailEntry.delete(0, ctk.END)
-                    EnderecoEntry.delete(0, ctk.END)
+                    self.entry_endereco.delete(0, ctk.END)
                     SalarioEntry.delete(0, ctk.END)
                     CodigoEntry.delete(0, ctk.END)
     
@@ -137,7 +153,7 @@ class FUNCIONARIO:
                     TelefoneEntry.insert(0, resultado[1])
                     EmailEntry.insert(0, resultado[2])
                     CPFEntry.insert(0, resultado[3])
-                    EnderecoEntry.insert(0, resultado[4])
+                    self.entry_endereco.insert(0, resultado[4])
                     CargoCB.set(resultado[5])
                     SalarioEntry.insert(0, resultado[6])
                     CodigoEntry.insert(0, resultado[8])
@@ -175,8 +191,8 @@ class FUNCIONARIO:
 
         def receber_endereco(self, cod_endereco, endereco_completo):
             self.cod_endereco = cod_endereco #RECEBE O ENDERECO_ID
-            EnderecoEntry.delete(0, ctk.END) #Limpa o campo de texto
-            EnderecoEntry.insert(0, endereco_completo) #Preenche o campo de texto
+            self.entry_endereco.delete(0, ctk.END) #Limpa o campo de texto
+            self.entry_endereco.insert(0, endereco_completo) #Preenche o campo de texto
 
 
             
@@ -187,7 +203,7 @@ class FUNCIONARIO:
             CPF = CPFEntry.get()
             Telefone = TelefoneEntry.get()
             Email = EmailEntry.get()
-            Endereco = EnderecoEntry.get()
+            Endereco =  self.entry_endereco.get()
             Cargo = CargoCB.get()
             Salario = SalarioEntry.get()
 
@@ -221,7 +237,7 @@ class FUNCIONARIO:
             CPF = CPFEntry.get()
             Telefone = TelefoneEntry.get()
             Email = EmailEntry.get()
-            Endereco = EnderecoEntry.get()
+            Endereco =  self.entry_endereco.get()
             Cargo = CargoCB.get()
             Salario = SalarioEntry.get()
             Cod_Funcionario = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O COD_FUNC DA TABELA
@@ -306,7 +322,7 @@ class FUNCIONARIO:
                     TelefoneEntry.insert(0, Telefone)
                     EmailEntry.insert(0, Email)
                     CPFEntry.insert(0, CPF)
-                    EnderecoEntry.insert(0, Endereco)
+                    self.entry_endereco.insert(0, Endereco)
                     SalarioEntry.insert(0, Salario)
                     #Inserindo os dado na combo box:
                     CargoCB.set(Cargo)
@@ -386,8 +402,8 @@ class FUNCIONARIO:
             TelefoneEntry.focus()
             EmailEntry.delete(0, ctk.END)
             EmailEntry.focus()
-            EnderecoEntry.delete(0, ctk.END)
-            EnderecoEntry.focus()
+            self.entry_endereco.delete(0, ctk.END)
+            self.entry_endereco.focus()
             SalarioEntry.delete(0, ctk.END)
             SalarioEntry.focus()
             CodigoEntry.delete(0, ctk.END)
@@ -398,6 +414,13 @@ class FUNCIONARIO:
             PesquisaTabelaEntry.focus()
             
             FocusIvisivelEntry.focus()
+
+            #TESTES:
+            # cod_endereco = valor_cod_endereco()
+            # print(cod_endereco)
+            # endeco_completo = valor_endereco_completo()
+            # print(endeco_completo)
+       
             
 
             global imagem_bytes
@@ -458,8 +481,7 @@ class FUNCIONARIO:
         TelefoneEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Telefone do Funcionario")
         EmailEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "E-mail do Funcionario")
         SalarioEntry = ctk.CTkEntry (self.root,width=207,font=("Georgia",14),placeholder_text = "Salario do Funcionario")
-        global EnderecoEntry
-        EnderecoEntry = ctk.CTkEntry (self.root,width=207,font=("Georgia",14),placeholder_text = "Endereço do Funcionario")
+        self.entry_endereco = ctk.CTkEntry (self.root,width=207,font=("Georgia",14),placeholder_text = "Endereço do Funcionario")
         CodigoEntry = ctk.CTkEntry(self.root,width=148,font=("Georgia",14),placeholder_text = "Codigo do Funcionario")
         PesquisaEntry = ctk.CTkEntry(self.root,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Funcionário")
         PesquisaTabelaEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Funcionário na Tabela")
@@ -472,7 +494,7 @@ class FUNCIONARIO:
         TelefoneEntry.place(x =270, y = 160)
         EmailEntry.place(x = 270, y =200)
         SalarioEntry.place(x = 640, y = 160)
-        EnderecoEntry.place(x = 640 , y = 80)
+        self.entry_endereco.place(x = 640 , y = 80)
         CodigoEntry.place(x = 700, y = 200)
         PesquisaTabelaEntry.place(x = 265, y =315)
         PesquisaEntry.place(x = 130,y = 25)
@@ -530,7 +552,7 @@ class FUNCIONARIO:
 
         #BOTÕES:
         #BOTÃO DE ENDEREÇO
-        EnderecoButton = ctk.CTkButton (self.root, text= "Endereço:",font= ("Georgia",19.5),width=10, command=abrir_tela_endereco)
+        EnderecoButton = ctk.CTkButton (self.root, text= "Endereço:",font= ("Georgia",19.5),width=10, command=self.abrir_tela_endereco)
         EnderecoButton.place (x=525, y = 80)
         #BOTÃO DE CADASTRO
         CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=160, command=cadastrar_funcionario)
