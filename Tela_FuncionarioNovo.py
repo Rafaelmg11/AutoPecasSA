@@ -55,6 +55,13 @@ class FUNCIONARIO:
         #Oculta a janela
         self.root.withdraw()
 
+        logradouro = None
+        numero = None
+        bairro = None
+        cidade = None
+        estado = None
+        self.cod_endereco = None
+
         #Cria uma nova janela tkinter para endereco de funcionionario
         Endereco = self.entry_endereco.get()
 
@@ -306,11 +313,18 @@ class FUNCIONARIO:
                 cursor.execute("SELECT * FROM funcionario WHERE ativo = TRUE and cod_func=%s ",(Cod_Funcionario,)) 
                 funcionario_pesquisa = cursor.fetchone()
                 
+                
+                
                 # Verificando se o funcionario foi encontrado
                 if funcionario_pesquisa:  # SE FOI ENCONTRADO...
+                    cursor.execute("SELECT cod_endereco FROM funcionario WHERE ativo = TRUE AND cod_func=%s",(Cod_Funcionario,))#SELECIONANDO O COD_ENDERECO
+                    cod_endereco_consulta = cursor.fetchone()#RECEBENDO O COD_ENDERECO
                     delete_funcionario(Cod_Funcionario) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
-
+                    cursor.execute("UPDATE endereco_funcionario SET ativo = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
                     limparCampos()
+                    conn.commit()
+                    cursor.close()
+                    conn.close()
                     messagebox.showinfo("Success","Funcionário excluido com sucesso")
                 else:
                     messagebox.showerror("Error","Codigo de Funcionário não existe")

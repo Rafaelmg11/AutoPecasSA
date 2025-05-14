@@ -143,4 +143,3 @@ def verificacao_endereco(CodEndereco):
     cursor.close()
     conn.close()
     return vericacao
-
