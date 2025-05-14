@@ -144,32 +144,3 @@ def verificacao_endereco(CodEndereco):
     conn.close()
     return vericacao
 
-def update_endereco(CEP,Estado,Cidade,Bairro,Logradouro,Numero,cod_endereco):
-    conn = get_connection()
-    cursor = conn.cursor()
-    query = "UPDATE endereco_funcionario SET cep = %s, estado = %s, cidade = %s, bairro = %s, logradouro = %s, numero = %s WHERE cod_endereco = %s"
-    cursor.execute(query,(CEP,Estado,Cidade,Bairro,Logradouro,Numero,cod_endereco))
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-def inner_join(CodEndereco):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT ef.cep, ef.estado , ef.cidade, ef.bairro, ef. logradouro, ef.numero from endereco_funcionario as ef " \
-    "inner join funcionario " \
-    "on ef.cod_endereco = funcionario.cod_endereco" \
-    "WHERE cod_endereco =%s",(CodEndereco))
-    resultado = cursor.fetchone()
-    return resultado
-
-def update_endereco_funcionario(endereco_formatado,cod_endereco):
-    conn = get_connection()
-    cursor = conn.cursor()
-    query = "UPDATE funcionario SET endereco_func = %s WHERE cod_endereco = %s"
-    cursor.execute(query,(endereco_formatado,cod_endereco))
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-

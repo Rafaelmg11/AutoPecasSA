@@ -12,9 +12,10 @@ from Endereco import ENDERECO
 
 class FUNCIONARIO:
 
-    def __init__(self,root,main_window = None): 
+    def __init__(self,root,main_window = None,callback = None): 
         self.root = root
         self.main_window = main_window 
+        self.callback = callback
         ctk.set_appearance_mode("light")
         # self.root.title("CADASTRO DE FUNCIONARIOS") #Titulo
         self.root.geometry("860x600") #Tamanho da janela
@@ -55,11 +56,40 @@ class FUNCIONARIO:
         self.root.withdraw()
 
         #Cria uma nova janela tkinter para endereco de funcionionario
+        Endereco = self.entry_endereco.get()
+
+        try:
+
+            #Separando Estado do Resto pois é com "-"
+            partes = Endereco.split("-")
+            cidade = partes[0].split(",")[-1].strip() #Pega o ultimo item do indice 0 da lista (cidade)
+            estado = partes[1].strip()
+            #Restante:
+            logradouro_numero_bairro = partes[0].split(",") #Lista recebendo toda a parte do indice 0
+            logradouro = logradouro_numero_bairro[0].strip()
+            numero = logradouro_numero_bairro[1].strip()
+            bairro = logradouro_numero_bairro[2].strip()
+
+            
+            # Exibindo as variáveis separadas
+            print("Logradouro:", logradouro)
+            print("Número:", numero)
+            print("Bairro:", bairro)
+            print("Cidade:", cidade)
+            print("Estado:", estado)
+
+            self.callback(logradouro,numero,bairro,cidade,estado)
+
+
+
+        except:
+            pass #Continua o código normalmente se except
+
         ctk.set_appearance_mode("ligth")
         root_endereco = ctk.CTkToplevel(self.root)
         root_endereco.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
         root_endereco.geometry("650x650") #Tamanho da janela
-        app_endereco= ENDERECO(root_endereco, self.root , self.receber_endereco)  # self é a main_window aqui
+        app_endereco= ENDERECO(root_endereco, self.root , self.receber_endereco,logradouro,numero,bairro,cidade,estado,self.cod_endereco )  # self é a main_window aqui
         root_endereco.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
 
     def receber_endereco(self, endereco_completo,cod_endereco,CEP,Logradouro,Numero):

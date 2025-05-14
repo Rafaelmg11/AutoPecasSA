@@ -2,16 +2,27 @@ import customtkinter as ctk
 import mysql.connector
 from tkinter import messagebox
 from tkinter import ttk
-from Crud_novo import get_connection,create_endereco_func,update_endereco,inner_join,update_endereco_funcionario
+from Crud_novo import get_connection,create_endereco_func
 from customtkinter import CTkImage
 import requests
 
 class ENDERECO:
 
-    def __init__(self,root,main_window,callback): 
+    def __init__(self,root,main_window,callback,logradouro='',numero='',bairro='',cidade='',estado='',cod_endereco=''): 
         self.root = root
         self.main_window = main_window
         self.callback = callback
+
+        #PUXANDO VARIAVEIS DE FUNCIONARIO
+        self.logradouro = logradouro
+        self.numero = numero
+        self.bairro = bairro
+        self.cidade = cidade
+        self.estado = estado
+        self.cod_endereco = cod_endereco
+        print(cod_endereco)
+
+        #CRIANDO JANELA
         ctk.set_appearance_mode("light")
         # self.root.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
         self.root.geometry("650x650") #Tamanho da janela
@@ -19,9 +30,33 @@ class ENDERECO:
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
         #Criação de Widgets
         self.create_widgets()
+        self.preencher_campos()
 
-        global endereco_completo, cod_endereco
+        global endereco_completo
+    def preencher_campos(self):
+        self.LogradouroEntry.delete(0, ctk.END)
+        self.LogradouroEntry.insert(0, self.logradouro)
+        self.NumeroEntry.delete(0, ctk.END)
+        self.NumeroEntry.insert(0, self.numero)
+        self.CidadeEntry.delete(0, ctk.END)
+        self.CidadeEntry.insert(0, self.cidade)
+        self.BairroEntry.delete(0, ctk.END)
+        self.BairroEntry.insert(0, self.bairro)
+        self.EstadoEntry.delete(0, ctk.END)
+        self.EstadoEntry.insert(0, self.estado)
 
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = "SELECT cep FROM endereco_funcionario WHERE ativo = TRUE and estado = %s and cidade = %s and bairro = %s and logradouro = %s and numero = %s"
+        cursor.execute(query,(self.estado,self.cidade,self.bairro,self.logradouro,self.numero))
+        self.cep = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        self.CEPEntry.delete(0, ctk.END)
+        self.CEPEntry.insert(0, self.cep)
+
+        
 
     def create_widgets(self):
 
@@ -32,7 +67,7 @@ class ENDERECO:
         def cep():
 
             
-            cep = CEPEntry.get()
+            cep = self.CEPEntry.get()
             cep= cep.replace("-","").replace(".","").replace(" ","") #Retirando caracteres indesejados e substituindo por espaços vazios
 
             #Verificação de Segurança
@@ -63,11 +98,11 @@ class ENDERECO:
 
 
                 #PREENCHENDO CAMPO DE TEXTOS COM AS VARIAVEIS
-                CEPEntry.insert(0, cep)
-                EstadoEntry.insert(0, Estado)
-                CidadeEntry.insert(0, Cidade)
-                BairroEntry.insert(0, Bairro)
-                LogradouroEntry.insert(0, Logradouro)
+                self.CEPEntry.insert(0, cep)
+                self.EstadoEntry.insert(0, Estado)
+                self.CidadeEntry.insert(0, Cidade)
+                self.BairroEntry.insert(0, Bairro)
+                self.LogradouroEntry.insert(0, Logradouro)
 
         def reabrir_janela():
             self.root.destroy()  # Fecha a janela de endereco, liberando recursos
@@ -82,7 +117,7 @@ class ENDERECO:
             if item:
                 valores = tabela.item(item,"values")
                 Cod_Endereco = valores[0]
-                cursor.execute("SELECT cep,estado,cidade,bairro,logradouro,numero, cod_endereco FROM endereco_funcionario WHERE cod_endereco = %s", (Cod_Endereco,))
+                cursor.execute("SELECT cep,estado,cidade,bairro,logradouro,numero, cod_endereco FROM endereco_funcionario WHERE ativo = TRUE and cod_endereco = %s", (Cod_Endereco,))
                 resultado = cursor.fetchone()
                 if resultado:
 
@@ -90,31 +125,31 @@ class ENDERECO:
     
 
                     #INSERINDO DADOS NOS CAMPOS
-                    CEPEntry.insert(0, resultado[0])
-                    EstadoEntry.insert(0, resultado[1])
-                    CidadeEntry.insert(0, resultado[2])
-                    BairroEntry.insert(0, resultado[3])
-                    LogradouroEntry.insert(0, resultado[4])
-                    NumeroEntry.insert(0, resultado[5])
+                    self.CEPEntry.insert(0, resultado[0])
+                    self.EstadoEntry.insert(0, resultado[1])
+                    self.CidadeEntry.insert(0, resultado[2])
+                    self.BairroEntry.insert(0, resultado[3])
+                    self.LogradouroEntry.insert(0, resultado[4])
+                    self.NumeroEntry.insert(0, resultado[5])
                     global cod_endereco
                     cod_endereco = resultado[6]
 
 
         def cadastrar_endereco():
-            CEP = CEPEntry.get()
-            Estado = EstadoEntry.get()
-            Cidade = CidadeEntry.get()
-            Bairro = BairroEntry.get()
-            Logradouro = LogradouroEntry.get()
+            CEP = self.CEPEntry.get()
+            Estado = self.EstadoEntry.get()
+            Cidade = self.CidadeEntry.get()
+            Bairro = self.BairroEntry.get()
+            Logradouro = self.LogradouroEntry.get()
 
             try:
-                Numero = int(NumeroEntry.get())
+                Numero = int(self.NumeroEntry.get())
             except:
                 messagebox.showerror("Error", "Numero de enderço inválido")
 
             global endereco_completo,cod_endereco
 
-            cep = CEPEntry.get()
+            cep = self.CEPEntry.get()
             cep= cep.replace("-","").replace(".","").replace(" ","") #Retirando caracteres indesejados e substituindo por espaços vazios
 
             #Verificação de Segurança
@@ -133,7 +168,7 @@ class ENDERECO:
                     cursor = conn.cursor()
                     try:
                         #Faz uma consulta no banco 
-                        cursor.execute("SELECT CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado) as endereco_completo FROM endereco_funcionario WHERE cod_endereco = %s",(cod_endereco,))
+                        cursor.execute("SELECT CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado) as endereco_completo FROM endereco_funcionario WHERE ativo = TRUE and cod_endereco = %s",(cod_endereco,))
                         #Rcebe a consulta
                         endereco_completo = cursor.fetchone()
                         #Recebe a consulta (só pra tirar uma virgula que ficava no final pois é uma tupla)
@@ -144,6 +179,10 @@ class ENDERECO:
                         limpar_Campos()
                         # Chama a função da tela principal e fecha a janela
                         self.callback(endereco_completo,cod_endereco,CEP,Logradouro,Numero)
+
+                        self.root.destroy()  # Fecha a janela de endereco, liberando recursos
+                        self.main_window.deiconify()  # Reexibe a janela principal
+
                     except Exception as e:
                         print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO
 
@@ -156,21 +195,23 @@ class ENDERECO:
 
         def alterar_endereco():
 
-            CEP = CEPEntry.get()
-            Estado = EstadoEntry.get()
-            Cidade = CidadeEntry.get()
-            Bairro = BairroEntry.get()
-            Logradouro = LogradouroEntry.get()
+            cod_endereco = self.cod_endereco
+
+            CEP = self.CEPEntry.get()
+            Estado = self.EstadoEntry.get()
+            Cidade = self.CidadeEntry.get()
+            Bairro = self.BairroEntry.get()
+            Logradouro = self.LogradouroEntry.get()
 
             try:
-                Numero = int(NumeroEntry.get())
+                Numero = int(self.NumeroEntry.get())
             except:
                 messagebox.showerror("Error", "Numero de enderço inválido")
 
-            global endereco_completo,cod_endereco
+            global endereco_completo
             print(cod_endereco)
 
-            cep = CEPEntry.get()
+            cep = self.CEPEntry.get()
             cep= cep.replace("-","").replace(".","").replace(" ","") #Retirando caracteres indesejados e substituindo por espaços vazios
 
             #Verificação de Segurança
@@ -182,37 +223,52 @@ class ENDERECO:
                 cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
                 try:
                     # CONSULTA NO BANCO
-                    cursor.execute("SELECT * FROM endereco_funcionario WHERE cod_endereco=%s ",(cod_endereco,))  
+                    cursor.execute("SELECT * FROM endereco_funcionario WHERE ativo = TRUE and cod_endereco=%s ",(cod_endereco,))  
                     endereco_pesquisa = cursor.fetchone()
                         
                     # Verificando se o funcionario foi encontrado
                     if endereco_pesquisa:  # SE FOI ENCONTRADO...
                         if CEP and Estado and Cidade and Bairro and Logradouro and Numero and cod_endereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                            update_endereco(CEP,Estado,Cidade,Bairro,Logradouro,Numero,cod_endereco) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                            query = "UPDATE endereco_funcionario SET cep = %s, estado = %s, cidade = %s, bairro = %s, logradouro = %s, numero = %s WHERE ativo = TRUE and cod_endereco = %s"
+                            cursor.execute(query,(CEP,Estado,Cidade,Bairro,Logradouro,Numero,cod_endereco)) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
                             
 
                             cod_endereco_tupla = (cod_endereco,)
 
 
-                            cursor.execute("SELECT ef.estado , ef.cidade, ef.bairro, ef.logradouro, ef.numero from endereco_funcionario as ef " \
-                            "inner join funcionario " \
-                            "on ef.cod_endereco = funcionario.cod_endereco " \
-                            "WHERE funcionario.cod_endereco =%s",(cod_endereco_tupla))
+                            cursor.execute("SELECT estado,cidade,bairro,logradouro,numero FROM endereco_funcionario WHERE ativo = TRUE and cod_endereco = %s",(cod_endereco_tupla))
 
                             endereco_completo = cursor.fetchone()
 
+                          
+
                             # Desempacotar os dados da tupla
                             estado, cidade, bairro, logradouro, numero = endereco_completo
-                            endereco_formatado = f"{logradouro}, {numero} - {bairro}, {cidade} - {estado}, CEP: {cep}"
+                            endereco_formatado = f"{logradouro}, {numero} , {bairro}, {cidade} - {estado}"
 
                             print(endereco_formatado)
 
-                            update_endereco_funcionario(endereco_formatado,cod_endereco)
+                            query = "UPDATE funcionario SET endereco_func = %s WHERE cod_endereco = %s"
+                            cursor.execute(query,(endereco_formatado,cod_endereco))
 
+                            endereco_completo = endereco_formatado
+
+                            # Chama a função da tela principal e fecha a janela
+                            self.callback(endereco_completo,cod_endereco,CEP,Logradouro,Numero)
+
+    
+                     
+                            
                                 
+                            conn.commit()
+                            
+
                             limpar_Campos()
 
                             messagebox.showinfo("Success","Endereço alterado com sucesso!")
+
+                            self.root.destroy()  # Fecha a janela de endereco, liberando recursos
+                            self.main_window.deiconify()  # Reexibe a janela principal
 
                         else:
                             messagebox.showerror("Error","Todos os campos são obrigatórios")
@@ -236,18 +292,18 @@ class ENDERECO:
 
             
         def limpar_Campos():
-            CEPEntry.delete(0, ctk.END)
-            CEPEntry.focus()
-            EstadoEntry.delete(0, ctk.END)
-            EstadoEntry.focus()
-            CidadeEntry.delete(0, ctk.END)
-            CidadeEntry.focus()
-            BairroEntry.delete(0, ctk.END)
-            BairroEntry.focus()
-            LogradouroEntry.delete(0, ctk.END)
-            LogradouroEntry.focus()
-            NumeroEntry.delete(0, ctk.END)
-            NumeroEntry.focus()
+            self.CEPEntry.delete(0, ctk.END)
+            self.CEPEntry.focus()
+            self.EstadoEntry.delete(0, ctk.END)
+            self.EstadoEntry.focus()
+            self.CidadeEntry.delete(0, ctk.END)
+            self.CidadeEntry.focus()
+            self.BairroEntry.delete(0, ctk.END)
+            self.BairroEntry.focus()
+            self.LogradouroEntry.delete(0, ctk.END)
+            self.LogradouroEntry.focus()
+            self.NumeroEntry.delete(0, ctk.END)
+            self.NumeroEntry.focus()
             FocusEntry.focus()
 
             #TABELA
@@ -255,7 +311,7 @@ class ENDERECO:
             cursor = conn.cursor()
             for linha in tabela.get_children():
                 tabela.delete(linha)
-            cursor.execute("SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario")
+            cursor.execute("SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario WHERE ativo = TRUE")
             consulta_tabela = cursor.fetchall()
 
             for linha in consulta_tabela:
@@ -272,7 +328,7 @@ class ENDERECO:
             tabela.tag_configure('oddrow', background='white')  # Linha cinza clara
             tabela.tag_configure('evenrow', background='#DBE1FF')  # Linha branca
 
-            cursor.execute(" SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario")
+            cursor.execute(" SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario WHERE ativo = TRUE")
             consulta_tabela = cursor.fetchall()
 
             for i, linha in enumerate(consulta_tabela):
@@ -298,23 +354,23 @@ class ENDERECO:
         NumeroLabel.place(x = 40, y = 280)
 
         #CRIANDO CAMPOS DE ENTRADA
-        CEPEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o CEP")
-        EstadoEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Estado")
-        CidadeEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite a Cidade")
-        BairroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Bairro")
-        LogradouroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Logradouro")
-        NumeroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Número")
+        self.CEPEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o CEP")
+        self.EstadoEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Estado")
+        self.CidadeEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite a Cidade")
+        self.BairroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Bairro")
+        self.LogradouroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Logradouro")
+        self.NumeroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Número")
         PesquisaTabelantry = ctk.CTkEntry(self.root,width=310,font=("Georgia",14),placeholder_text = "Pesquisa de Endereço")
         FocusEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Focus")
      
 
         #POSICIONANDO OS CAMPOS DE ENTRADAS:
-        CEPEntry.place(x = 160, y = 80)
-        EstadoEntry.place(x = 160, y = 120)
-        CidadeEntry.place(x = 160, y = 160)
-        BairroEntry.place(x = 160, y = 200)
-        LogradouroEntry.place(x = 160, y = 240)
-        NumeroEntry.place(x = 160, y = 280)
+        self.CEPEntry.place(x = 160, y = 80)
+        self.EstadoEntry.place(x = 160, y = 120)
+        self.CidadeEntry.place(x = 160, y = 160)
+        self.BairroEntry.place(x = 160, y = 200)
+        self.LogradouroEntry.place(x = 160, y = 240)
+        self.NumeroEntry.place(x = 160, y = 280)
         PesquisaTabelantry.place(x = 165, y = 365)
         FocusEntry.place(x = 10000, y = 10000)
 
