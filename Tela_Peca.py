@@ -403,6 +403,7 @@ class PECA:
             PesquisaEntry.focus()
             PesquisaTabelaEntry.delete(0, ctk.END)
             PesquisaTabelaEntry.focus()
+            cod_fornecedor_selecionado = None
             
             FocusIvisivelEntry.focus()
             
@@ -425,6 +426,14 @@ class PECA:
                 tabela.insert("","end",values = "")
 
 
+        def bloquear_tudo_exceto_setas(event):
+            # Permitir apenas as teclas de seta
+            if event.keysym in ["Left", "Right", "Up", "Down"]:
+                return  # deixa passar
+            return "break"  # bloqueia tudo o resto
+
+
+
 
 
 
@@ -440,6 +449,7 @@ class PECA:
         TipoDePecaCB.set("Selecione Um Tipo") #FRASE DO FRONT END INICIAL
         TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
         TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
+        TipoDePecaCB.bind("<Key>", bloquear_tudo_exceto_setas)
 
 
         fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES
@@ -449,6 +459,7 @@ class PECA:
         fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
         fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
         fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
+        fornecedorCB.bind("<Key>", bloquear_tudo_exceto_setas)
 
         #CRIANDO LabelS:
         TipoDePecaLabel =ctk.CTkLabel(self.root,text = "Tipo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 

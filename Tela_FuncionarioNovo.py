@@ -243,14 +243,18 @@ class FUNCIONARIO:
             Salario = SalarioEntry.get()
             CodEndereco = self.cod_endereco
 
-            if Nome and Telefone and Email and CPF and Endereco and Cargo and Salario and CodEndereco:
-                create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco)
-
-                limparCampos()
-
-                messagebox.showinfo("Success","Funcionário cadastrado com sucesso!")
+            if Cargo == "Selecione Um Cargo":
+                messagebox.showerror("Error","Cargo Inválido")
             else:
-                messagebox.showerror("Error","Todos os campos são obrigatórios!")
+
+                if Nome and Telefone and Email and CPF and Endereco and Cargo and Salario and CodEndereco:
+                    create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco)
+
+                    limparCampos()
+
+                    messagebox.showinfo("Success","Funcionário cadastrado com sucesso!")
+                else:
+                    messagebox.showerror("Error","Todos os campos são obrigatórios!")
 
 
         #FUNÇÃO DE ALTERAR FUNCIONARIO:
