@@ -2,7 +2,7 @@ import customtkinter as ctk
 import mysql.connector
 from tkinter import messagebox
 from tkinter import ttk
-from Crud_novo import get_connection,create_endereco_func
+from Crud_novo import get_connection,create_endereco_func,update_endereco,inner_join,update_endereco_funcionario
 from customtkinter import CTkImage
 import requests
 
@@ -14,7 +14,7 @@ class ENDERECO:
         self.callback = callback
         ctk.set_appearance_mode("light")
         # self.root.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
-        self.root.geometry("400x400") #Tamanho da janela
+        self.root.geometry("650x650") #Tamanho da janela
         self.root.configure(fg_color = "#5424A2") #Cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
         #Criação de Widgets
@@ -24,6 +24,10 @@ class ENDERECO:
 
 
     def create_widgets(self):
+
+        
+        frame_tabela = ctk.CTkFrame (self.root,width= 630,height = 200, fg_color= "#5424A2")
+        frame_tabela.place(x = 15, y = 390)
 
         def cep():
 
@@ -68,6 +72,32 @@ class ENDERECO:
         def reabrir_janela():
             self.root.destroy()  # Fecha a janela de endereco, liberando recursos
             self.main_window.deiconify()  # Reexibe a janela principal
+
+
+        def selecionar_linha(event):
+            conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
+            cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
+
+            item = tabela.selection()
+            if item:
+                valores = tabela.item(item,"values")
+                Cod_Endereco = valores[0]
+                cursor.execute("SELECT cep,estado,cidade,bairro,logradouro,numero, cod_endereco FROM endereco_funcionario WHERE cod_endereco = %s", (Cod_Endereco,))
+                resultado = cursor.fetchone()
+                if resultado:
+
+                    limpar_Campos()
+    
+
+                    #INSERINDO DADOS NOS CAMPOS
+                    CEPEntry.insert(0, resultado[0])
+                    EstadoEntry.insert(0, resultado[1])
+                    CidadeEntry.insert(0, resultado[2])
+                    BairroEntry.insert(0, resultado[3])
+                    LogradouroEntry.insert(0, resultado[4])
+                    NumeroEntry.insert(0, resultado[5])
+                    global cod_endereco
+                    cod_endereco = resultado[6]
 
 
         def cadastrar_endereco():
@@ -121,6 +151,79 @@ class ENDERECO:
                     messagebox.showerror("Error","Todos os campos deveme estar preenchidos")
 
 
+
+
+
+        def alterar_endereco():
+
+            CEP = CEPEntry.get()
+            Estado = EstadoEntry.get()
+            Cidade = CidadeEntry.get()
+            Bairro = BairroEntry.get()
+            Logradouro = LogradouroEntry.get()
+
+            try:
+                Numero = int(NumeroEntry.get())
+            except:
+                messagebox.showerror("Error", "Numero de enderço inválido")
+
+            global endereco_completo,cod_endereco
+            print(cod_endereco)
+
+            cep = CEPEntry.get()
+            cep= cep.replace("-","").replace(".","").replace(" ","") #Retirando caracteres indesejados e substituindo por espaços vazios
+
+            #Verificação de Segurança
+            if len(cep) != 8 or not cep.isdigit(): #isdigit() verifica se é numero
+                messagebox.showerror("Error","CEP Inválido")
+            else:
+                #CONEXÃO COM O BANCO DE DADOS
+                conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
+                cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
+                try:
+                    # CONSULTA NO BANCO
+                    cursor.execute("SELECT * FROM endereco_funcionario WHERE cod_endereco=%s ",(cod_endereco,))  
+                    endereco_pesquisa = cursor.fetchone()
+                        
+                    # Verificando se o funcionario foi encontrado
+                    if endereco_pesquisa:  # SE FOI ENCONTRADO...
+                        if CEP and Estado and Cidade and Bairro and Logradouro and Numero and cod_endereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
+                            update_endereco(CEP,Estado,Cidade,Bairro,Logradouro,Numero,cod_endereco) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                            
+
+                            cod_endereco_tupla = (cod_endereco,)
+
+
+                            cursor.execute("SELECT ef.estado , ef.cidade, ef.bairro, ef.logradouro, ef.numero from endereco_funcionario as ef " \
+                            "inner join funcionario " \
+                            "on ef.cod_endereco = funcionario.cod_endereco " \
+                            "WHERE funcionario.cod_endereco =%s",(cod_endereco_tupla))
+
+                            endereco_completo = cursor.fetchone()
+
+                            # Desempacotar os dados da tupla
+                            estado, cidade, bairro, logradouro, numero = endereco_completo
+                            endereco_formatado = f"{logradouro}, {numero} - {bairro}, {cidade} - {estado}, CEP: {cep}"
+
+                            print(endereco_formatado)
+
+                            update_endereco_funcionario(endereco_formatado,cod_endereco)
+
+                                
+                            limpar_Campos()
+
+                            messagebox.showinfo("Success","Endereço alterado com sucesso!")
+
+                        else:
+                            messagebox.showerror("Error","Todos os campos são obrigatórios")
+                    else:
+                        messagebox.showerror("Error","Cadastro de Enderço não existe")
+
+                except Exception as e:
+                    print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
+                        
+
+
         #TESTES:
         # def valor_cod_endereco():
         #     global cod_endereco
@@ -147,6 +250,36 @@ class ENDERECO:
             NumeroEntry.focus()
             FocusEntry.focus()
 
+            #TABELA
+            conn = get_connection()
+            cursor = conn.cursor()
+            for linha in tabela.get_children():
+                tabela.delete(linha)
+            cursor.execute("SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario")
+            consulta_tabela = cursor.fetchall()
+
+            for linha in consulta_tabela:
+                tabela.insert("","end",values = "")
+
+
+        def listar_endereco():
+            conn = get_connection()
+            cursor = conn.cursor()
+            
+            for linha in tabela.get_children():
+                tabela.delete(linha)
+
+            tabela.tag_configure('oddrow', background='white')  # Linha cinza clara
+            tabela.tag_configure('evenrow', background='#DBE1FF')  # Linha branca
+
+            cursor.execute(" SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario")
+            consulta_tabela = cursor.fetchall()
+
+            for i, linha in enumerate(consulta_tabela):
+                tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+                tabela.insert("", "end", values=linha, tags=(tag,))
+
+
 
         #CRIANDO LABELS
         # CEPLabel = ctk.CTkLabel(self.root,text = "CEP: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
@@ -171,8 +304,9 @@ class ENDERECO:
         BairroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Bairro")
         LogradouroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Logradouro")
         NumeroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Número")
+        PesquisaTabelantry = ctk.CTkEntry(self.root,width=310,font=("Georgia",14),placeholder_text = "Pesquisa de Endereço")
         FocusEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Focus")
-
+     
 
         #POSICIONANDO OS CAMPOS DE ENTRADAS:
         CEPEntry.place(x = 160, y = 80)
@@ -181,7 +315,52 @@ class ENDERECO:
         BairroEntry.place(x = 160, y = 200)
         LogradouroEntry.place(x = 160, y = 240)
         NumeroEntry.place(x = 160, y = 280)
+        PesquisaTabelantry.place(x = 165, y = 365)
         FocusEntry.place(x = 10000, y = 10000)
+
+
+
+        #TABELA:
+        # Estilo da Tabela
+        style = ttk.Style()
+        # Estilo geral da Tabela
+        style.configure("Treeview",foreground="black",font=("Segoe UI", 10))
+        # Estilo do cabeçalho
+        style.configure("Treeview.Heading",foreground="black",font=("Segoe UI", 10))
+        #Criando tabela:
+        tabela = ttk.Treeview(frame_tabela,columns=("cod","cep","estado","cidade","bairro","logradouro","numero"),show ="headings",height=10)
+
+        #Cabeçalho de cada coluna
+        tabela.heading("cod", text="Código")
+        tabela.heading("cep", text="CEP")
+        tabela.heading("estado", text="Estado")
+        tabela.heading("cidade", text="Cidade")
+        tabela.heading("bairro",text="Bairro")
+        tabela.heading("logradouro",text="Logradouro")
+        tabela.heading("numero",text="Número")
+
+        #Tamanho de cada coluna
+        tabela.column("cod", width=55)
+        tabela.column("cep", width=100)
+        tabela.column("estado", width=120)
+        tabela.column("cidade", width=120)
+        tabela.column("bairro",width = 120)
+        tabela.column("logradouro",width = 150)
+        tabela.column("numero",width = 70)
+        #Posicionando
+        tabela.place(x = 5, y = 13)
+        #Ação ao selecionar uma linha
+        tabela.bind("<<TreeviewSelect>>", selecionar_linha)
+        #Barra de Rolamento:
+        BarraRolamento = ttk.Scrollbar(frame_tabela, orient="vertical")
+        BarraRolamento.place(x = 750, y = 14, height=frame_tabela.winfo_height() + 223)  # Ajustando o tamanho da barra de rolagem
+        #Conectando barra com a tabela
+        tabela.config(yscrollcommand=BarraRolamento.set)
+        BarraRolamento.config(command=tabela.yview)
+
+
+
+
 
         #CRIANDO BOTÃO
         #BOTAO DE PESQUISA
@@ -189,13 +368,24 @@ class ENDERECO:
         CEPButton.place(x = 40,y = 80)
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=120, font=("Georgia", 16),command=reabrir_janela) #AÇÃO PARA O BOTÃO
-        voltar_button.place(x=20, y = 355)
+        voltar_button.place(x=20, y = 600)
         #BOTÃO DE LIMPAR:
         limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=150,command=limpar_Campos)
         limparButton.place(x = 209, y = 35)
         #BOTÃO DE CADASTRAR
         cadastrarButton = ctk.CTkButton(self.root,text = "CADASTRAR",font= ("Georgia",14),width=150,command=cadastrar_endereco)
         cadastrarButton.place( x = 48 , y = 35)
+        #BOTÃO ALTERAR
+        AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=160,command=alterar_endereco)
+        AlterarButton.place(x = 370,y = 35)
+        #BOTÃO DE PESQUISA NA TABELA
+        PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela")
+        PesquisaTabelaButton.place(x = 19, y = 365)
+        #BOTAO DE LISTAR
+        ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_endereco)
+        ListarButton.place(x = 486 , y = 365)
+
+
 
 def valor_cod_endereco():
     global cod_endereco

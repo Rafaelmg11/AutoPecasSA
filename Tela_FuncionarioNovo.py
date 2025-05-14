@@ -58,7 +58,7 @@ class FUNCIONARIO:
         ctk.set_appearance_mode("ligth")
         root_endereco = ctk.CTkToplevel(self.root)
         root_endereco.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
-        root_endereco.geometry("400x400") #Tamanho da janela
+        root_endereco.geometry("650x650") #Tamanho da janela
         app_endereco= ENDERECO(root_endereco, self.root , self.receber_endereco)  # self é a main_window aqui
         root_endereco.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
 
@@ -315,6 +315,7 @@ class FUNCIONARIO:
                     self.entry_endereco.insert(0, Endereco)
                     SalarioEntry.insert(0, Salario)
                     CodEndereco = CodEndereco
+                    print(CodEndereco)
                     #Inserindo os dado na combo box:
                     CargoCB.set(Cargo)
 
@@ -502,10 +503,10 @@ class FUNCIONARIO:
         FocusIvisivelEntry.place(x = 330000000, y = 300000000)
 
         #TABELA:
-        # Estilo da Treeview
+        # Estilo da Tabela
         style = ttk.Style()
 
-        # Estilo geral da Treeview
+        # Estilo geral da Tabela
         style.configure("Treeview",foreground="black",font=("Segoe UI", 10))
         # Estilo do cabeçalho
         style.configure("Treeview.Heading",foreground="black",font=("Segoe UI", 10))
