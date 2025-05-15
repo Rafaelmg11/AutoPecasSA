@@ -143,3 +143,21 @@ def verificacao_endereco(CodEndereco):
     cursor.close()
     conn.close()
     return vericacao
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#FUNCÕES CLIENTE:
+
+def create_cliente(Nome,Telefone,Email,CPF,Endereco,CodEndereco):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO cliente (nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente,cod_endereco) VALUES ( %s, %s , %s, %s, %s, %s)"
+    cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,CodEndereco))
+    conn.commit ()
+    cursor.close()
+    conn.close()
+
+
+
