@@ -3,6 +3,8 @@ from config import MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE
 
 #pip install mysql-connector-python
 
+#LIXO --------------------
+
 
 
 def get_connection():

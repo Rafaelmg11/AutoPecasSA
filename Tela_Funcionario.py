@@ -6,6 +6,8 @@ from crudPrincipal import create_funcionario, read_funcionario, update_funcionar
 import tkinter as tk
 import mysql.connector
 
+#LIXO------------------------------------------------------
+
 class FUNCIONARIO:
 
     def __init__(self,root): 

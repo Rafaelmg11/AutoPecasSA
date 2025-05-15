@@ -25,7 +25,7 @@ class ENDERECO:
         #CRIANDO JANELA
         ctk.set_appearance_mode("light")
         # self.root.title("ENDEREÇO DE FUNCIONARIOS") #Titulo
-        self.root.geometry("650x650") #Tamanho da janela
+        self.root.geometry("650x620") #Tamanho da janela
         self.root.configure(fg_color = "#5424A2") #Cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
         #Criação de Widgets
@@ -72,7 +72,7 @@ class ENDERECO:
 
         
         frame_tabela = ctk.CTkFrame (self.root,width= 630,height = 200, fg_color= "#5424A2")
-        frame_tabela.place(x = 15, y = 390)
+        frame_tabela.place(x = 15, y = 370)
 
         def cep():
 
@@ -357,11 +357,11 @@ class ENDERECO:
 
         #POSICIONANDO LABELS
         # CEPLabel.place(x = 40 , y = 60)
-        EstadoLabel.place(x = 40, y = 120)
-        CidadeLabel.place(x = 40, y = 160)
-        BairroLabel.place(x = 40, y = 200)
-        LogradouroLabel.place(x = 40, y = 240)
-        NumeroLabel.place(x = 40, y = 280)
+        EstadoLabel.place(x = 140, y = 120)
+        CidadeLabel.place(x = 140, y = 160)
+        BairroLabel.place(x = 140, y = 200)
+        LogradouroLabel.place(x = 140, y = 240)
+        NumeroLabel.place(x = 140, y = 280)
 
         #CRIANDO CAMPOS DE ENTRADA
         self.CEPEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o CEP")
@@ -375,13 +375,13 @@ class ENDERECO:
      
 
         #POSICIONANDO OS CAMPOS DE ENTRADAS:
-        self.CEPEntry.place(x = 160, y = 80)
-        self.EstadoEntry.place(x = 160, y = 120)
-        self.CidadeEntry.place(x = 160, y = 160)
-        self.BairroEntry.place(x = 160, y = 200)
-        self.LogradouroEntry.place(x = 160, y = 240)
-        self.NumeroEntry.place(x = 160, y = 280)
-        PesquisaTabelantry.place(x = 165, y = 365)
+        self.CEPEntry.place(x = 260, y = 80)
+        self.EstadoEntry.place(x = 260, y = 120)
+        self.CidadeEntry.place(x = 260, y = 160)
+        self.BairroEntry.place(x = 260, y = 200)
+        self.LogradouroEntry.place(x = 260, y = 240)
+        self.NumeroEntry.place(x = 260, y = 280)
+        PesquisaTabelantry.place(x = 165, y = 345)
         self.FocusEntry.place(x = 10000, y = 10000)
 
 
@@ -429,27 +429,27 @@ class ENDERECO:
 
 
         #CRIANDO BOTÃO
-        #BOTAO DE PESQUISA
+        #BOTAO DE CEP
         CEPButton = ctk.CTkButton(self.root,text = "CEP:",font= ("Georgia",18),width=80,command=cep)
-        CEPButton.place(x = 40,y = 80)
+        CEPButton.place(x = 140,y = 80)
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=120, font=("Georgia", 16),command=reabrir_janela) #AÇÃO PARA O BOTÃO
-        voltar_button.place(x=20, y = 600)
+        voltar_button.place(x=20, y = 580)
         #BOTÃO DE LIMPAR:
         limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=150,command=limpar_Campos)
-        limparButton.place(x = 209, y = 35)
+        limparButton.place(x = 411, y = 35)
         #BOTÃO DE CADASTRAR
         cadastrarButton = ctk.CTkButton(self.root,text = "CADASTRAR",font= ("Georgia",14),width=150,command=cadastrar_endereco)
-        cadastrarButton.place( x = 48 , y = 35)
+        cadastrarButton.place( x = 89 , y = 35)
         #BOTÃO ALTERAR
-        AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=160,command=alterar_endereco)
-        AlterarButton.place(x = 370,y = 35)
+        AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=150,command=alterar_endereco)
+        AlterarButton.place(x = 250, y = 35)
         #BOTÃO DE PESQUISA NA TABELA
         PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela")
-        PesquisaTabelaButton.place(x = 19, y = 365)
+        PesquisaTabelaButton.place(x = 19, y = 345)
         #BOTAO DE LISTAR
         ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_endereco)
-        ListarButton.place(x = 486 , y = 365)
+        ListarButton.place(x = 486 , y = 345)
 
 
 
