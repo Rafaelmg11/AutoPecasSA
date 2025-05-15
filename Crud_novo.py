@@ -73,7 +73,7 @@ def update_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,cod_peca,c
 def delete_peca(codigo_Peca):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "UPDATE peca SET ativo = FALSE WHERE cod_peca = %s"
+    query = "UPDATE peca SET status = FALSE WHERE cod_peca = %s"
     cursor.execute(query, (codigo_Peca,))
     conn.commit()
     cursor.close()
@@ -116,7 +116,7 @@ def update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Sa
 def delete_funcionario(Cod_Funcionario):
     conn = get_connection()
     cursor = conn.cursor()
-    query = "UPDATE funcionario SET ativo = FALSE WHERE cod_func = %s"
+    query = "UPDATE funcionario SET status = FALSE WHERE cod_func = %s"
     cursor.execute(query,(Cod_Funcionario,))
     conn.commit()
     cursor.close()

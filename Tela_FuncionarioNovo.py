@@ -60,10 +60,11 @@ class FUNCIONARIO:
         bairro = None
         cidade = None
         estado = None
-        self.cod_endereco = None
+ 
 
         #Cria uma nova janela tkinter para endereco de funcionionario
         Endereco = self.entry_endereco.get()
+        self.cod_endereco=''
 
         try:
 
@@ -172,7 +173,7 @@ class FUNCIONARIO:
             if item:
                 valores = tabela.item(item,"values")
                 Cod_Funcionario = valores[0]
-                cursor.execute("SELECT nome_func, telefone_func, email_func, cpf_func, endereco_func, cargo, salario, imagem, cod_func, cod_endereco FROM funcionario WHERE ativo = TRUE and cod_func=%s", (Cod_Funcionario,))
+                cursor.execute("SELECT nome_func, telefone_func, email_func, cpf_func, endereco_func, cargo, salario, imagem, cod_func, cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s", (Cod_Funcionario,))
                 resultado = cursor.fetchone()
                 if resultado:
 
@@ -286,7 +287,7 @@ class FUNCIONARIO:
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT * FROM funcionario WHERE ativo = TRUE and cod_func=%s ",(Cod_Funcionario,))  
+                cursor.execute("SELECT * FROM funcionario WHERE status = TRUE and cod_func=%s ",(Cod_Funcionario,))  
                 funcionario_pesquisa = cursor.fetchone()
                     
                 # Verificando se o funcionario foi encontrado
@@ -314,17 +315,17 @@ class FUNCIONARIO:
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT * FROM funcionario WHERE ativo = TRUE and cod_func=%s ",(Cod_Funcionario,)) 
+                cursor.execute("SELECT * FROM funcionario WHERE status = TRUE and cod_func=%s ",(Cod_Funcionario,)) 
                 funcionario_pesquisa = cursor.fetchone()
                 
                 
                 
                 # Verificando se o funcionario foi encontrado
                 if funcionario_pesquisa:  # SE FOI ENCONTRADO...
-                    cursor.execute("SELECT cod_endereco FROM funcionario WHERE ativo = TRUE AND cod_func=%s",(Cod_Funcionario,))#SELECIONANDO O COD_ENDERECO
+                    cursor.execute("SELECT cod_endereco FROM funcionario WHERE status = TRUE AND cod_func=%s",(Cod_Funcionario,))#SELECIONANDO O COD_ENDERECO
                     cod_endereco_consulta = cursor.fetchone()#RECEBENDO O COD_ENDERECO
                     delete_funcionario(Cod_Funcionario) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
-                    cursor.execute("UPDATE endereco_funcionario SET ativo = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
+                    cursor.execute("UPDATE endereco_funcionario SET status = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
                     limparCampos()
                     conn.commit()
                     cursor.close()
@@ -343,7 +344,7 @@ class FUNCIONARIO:
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE ativo = TRUE and cod_func=%s OR nome_func=%s", (pesquisa,pesquisa)) 
+                cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s", (pesquisa,pesquisa)) 
                 # ACIMA SELECIONA AS COLUNAS DA TABELA SE cod_func OU nome_func == pesquisa (o que foi digitado no campo de pesquisa)
                 # PERMITE PESQUISA POR NOME E CODIGO DO FUNCIONARIO
                 funcionario_pesquisa = cursor.fetchone()
@@ -400,7 +401,7 @@ class FUNCIONARIO:
             tabela.tag_configure('oddrow', background='#f2f2f2')
             tabela.tag_configure('evenrow', background='#ffffff')
             
-            cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE ativo = TRUE and cod_func=%s OR nome_func=%s OR nome_func LIKE %s ",(pesquisa,pesquisa,f"%{pesquisa}%"))
+            cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s OR nome_func LIKE %s ",(pesquisa,pesquisa,f"%{pesquisa}%"))
             consulta_tabela = cursor.fetchall()
 
             if consulta_tabela:
@@ -424,7 +425,7 @@ class FUNCIONARIO:
             tabela.tag_configure('oddrow', background='white')  # Linha cinza clara
             tabela.tag_configure('evenrow', background='#DBE1FF')  # Linha branca
 
-            cursor.execute(" SELECT cod_func,nome_func,cpf_func,telefone_func,email_func,endereco_func,cargo,salario FROM funcionario WHERE  ativo = TRUE ")
+            cursor.execute(" SELECT cod_func,nome_func,cpf_func,telefone_func,email_func,endereco_func,cargo,salario FROM funcionario WHERE  status = TRUE ")
             consulta_tabela = cursor.fetchall()
 
             for i, linha in enumerate(consulta_tabela):
@@ -479,7 +480,7 @@ class FUNCIONARIO:
             cursor = conn.cursor()
             for linha in tabela.get_children():
                 tabela.delete(linha)
-            cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario FROM funcionario WHERE  ativo = TRUE ")
+            cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario FROM funcionario WHERE  status = TRUE ")
             consulta_tabela = cursor.fetchall()
 
             for linha in consulta_tabela:

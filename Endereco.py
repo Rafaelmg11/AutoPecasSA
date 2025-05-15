@@ -20,7 +20,6 @@ class ENDERECO:
         self.cidade = cidade
         self.estado = estado
         self.cod_endereco = cod_endereco
-        print(cod_endereco)
 
         #CRIANDO JANELA
         ctk.set_appearance_mode("light")
@@ -34,27 +33,30 @@ class ENDERECO:
 
         global endereco_completo
     def preencher_campos(self):
-        self.LogradouroEntry.delete(0, ctk.END)
-        self.LogradouroEntry.insert(0, self.logradouro)
-        self.NumeroEntry.delete(0, ctk.END)
-        self.NumeroEntry.insert(0, self.numero)
-        self.CidadeEntry.delete(0, ctk.END)
-        self.CidadeEntry.insert(0, self.cidade)
-        self.BairroEntry.delete(0, ctk.END)
-        self.BairroEntry.insert(0, self.bairro)
-        self.EstadoEntry.delete(0, ctk.END)
-        self.EstadoEntry.insert(0, self.estado)
+        try:
+            self.LogradouroEntry.delete(0, ctk.END)
+            self.LogradouroEntry.insert(0, self.logradouro)
+            self.NumeroEntry.delete(0, ctk.END)
+            self.NumeroEntry.insert(0, self.numero)
+            self.CidadeEntry.delete(0, ctk.END)
+            self.CidadeEntry.insert(0, self.cidade)
+            self.BairroEntry.delete(0, ctk.END)
+            self.BairroEntry.insert(0, self.bairro)
+            self.EstadoEntry.delete(0, ctk.END)
+            self.EstadoEntry.insert(0, self.estado)
 
-        conn = get_connection()
-        cursor = conn.cursor()
-        query = "SELECT cep FROM endereco_funcionario WHERE ativo = TRUE and estado = %s and cidade = %s and bairro = %s and logradouro = %s and numero = %s"
-        cursor.execute(query,(self.estado,self.cidade,self.bairro,self.logradouro,self.numero))
-        self.cep = cursor.fetchone()
-        cursor.close()
-        conn.close()
+            conn = get_connection()
+            cursor = conn.cursor()
+            query = "SELECT cep FROM endereco_funcionario WHERE status = TRUE and estado = %s and cidade = %s and bairro = %s and logradouro = %s and numero = %s"
+            cursor.execute(query,(self.estado,self.cidade,self.bairro,self.logradouro,self.numero))
+            self.cep = cursor.fetchone()
+            cursor.close()
+            conn.close()
 
-        self.CEPEntry.delete(0, ctk.END)
-        self.CEPEntry.insert(0, self.cep)
+            self.CEPEntry.delete(0, ctk.END)
+            self.CEPEntry.insert(0, self.cep)
+        except:
+            pass
 
         
 
@@ -117,7 +119,7 @@ class ENDERECO:
             if item:
                 valores = tabela.item(item,"values")
                 Cod_Endereco = valores[0]
-                cursor.execute("SELECT cep,estado,cidade,bairro,logradouro,numero, cod_endereco FROM endereco_funcionario WHERE ativo = TRUE and cod_endereco = %s", (Cod_Endereco,))
+                cursor.execute("SELECT cep,estado,cidade,bairro,logradouro,numero, cod_endereco FROM endereco_funcionario WHERE status = TRUE and cod_endereco = %s", (Cod_Endereco,))
                 resultado = cursor.fetchone()
                 if resultado:
 
@@ -168,7 +170,7 @@ class ENDERECO:
                     cursor = conn.cursor()
                     try:
                         #Faz uma consulta no banco 
-                        cursor.execute("SELECT CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado) as endereco_completo FROM endereco_funcionario WHERE ativo = TRUE and cod_endereco = %s",(cod_endereco,))
+                        cursor.execute("SELECT CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado) as endereco_completo FROM endereco_funcionario WHERE status = TRUE and cod_endereco = %s",(cod_endereco,))
                         #Rcebe a consulta
                         endereco_completo = cursor.fetchone()
                         #Recebe a consulta (só pra tirar uma virgula que ficava no final pois é uma tupla)
@@ -223,20 +225,20 @@ class ENDERECO:
                 cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
                 try:
                     # CONSULTA NO BANCO
-                    cursor.execute("SELECT * FROM endereco_funcionario WHERE ativo = TRUE and cod_endereco=%s ",(cod_endereco,))  
+                    cursor.execute("SELECT * FROM endereco_funcionario WHERE status = TRUE and cod_endereco=%s ",(cod_endereco,))  
                     endereco_pesquisa = cursor.fetchone()
                         
                     # Verificando se o funcionario foi encontrado
                     if endereco_pesquisa:  # SE FOI ENCONTRADO...
                         if CEP and Estado and Cidade and Bairro and Logradouro and Numero and cod_endereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                            query = "UPDATE endereco_funcionario SET cep = %s, estado = %s, cidade = %s, bairro = %s, logradouro = %s, numero = %s WHERE ativo = TRUE and cod_endereco = %s"
+                            query = "UPDATE endereco_funcionario SET cep = %s, estado = %s, cidade = %s, bairro = %s, logradouro = %s, numero = %s WHERE status = TRUE and cod_endereco = %s"
                             cursor.execute(query,(CEP,Estado,Cidade,Bairro,Logradouro,Numero,cod_endereco)) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
                             
 
                             cod_endereco_tupla = (cod_endereco,)
 
 
-                            cursor.execute("SELECT estado,cidade,bairro,logradouro,numero FROM endereco_funcionario WHERE ativo = TRUE and cod_endereco = %s",(cod_endereco_tupla))
+                            cursor.execute("SELECT estado,cidade,bairro,logradouro,numero FROM endereco_funcionario WHERE status = TRUE and cod_endereco = %s",(cod_endereco_tupla))
 
                             endereco_completo = cursor.fetchone()
 
@@ -304,14 +306,14 @@ class ENDERECO:
             self.LogradouroEntry.focus()
             self.NumeroEntry.delete(0, ctk.END)
             self.NumeroEntry.focus()
-            FocusEntry.focus()
+            self.FocusEntry.focus()
 
             #TABELA
             conn = get_connection()
             cursor = conn.cursor()
             for linha in tabela.get_children():
                 tabela.delete(linha)
-            cursor.execute("SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario WHERE ativo = TRUE")
+            cursor.execute("SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario WHERE status = TRUE")
             consulta_tabela = cursor.fetchall()
 
             for linha in consulta_tabela:
@@ -328,7 +330,7 @@ class ENDERECO:
             tabela.tag_configure('oddrow', background='white')  # Linha cinza clara
             tabela.tag_configure('evenrow', background='#DBE1FF')  # Linha branca
 
-            cursor.execute(" SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario WHERE ativo = TRUE")
+            cursor.execute(" SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_funcionario WHERE status = TRUE")
             consulta_tabela = cursor.fetchall()
 
             for i, linha in enumerate(consulta_tabela):
@@ -361,7 +363,7 @@ class ENDERECO:
         self.LogradouroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Logradouro")
         self.NumeroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Número")
         PesquisaTabelantry = ctk.CTkEntry(self.root,width=310,font=("Georgia",14),placeholder_text = "Pesquisa de Endereço")
-        FocusEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Focus")
+        self.FocusEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Focus")
      
 
         #POSICIONANDO OS CAMPOS DE ENTRADAS:
@@ -372,7 +374,7 @@ class ENDERECO:
         self.LogradouroEntry.place(x = 160, y = 240)
         self.NumeroEntry.place(x = 160, y = 280)
         PesquisaTabelantry.place(x = 165, y = 365)
-        FocusEntry.place(x = 10000, y = 10000)
+        self.FocusEntry.place(x = 10000, y = 10000)
 
 
 
