@@ -26,9 +26,11 @@ class FUNCIONARIO:
 
         self.imagem_padrao_pil = Image.open("sem_imagem.png") #Puxa imagem
         self.imagem_padrao = CTkImage(self.imagem_padrao_pil,size= (110 , 110)) #Converte imagem 
-
+        self.cod_endereco=""
+        
         #Imagem atual em bytes
         global imagem_bytes
+
 
         with open("sem_imagem.png","rb") as f: #Abre a imagem padrao em modo de leitura binaria(bytes)
             imagem_bytes = f.read() #Recebe a leitura e fecha o arquivo
@@ -55,43 +57,41 @@ class FUNCIONARIO:
         #Oculta a janela
         self.root.withdraw()
 
-        logradouro = None
-        numero = None
-        bairro = None
-        cidade = None
-        estado = None
+        # Inicializa variáveis vazias
+        logradouro = numero = bairro = cidade = estado = ""
  
 
-        #Cria uma nova janela tkinter para endereco de funcionionario
-        Endereco = self.entry_endereco.get()
-        self.cod_endereco=''
+        # Tenta obter e dividir o endereço somente se houver texto
+        Endereco = self.entry_endereco.get().strip()
 
-        try:
+        if Endereco:
 
-            #Separando Estado do Resto pois é com "-"
-            partes = Endereco.split("-")
-            cidade = partes[0].split(",")[-1].strip() #Pega o ultimo item do indice 0 da lista (cidade)
-            estado = partes[1].strip()
-            #Restante:
-            logradouro_numero_bairro = partes[0].split(",") #Lista recebendo toda a parte do indice 0
-            logradouro = logradouro_numero_bairro[0].strip()
-            numero = logradouro_numero_bairro[1].strip()
-            bairro = logradouro_numero_bairro[2].strip()
+            try:
 
-            
-            # Exibindo as variáveis separadas
-            print("Logradouro:", logradouro)
-            print("Número:", numero)
-            print("Bairro:", bairro)
-            print("Cidade:", cidade)
-            print("Estado:", estado)
+                #Separando Estado do Resto pois é com "-"
+                partes = Endereco.split("-")
+                cidade = partes[0].split(",")[-1].strip() #Pega o ultimo item do indice 0 da lista (cidade)
+                estado = partes[1].strip()
+                #Restante:
+                logradouro_numero_bairro = partes[0].split(",") #Lista recebendo toda a parte do indice 0
+                logradouro = logradouro_numero_bairro[0].strip()
+                numero = logradouro_numero_bairro[1].strip()
+                bairro = logradouro_numero_bairro[2].strip()
 
-            self.callback(logradouro,numero,bairro,cidade,estado)
+                
+                # Exibindo as variáveis separadas
+                print("Logradouro:", logradouro)
+                print("Número:", numero)
+                print("Bairro:", bairro)
+                print("Cidade:", cidade)
+                print("Estado:", estado)
+
+                self.callback(logradouro,numero,bairro,cidade,estado)
 
 
 
-        except:
-            pass #Continua o código normalmente se except
+            except:
+                pass #Continua o código normalmente se except
 
         ctk.set_appearance_mode("ligth")
         root_endereco = ctk.CTkToplevel(self.root)

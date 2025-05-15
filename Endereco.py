@@ -20,6 +20,7 @@ class ENDERECO:
         self.cidade = cidade
         self.estado = estado
         self.cod_endereco = cod_endereco
+        print(cod_endereco)
 
         #CRIANDO JANELA
         ctk.set_appearance_mode("light")
@@ -32,19 +33,21 @@ class ENDERECO:
         self.preencher_campos()
 
         global endereco_completo
-    def preencher_campos(self):
-        try:
-            self.LogradouroEntry.delete(0, ctk.END)
-            self.LogradouroEntry.insert(0, self.logradouro)
-            self.NumeroEntry.delete(0, ctk.END)
-            self.NumeroEntry.insert(0, self.numero)
-            self.CidadeEntry.delete(0, ctk.END)
-            self.CidadeEntry.insert(0, self.cidade)
-            self.BairroEntry.delete(0, ctk.END)
-            self.BairroEntry.insert(0, self.bairro)
-            self.EstadoEntry.delete(0, ctk.END)
-            self.EstadoEntry.insert(0, self.estado)
 
+    def preencher_campos(self):
+        self.LogradouroEntry.delete(0, ctk.END)
+        self.LogradouroEntry.insert(0, self.logradouro)
+        self.NumeroEntry.delete(0, ctk.END)
+        self.NumeroEntry.insert(0, self.numero)
+        self.CidadeEntry.delete(0, ctk.END)
+        self.CidadeEntry.insert(0, self.cidade)
+        self.BairroEntry.delete(0, ctk.END)
+        self.BairroEntry.insert(0, self.bairro)
+        self.EstadoEntry.delete(0, ctk.END)
+        self.EstadoEntry.insert(0, self.estado)
+
+
+        if all([self.estado, self.cidade, self.bairro, self.logradouro, self.numero]):
             conn = get_connection()
             cursor = conn.cursor()
             query = "SELECT cep FROM endereco_funcionario WHERE status = TRUE and estado = %s and cidade = %s and bairro = %s and logradouro = %s and numero = %s"
@@ -53,10 +56,15 @@ class ENDERECO:
             cursor.close()
             conn.close()
 
-            self.CEPEntry.delete(0, ctk.END)
-            self.CEPEntry.insert(0, self.cep)
-        except:
-            pass
+            if self.cep:
+                self.CEPEntry.delete(0, ctk.END)
+                self.CEPEntry.insert(0, self.cep)
+        
+        else:
+            self.cep = None
+
+
+
 
         
 
