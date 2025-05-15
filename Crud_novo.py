@@ -160,6 +160,24 @@ def create_cliente(Nome,Telefone,Email,CPF,Endereco,CodEndereco):
     conn.close()
 
 
+def update_cliente(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,CodEndereco):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "UPDATE cliente SET nome_cliente = %s, telefone_cliente = %s, email_cliente = %s, cpf_cliente = %s, endereco_cliente = %s, cod_endereco = %s WHERE cod_cliente = %s"
+    cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,CodEndereco,Cod_Funcionario))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def delete_cliente(Cod_Funcionario):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "UPDATE cliente SET status = FALSE WHERE cod_cliente = %s"
+    cursor.execute(query,(Cod_Funcionario,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 #ENDERECO CLIENTE:
 def create_endereco_cliente(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
     conn = get_connection()

@@ -2,7 +2,7 @@ import customtkinter as ctk
 import mysql.connector
 from tkinter import messagebox
 from tkinter import ttk
-from Crud_novo import verificacao_endereco,get_connection,selecionar_cargo,create_cliente,update_funcionario,delete_funcionario
+from Crud_novo import get_connection,create_cliente,update_cliente,delete_cliente
 from customtkinter import CTkImage
 from Endereco_Cliente import ENDERECO_CLIENTE
 
@@ -198,7 +198,7 @@ class CLIENTE:
                 # Verificando se o cliente foi encontrado
                 if cliente_pesquisa:  # SE FOI ENCONTRADO...
                     if cod_cliente and Nome and Telefone and Email and CPF and Endereco and CodEndereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                        update_funcionario(cod_cliente,Nome,Telefone,Email,CPF,Endereco,CodEndereco) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                        update_cliente(cod_cliente,Nome,Telefone,Email,CPF,Endereco,CodEndereco) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
                             
                         limparCampos()
 
@@ -229,8 +229,8 @@ class CLIENTE:
                 if cliente_pesquisa:  # SE FOI ENCONTRADO...
                     cursor.execute("SELECT cod_endereco FROM cliente WHERE status = TRUE AND cod_cliente=%s",(cod_cliente,))#SELECIONANDO O COD_ENDERECO
                     cod_endereco_consulta = cursor.fetchone()#RECEBENDO O COD_ENDERECO
-                    delete_funcionario(cod_cliente) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
-                    cursor.execute("UPDATE endereco_clienteionario SET status = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
+                    delete_cliente(cod_cliente) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
+                    cursor.execute("UPDATE endereco_cliente SET status = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
                     limparCampos()
                     conn.commit()
                     cursor.close()

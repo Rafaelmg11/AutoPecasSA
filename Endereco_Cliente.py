@@ -207,7 +207,7 @@ class ENDERECO_CLIENTE:
 
         def alterar_endereco():
 
-            self.cod_endereco = cod_endereco
+            cod_endereco = self.cod_endereco
 
             CEP = self.CEPEntry.get()
             Estado = self.EstadoEntry.get()
