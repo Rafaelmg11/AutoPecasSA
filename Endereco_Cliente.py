@@ -285,7 +285,7 @@ class ENDERECO_CLIENTE:
                         else:
                             messagebox.showerror("Error","Todos os campos são obrigatórios")
                     else:
-                        messagebox.showerror("Error","Cadastro de Enderço não existe")
+                        messagebox.showerror("Error","Cadastro de Endereço não existe")
 
                 except Exception as e:
                     print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
