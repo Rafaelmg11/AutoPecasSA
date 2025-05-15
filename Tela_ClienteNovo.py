@@ -2,9 +2,9 @@ import customtkinter as ctk
 import mysql.connector
 from tkinter import messagebox
 from tkinter import ttk
-from Crud_novo import verificacao_endereco,get_connection,selecionar_cargo,create_funcionario,update_funcionario,delete_funcionario
+from Crud_novo import verificacao_endereco,get_connection,selecionar_cargo,create_cliente,update_funcionario,delete_funcionario
 from customtkinter import CTkImage
-from Endereco import ENDERECO
+from Endereco_Cliente import ENDERECO_CLIENTE
 
 class CLIENTE:
 
@@ -17,6 +17,8 @@ class CLIENTE:
         self.root.geometry("750x570") #Tamanho da janela
         self.root.configure(fg_color = "#5424A2") #Cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
+
+        self.cod_endereco=''
 
         #Criação de Widgets
         self.create_widgets()
@@ -80,7 +82,7 @@ class CLIENTE:
         root_endereco = ctk.CTkToplevel(self.root)
         root_endereco.title("ENDEREÇO DE CLIENTES") #Titulo
         root_endereco.geometry("650x650") #Tamanho da janela
-        app_endereco= ENDERECO(root_endereco, self.root , self.receber_endereco,logradouro,numero,bairro,cidade,estado,self.cod_endereco )  # self é a main_window aqui
+        app_endereco= ENDERECO_CLIENTE(root_endereco, self.root , self.receber_endereco,logradouro,numero,bairro,cidade,estado,self.cod_endereco )  # self é a main_window aqui
         root_endereco.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
 
     def receber_endereco(self, endereco_completo,cod_endereco,CEP,Logradouro,Numero):
@@ -111,9 +113,9 @@ class CLIENTE:
 
 
         def voltar_para_principal():
-            # Fechar a janela atual de cadastro de funcionarios e voltar para a janela principal
-            # self.root.quit()  # Fecha a janela de cadastro de funcionarios (destrói a instância)
-            self.root.destroy()  # Fecha a janela de cadastro de funcionarios, liberando recursos
+            # Fechar a janela atual de cadastro de clientes e voltar para a janela principal
+            # self.root.quit()  # Fecha a janela de cadastro de clientes (destrói a instância)
+            self.root.destroy()  # Fecha a janela de cadastro de clientes, liberando recursos
             self.main_window.deiconify()  # Reexibe a janela principal
 
 
@@ -124,8 +126,8 @@ class CLIENTE:
             item = tabela.selection()
             if item:
                 valores = tabela.item(item,"values")
-                Cod_Funcionario = valores[0]
-                cursor.execute("SELECT nome_func, telefone_func, email_func, cpf_func, endereco_func, cargo, salario, cod_func, cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s", (Cod_Funcionario,))
+                cod_cliente = valores[0]
+                cursor.execute("SELECT nome_cliente, telefone_cliente, email_cliente, cpf_cliente, endereco_cliente, cod_cliente, cod_endereco FROM cliente WHERE status = TRUE and cod_cliente=%s", (cod_cliente,))
                 resultado = cursor.fetchone()
                 if resultado:
 
@@ -143,8 +145,8 @@ class CLIENTE:
                     EmailEntry.insert(0, resultado[2])
                     CPFEntry.insert(0, resultado[3])
                     self.entry_endereco.insert(0, resultado[4])
-                    CodigoEntry.insert(0, resultado[8])
-                    self.cod_endereco = resultado[9]
+                    CodigoEntry.insert(0, resultado[5])
+                    self.cod_endereco = resultado[6]
                     print(self.cod_endereco)
 
             
@@ -160,7 +162,7 @@ class CLIENTE:
 
 
             if Nome and Telefone and Email and CPF and Endereco and CodEndereco:
-                create_funcionario(Nome,Telefone,Email,CPF,Endereco,CodEndereco)
+                create_cliente(Nome,Telefone,Email,CPF,Endereco,CodEndereco)
 
                 limparCampos()
 
@@ -169,8 +171,8 @@ class CLIENTE:
                 messagebox.showerror("Error","Todos os campos são obrigatórios!")
 
 
-        #FUNÇÃO DE ALTERAR FUNCIONARIO:
-        def alterar_funcionario():
+        #FUNÇÃO DE ALTERAR cliente:
+        def alterar_cliente():
 
             #RECEBENDO VALORES
             Nome = NomeEntry.get()
@@ -178,7 +180,7 @@ class CLIENTE:
             Telefone = TelefoneEntry.get()
             Email = EmailEntry.get()
             Endereco =  self.entry_endereco.get()
-            Cod_Funcionario = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O COD_FUNC DA TABELA
+            cod_cliente = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O cod_cliente DA TABELA
             CodEndereco = self.cod_endereco
 
             if "@" not in Email or "." not in Email:
@@ -190,13 +192,13 @@ class CLIENTE:
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT * FROM funcionario WHERE status = TRUE and cod_func=%s ",(Cod_Funcionario,))  
-                funcionario_pesquisa = cursor.fetchone()
+                cursor.execute("SELECT * FROM cliente WHERE status = TRUE and cod_cliente=%s ",(cod_cliente,))  
+                cliente_pesquisa = cursor.fetchone()
                     
-                # Verificando se o funcionario foi encontrado
-                if funcionario_pesquisa:  # SE FOI ENCONTRADO...
-                    if Cod_Funcionario and Nome and Telefone and Email and CPF and Endereco and CodEndereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                        update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,CodEndereco) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                # Verificando se o cliente foi encontrado
+                if cliente_pesquisa:  # SE FOI ENCONTRADO...
+                    if cod_cliente and Nome and Telefone and Email and CPF and Endereco and CodEndereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
+                        update_funcionario(cod_cliente,Nome,Telefone,Email,CPF,Endereco,CodEndereco) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
                             
                         limparCampos()
 
@@ -212,23 +214,23 @@ class CLIENTE:
                     
 
         #FUNÇÃO DE EXCLUIR
-        def excluir_funcionario():
-            Cod_Funcionario = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O COD_FUNC DA TABELA
+        def excluir_cliente():
+            cod_cliente = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O cod_cliente DA TABELA
             conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT * FROM funcionario WHERE status = TRUE and cod_func=%s ",(Cod_Funcionario,)) 
-                funcionario_pesquisa = cursor.fetchone()
+                cursor.execute("SELECT * FROM cliente WHERE status = TRUE and cod_cliente=%s ",(cod_cliente,)) 
+                cliente_pesquisa = cursor.fetchone()
                 
                 
                 
-                # Verificando se o funcionario foi encontrado
-                if funcionario_pesquisa:  # SE FOI ENCONTRADO...
-                    cursor.execute("SELECT cod_endereco FROM funcionario WHERE status = TRUE AND cod_func=%s",(Cod_Funcionario,))#SELECIONANDO O COD_ENDERECO
+                # Verificando se o cliente foi encontrado
+                if cliente_pesquisa:  # SE FOI ENCONTRADO...
+                    cursor.execute("SELECT cod_endereco FROM cliente WHERE status = TRUE AND cod_cliente=%s",(cod_cliente,))#SELECIONANDO O COD_ENDERECO
                     cod_endereco_consulta = cursor.fetchone()#RECEBENDO O COD_ENDERECO
-                    delete_funcionario(Cod_Funcionario) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
-                    cursor.execute("UPDATE endereco_funcionario SET status = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
+                    delete_funcionario(cod_cliente) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
+                    cursor.execute("UPDATE endereco_clienteionario SET status = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
                     limparCampos()
                     conn.commit()
                     cursor.close()
@@ -241,25 +243,25 @@ class CLIENTE:
 
 
         #FUNÇÃO DE PESQUISAR OBS: NAO TEM RELAÇÃO COM O CRUD
-        def pesquisar_funcionario():
+        def pesquisar_cliente():
             pesquisa = PesquisaEntry.get() #RECEBENDO VALOR PARA PESQUISAR
             conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s", (pesquisa,pesquisa)) 
-                # ACIMA SELECIONA AS COLUNAS DA TABELA SE cod_func OU nome_func == pesquisa (o que foi digitado no campo de pesquisa)
-                # PERMITE PESQUISA POR NOME E CODIGO DO FUNCIONARIO
-                funcionario_pesquisa = cursor.fetchone()
+                cursor.execute("SELECT cod_cliente,nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente,cod_endereco FROM cliente WHERE status = TRUE and cod_cliente=%s OR nome_cliente=%s", (pesquisa,pesquisa)) 
+                # ACIMA SELECIONA AS COLUNAS DA TABELA SE cod_cliente OU nome_cliente == pesquisa (o que foi digitado no campo de pesquisa)
+                # PERMITE PESQUISA POR NOME E CODIGO DO cliente
+                cliente_pesquisa = cursor.fetchone()
                 
-                # Verificando se o funcionario foi encontrado
-                if funcionario_pesquisa:  # SE FOI ENCONTRADO...
-                    Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,CodEndereco = funcionario_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
+                # Verificando se o cliente foi encontrado
+                if cliente_pesquisa:  # SE FOI ENCONTRADO...
+                    cod_cliente,Nome,Telefone,Email,CPF,Endereco,CodEndereco = cliente_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
                 
                     limparCampos()
 
                     # Inserindo os dados nas entradas (Entry)
-                    CodigoEntry.insert(0, Cod_Funcionario)
+                    CodigoEntry.insert(0, cod_cliente)
                     NomeEntry.insert(0, Nome)
                     TelefoneEntry.insert(0, Telefone)
                     EmailEntry.insert(0, Email)
@@ -290,7 +292,7 @@ class CLIENTE:
             tabela.tag_configure('oddrow', background='#f2f2f2')
             tabela.tag_configure('evenrow', background='#ffffff')
             
-            cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s OR nome_func LIKE %s ",(pesquisa,pesquisa,f"%{pesquisa}%"))
+            cursor.execute("SELECT cod_cliente,nome_cliente,cpf_cliente,telefone_cliente,email_cliente,endereco_cliente,cod_endereco FROM cliente WHERE status = TRUE and cod_cliente=%s OR nome_cliente=%s OR nome_cliente LIKE %s ",(pesquisa,pesquisa,f"%{pesquisa}%"))
             consulta_tabela = cursor.fetchall()
 
             if consulta_tabela:
@@ -304,7 +306,7 @@ class CLIENTE:
 
 
 
-        def listar_funcionario():
+        def listar_cliente():
             conn = get_connection()
             cursor = conn.cursor()
             
@@ -314,7 +316,7 @@ class CLIENTE:
             tabela.tag_configure('oddrow', background='white')  # Linha cinza clara
             tabela.tag_configure('evenrow', background='#DBE1FF')  # Linha branca
 
-            cursor.execute(" SELECT cod_func,nome_func,cpf_func,telefone_func,email_func,endereco_func,cargo,salario FROM funcionario WHERE  status = TRUE ")
+            cursor.execute(" SELECT cod_cliente,nome_cliente,cpf_cliente,telefone_cliente,email_cliente,endereco_cliente FROM cliente WHERE  status = TRUE ")
             consulta_tabela = cursor.fetchall()
 
             for i, linha in enumerate(consulta_tabela):
@@ -352,7 +354,7 @@ class CLIENTE:
             cursor = conn.cursor()
             for linha in tabela.get_children():
                 tabela.delete(linha)
-            cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario FROM funcionario WHERE  status = TRUE ")
+            cursor.execute("SELECT cod_cliente,nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente FROM cliente WHERE  status = TRUE ")
             consulta_tabela = cursor.fetchall()
 
             for linha in consulta_tabela:
@@ -370,7 +372,7 @@ class CLIENTE:
         CPFLabel =ctk.CTkLabel (self.root,text= "CPF: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         TelefoneLabel =ctk.CTkLabel(self.root,text="Telefone: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         EmailLabel =ctk.CTkLabel (self.root,text="Email: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-        CodigoLabel =ctk.CTkLabel (self.root,text="Cod. Funcionario: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        CodigoLabel =ctk.CTkLabel (self.root,text="Cod. cliente: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
      
 
         #POSICIONANDO LabelS:
@@ -447,13 +449,13 @@ class CLIENTE:
         EnderecoButton = ctk.CTkButton (self.root, text= "Endereço:",font= ("Georgia",19.5),width=10, command=self.abrir_tela_endereco)
         EnderecoButton.place(x = 370, y = 120)
         #BOTÃO DE CADASTRO
-        CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=160, command=cadastrar_funcionario)
+        CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=160, command=cadastrar_cliente)
         CadastrarButton.place(x =100 , y = 220)
         #BOTÃO ALTERAR
-        AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=160,command=alterar_funcionario)
+        AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=160,command=alterar_cliente)
         AlterarButton.place(x = 295, y = 220)
         #BOTAO DE EXCLUIR
-        ExcluirButton = ctk.CTkButton(self.root,text = "EXCLUIR",font= ("Georgia",14),width=160,command=excluir_funcionario)
+        ExcluirButton = ctk.CTkButton(self.root,text = "EXCLUIR",font= ("Georgia",14),width=160,command=excluir_cliente)
         ExcluirButton.place(x = 490, y = 220)
         #BOTÃO DE LIMPAR
         limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=160,command=limparCampos)
@@ -462,10 +464,10 @@ class CLIENTE:
         PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela", command=pesquisa_tabela)
         PesquisaTabelaButton.place(x = 20, y = 285)
         #BOTAO DE PESQUISA
-        PesquisarButton = ctk.CTkButton(self.root,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_funcionario)
+        PesquisarButton = ctk.CTkButton(self.root,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_cliente)
         PesquisarButton.place(x = 20,y = 25)
         #BOTAO DE LISTAR
-        ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_funcionario)
+        ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_cliente)
         ListarButton.place(x = 550 , y = 285)
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=130, font=("Georgia", 16), command=voltar_para_principal) #AÇÃO PARA O BOTÃO

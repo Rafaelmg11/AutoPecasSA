@@ -4,7 +4,7 @@ from tkinter import messagebox,filedialog #filedialog abre janelas de seleção 
 from tkinter import ttk
 from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: converter em widgets para exibição 
 import io #Fluxo de bytes (transforma imagem em bytes)
-from Crud_novo import verificacao_endereco,get_connection,selecionar_cargo,create_funcionario,update_funcionario,delete_funcionario
+from Crud_novo import get_connection,selecionar_cargo,create_funcionario,update_funcionario,delete_funcionario
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
 from Endereco import ENDERECO
@@ -401,7 +401,7 @@ class FUNCIONARIO:
             tabela.tag_configure('oddrow', background='#f2f2f2')
             tabela.tag_configure('evenrow', background='#ffffff')
             
-            cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s OR nome_func LIKE %s ",(pesquisa,pesquisa,f"%{pesquisa}%"))
+            cursor.execute("SELECT cod_func,nome_func,cpf_func,telefone_func,email_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s OR nome_func LIKE %s ",(pesquisa,pesquisa,f"%{pesquisa}%"))
             consulta_tabela = cursor.fetchall()
 
             if consulta_tabela:

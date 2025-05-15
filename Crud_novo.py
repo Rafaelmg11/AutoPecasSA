@@ -160,4 +160,15 @@ def create_cliente(Nome,Telefone,Email,CPF,Endereco,CodEndereco):
     conn.close()
 
 
+#ENDERECO CLIENTE:
+def create_endereco_cliente(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO endereco_cliente(cep,estado,cidade,bairro,logradouro,numero) VALUES (%s, %s , %s, %s, %s, %s)"
+    cursor.execute(query, (CEP,Estado,Cidade,Bairro,Logradouro,Numero))
+    conn.commit()
+    cod_endereco = cursor.lastrowid #PEGA O ID DA ULTIMA LINHA ADICIONADA (OU SEJA O CADASTRADO FEITO) 
+    cursor.close()
+    conn.close()
+    return cod_endereco
 
