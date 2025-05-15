@@ -344,7 +344,7 @@ class FUNCIONARIO:
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s", (pesquisa,pesquisa)) 
+                cursor.execute("SELECT cod_func,nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s OR cpf_func = %s", (pesquisa,pesquisa,pesquisa)) 
                 # ACIMA SELECIONA AS COLUNAS DA TABELA SE cod_func OU nome_func == pesquisa (o que foi digitado no campo de pesquisa)
                 # PERMITE PESQUISA POR NOME E CODIGO DO FUNCIONARIO
                 funcionario_pesquisa = cursor.fetchone()
@@ -401,7 +401,7 @@ class FUNCIONARIO:
             tabela.tag_configure('oddrow', background='#f2f2f2')
             tabela.tag_configure('evenrow', background='#ffffff')
             
-            cursor.execute("SELECT cod_func,nome_func,cpf_func,telefone_func,email_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s OR nome_func LIKE %s ",(pesquisa,pesquisa,f"%{pesquisa}%"))
+            cursor.execute("SELECT cod_func,nome_func,cpf_func,telefone_func,email_func,endereco_func,cargo,salario,imagem,cod_endereco FROM funcionario WHERE status = TRUE and cod_func=%s OR nome_func=%s OR nome_func LIKE %s OR cpf_func = %s OR telefone_func = %s OR email_func = %s OR cargo = %s",(pesquisa,pesquisa,f"%{pesquisa}%",pesquisa,pesquisa,pesquisa,pesquisa))
             consulta_tabela = cursor.fetchall()
 
             if consulta_tabela:

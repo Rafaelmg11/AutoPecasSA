@@ -393,7 +393,7 @@ class CLIENTE:
         self.entry_endereco.bind("<Key>", bloquear_tudo_exceto_setas)
         CodigoEntry = ctk.CTkEntry(self.root,width=177,font=("Georgia",14),placeholder_text = "Codigo do Cliente")
         PesquisaEntry = ctk.CTkEntry(self.root,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Cliente")
-        PesquisaTabelaEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Cliente na Tabela")
+        PesquisaTabelaEntry = ctk.CTkEntry(self.root,width=380,font= ("Georgia",14),placeholder_text = "Pesquisa de Cliente na Tabela")
         FocusIvisivelEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Focus")
 
 
@@ -404,7 +404,7 @@ class CLIENTE:
         EmailEntry.place(x = 510, y =80)
         self.entry_endereco.place(x = 510 ,y = 120)
         CodigoEntry.place(x = 540, y = 160)
-        PesquisaTabelaEntry.place(x = 185, y =285)
+        PesquisaTabelaEntry.place(x = 175, y =285)
         PesquisaEntry.place(x = 130,y = 25)
         FocusIvisivelEntry.place(x = 330000000, y = 300000000)
 
@@ -462,13 +462,13 @@ class CLIENTE:
         limparButton.place(x = 555, y = 25)
         #BOTÃO DE PESQUISA NA TABELA
         PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela", command=pesquisa_tabela)
-        PesquisaTabelaButton.place(x = 20, y = 285)
+        PesquisaTabelaButton.place(x = 24, y = 285)
         #BOTAO DE PESQUISA
         PesquisarButton = ctk.CTkButton(self.root,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_cliente)
         PesquisarButton.place(x = 20,y = 25)
         #BOTAO DE LISTAR
         ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_cliente)
-        ListarButton.place(x = 550 , y = 285)
+        ListarButton.place(x = 572 , y = 285)
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=130, font=("Georgia", 16), command=voltar_para_principal) #AÇÃO PARA O BOTÃO
         voltar_button.place(x=20, y=525)
