@@ -339,6 +339,30 @@ class ENDERECO_CLIENTE:
                 tabela.insert("", "end", values=linha, tags=(tag,))
 
 
+        def pesquisa_tabela():
+            conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
+            cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
+
+            #PARTE DA TABELA:
+            pesquisa = PesquisaTabelaEntry.get()
+            for linha in tabela.get_children():
+                tabela.delete(linha)
+
+            tabela.tag_configure('oddrow', background='#f2f2f2')
+            tabela.tag_configure('evenrow', background='#ffffff')
+            
+            cursor.execute("SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_cliente WHERE status = TRUE and (cod_endereco=%s OR cep = %s OR logradouro LIKE %s OR estado = %s OR cidade = %s OR numero = %s OR bairro = %s) ",(pesquisa,pesquisa,f"%{pesquisa}%",pesquisa,pesquisa,pesquisa,pesquisa))
+            consulta_tabela = cursor.fetchall()
+
+            if consulta_tabela:
+
+                for i, linha in enumerate(consulta_tabela):
+                    tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+                    tabela.insert("", "end", values=linha, tags=(tag,))
+
+            else:
+                messagebox.showerror("Error", "Nenhum resultado encontrado")
+
 
         #CRIANDO LABELS
         # CEPLabel = ctk.CTkLabel(self.root,text = "CEP: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
@@ -363,7 +387,7 @@ class ENDERECO_CLIENTE:
         self.BairroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Bairro")
         self.LogradouroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Logradouro")
         self.NumeroEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Digite o Número")
-        PesquisaTabelantry = ctk.CTkEntry(self.root,width=310,font=("Georgia",14),placeholder_text = "Pesquisa de Endereço")
+        PesquisaTabelaEntry = ctk.CTkEntry(self.root,width=310,font=("Georgia",14),placeholder_text = "Pesquisa de Endereço")
         self.FocusEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Focus")
      
 
@@ -374,7 +398,7 @@ class ENDERECO_CLIENTE:
         self.BairroEntry.place(x = 260, y = 200)
         self.LogradouroEntry.place(x = 260, y = 240)
         self.NumeroEntry.place(x = 260, y = 280)
-        PesquisaTabelantry.place(x = 165, y = 345)
+        PesquisaTabelaEntry.place(x = 165, y = 345)
         self.FocusEntry.place(x = 10000, y = 10000)
 
 
@@ -438,7 +462,7 @@ class ENDERECO_CLIENTE:
         AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=150,command=alterar_endereco)
         AlterarButton.place(x = 250, y = 35)
         #BOTÃO DE PESQUISA NA TABELA
-        PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela")
+        PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela",command=pesquisa_tabela)
         PesquisaTabelaButton.place(x = 19, y = 345)
         #BOTAO DE LISTAR
         ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_endereco)

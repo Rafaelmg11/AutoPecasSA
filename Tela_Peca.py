@@ -299,7 +299,7 @@ class PECA:
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, cod_peca ,imagem FROM peca WHERE status = TRUE and cod_peca=%s or desc_peca=%s", (pesquisa,pesquisa)) 
+                cursor.execute("SELECT tipo_peca, desc_peca, qtde_estoque, lote, valor_unitario, fornecedor, cod_peca ,imagem FROM peca WHERE status = TRUE and (cod_peca=%s or desc_peca=%s)", (pesquisa,pesquisa)) 
                 # ACIMA SELECIONA AS COLUNAS DA TABELA SE codpeca OU descpeca == pesquisa (o que foi digitado no campo de pesquisa)
                 # PERMITE PESQUISA POR DESCRICAO E CODIGO DA PECA
                 peca_pesquisa = cursor.fetchone()
@@ -357,7 +357,7 @@ class PECA:
             tabela.tag_configure('oddrow', background='#f2f2f2')
             tabela.tag_configure('evenrow', background='#ffffff')
             
-            cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca WHERE status = TRUE and cod_peca = %s OR desc_peca LIKE %s ",(pesquisa,f"%{pesquisa}%"))
+            cursor.execute("SELECT cod_peca,tipo_peca, desc_peca, qtde_estoque,valor_unitario,lote,fornecedor FROM peca WHERE status = TRUE and (cod_peca = %s OR desc_peca LIKE %s) ",(pesquisa,f"%{pesquisa}%"))
             consulta_tabela = cursor.fetchall()
 
             for i, linha in enumerate(consulta_tabela):
