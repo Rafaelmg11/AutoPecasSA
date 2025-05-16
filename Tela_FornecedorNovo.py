@@ -4,7 +4,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from Crud_novo import get_connection,create_fornecedor,update_fornecedor,delete_fornecedor
 from customtkinter import CTkImage
-from Endereco_Cliente import ENDERECO_CLIENTE
+from Endereco_Fornecedor import ENDERECO_FORNECEDOR
 
 class FORNECEDOR:
 
@@ -82,7 +82,7 @@ class FORNECEDOR:
         root_endereco = ctk.CTkToplevel(self.root)
         root_endereco.title("ENDEREÇO DE FORNECEDORES") #Titulo
         root_endereco.geometry("650x650") #Tamanho da janela
-        app_endereco= ENDERECO_CLIENTE(root_endereco, self.root , self.receber_endereco,logradouro,numero,bairro,cidade,estado,self.cod_endereco )  # self é a main_window aqui
+        app_endereco= ENDERECO_FORNECEDOR(root_endereco, self.root , self.receber_endereco,logradouro,numero,bairro,cidade,estado,self.cod_endereco )  # self é a main_window aqui
         root_endereco.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
 
     def receber_endereco(self, endereco_completo,cod_endereco,CEP,Logradouro,Numero):
