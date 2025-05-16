@@ -36,46 +36,68 @@ class TelaPrincipal:
         self.create_widgets()
 
     def create_widgets(self):
+        # Frame de menu e categorias
+        Frame_menu = ctk.CTkFrame(self.root, width=1560, height=60, fg_color="#5424A2")
+        Frame_menu.place(x=-10, y=0)
 
-        #Criando Frames:
-        Frame_menu = ctk.CTkFrame(self.root, width=1560, height=60, fg_color="#5424A2")  
-        Frame_menu.place (x = -10, y = 0)
+        Frame_categorias = ctk.CTkFrame(self.root, width=960, height=110, fg_color="#5424A2")
+        Frame_categorias.place(x=290, y=120)
 
-        #ICONS:
-        IconCarrinho = CTkImage(light_image= Image.open("icons/CarrinhoBranco.png"),size = (50, 50))
-        IconCoracao = CTkImage(light_image= Image.open("icons/Coracao.png"),size = (50, 50))
-        IconLocalizacao = CTkImage(light_image= Image.open("icons/Localizacao.png"),size = (50, 50))
-        IconSacola = CTkImage(light_image= Image.open("icons/Compras.png"),size = (50, 50))
-        IconUsuario = CTkImage(light_image= Image.open("icons/Usuario.png"),size = (50, 50))
+        # Frame principal com Canvas e Scrollbar
+        Frame_Pecas = ctk.CTkFrame(self.root, width=1000, height=600, fg_color="white", border_width=1, border_color="#CCCCCC", corner_radius=0)
+        Frame_Pecas.place(x=270, y=280)
+
+        canvas = ctk.CTkCanvas(Frame_Pecas, bg="white", highlightthickness=0)
+        canvas.pack(side="left", fill="both", expand=True)
+
+        scrollbar = ttk.Scrollbar(Frame_Pecas, orient="vertical", command=canvas.yview)
+        scrollbar.pack(side="right", fill="y")
+
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Frame interno que será rolável
+        self.scrollable_frame = ctk.CTkFrame(canvas, fg_color="white")
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        self.scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        self.exibir_produtos()
+
+    def exibir_produtos(self):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT desc_peca, valor_unitario, imagem FROM peca WHERE status = 1")
+            pecas = cursor.fetchall()
+            conn.close()
+
+            for idx, (desc, valor, imagem_blob) in enumerate(pecas):
+                row = idx // 4
+                col = idx % 4
+
+                frame = ctk.CTkFrame(self.scrollable_frame, width=200, height=250, fg_color="white", border_width=1, border_color="#CCCCCC", corner_radius=0)
+                frame.grid(row=row, column=col, padx=20, pady=20)
+
+                if imagem_blob:
+                    imagem = Image.open(io.BytesIO(imagem_blob))
+                    imagem = imagem.resize((150, 100))
+                    imagem_ctk = CTkImage(light_image=imagem, size=(150, 100))
+                    img_label = ctk.CTkLabel(frame, image=imagem_ctk, text="")
+                    img_label.image = imagem_ctk
+                    img_label.pack(pady=5)
+                else:
+                    img_label = ctk.CTkLabel(frame, text="Sem imagem")
+                    img_label.pack(pady=5)
+
+                ctk.CTkLabel(frame, text=desc, font=("Georgia", 12), wraplength=180).pack(pady=(5, 2))
+                ctk.CTkLabel(frame, text=f"R$ {valor:.2f}", font=("Georgia", 12, "bold"), text_color="#5424A2").pack()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar produtos:\n{str(e)}")
 
 
 
-        # Definindo a cor de fundo para o entry e o botão
-        cor_fundo = "#f0f0f0"  # Pode ajustar para a cor que quiser
 
-        #CRIANDO LABELS:
-        PesquisaEntry = ctk.CTkEntry(Frame_menu,width=500,font= ("Georgia",14),placeholder_text = "Digite a sua pesquisa",fg_color=cor_fundo,border_width=1, corner_radius=5)
-        PesquisaEntry.place(x = 500, y = 17)
-
-        #BOTÕES:
-        #BOTAO DE PESQUISA
-        PesquisarButton = ctk.CTkButton(Frame_menu,text = "Pesquisar",font= ("Georgia",16),width=100)
-        PesquisarButton.place(x = 380,y = 17)
-        #BOTÃO DE CARRINHO
-        CarrinhoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconCarrinho,corner_radius=0,fg_color="#5424A2",hover=False)
-        CarrinhoButton.place(x = 1450,y = 0)
-        #BOTÃO DE CORAÇÃO
-        CoracaoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconCoracao,corner_radius=0,fg_color="#5424A2",hover=False)
-        CoracaoButton.place(x = 1380,y = 0)
-        #BOTÃO DE LOCALIZAÇÃO
-        LocalizacaoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconLocalizacao,corner_radius=0,fg_color="#5424A2",hover=False)
-        LocalizacaoButton.place(x = 1200,y = 0)
-        #BOTÃO DE SACOLA DE COMPRA
-        SacolaButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconSacola,corner_radius=0,fg_color="#5424A2",hover=False)
-        SacolaButton.place(x = 1305,y = 0)
-        #BOTÃO DE USUARIO
-        UsuarioButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconUsuario,corner_radius=0,fg_color="#5424A2",hover=False)
-        UsuarioButton.place(x = 50,y = 0)
+        
 
 
 
