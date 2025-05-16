@@ -7,7 +7,7 @@ import io #Fluxo de bytes (transforma imagem em bytes)
 from Crud_novo import get_connection,selecionar_cargo,create_funcionario,update_funcionario,delete_funcionario
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
-from Endereco import ENDERECO
+from Endereco_Funcionario import ENDERECO
 # from Endereco import valor_cod_endereco,valor_endereco_completo #TESTES
 
 class FUNCIONARIO:
