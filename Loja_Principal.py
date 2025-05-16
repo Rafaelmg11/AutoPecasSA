@@ -42,7 +42,13 @@ class TelaPrincipal:
         Frame_menu.place (x = -10, y = 0)
 
         #ICONS:
-        iconLupa = CTkImage(light_image= Image.open("icons/IconLupa.png"),size = (20, 20))
+        IconCarrinho = CTkImage(light_image= Image.open("icons/CarrinhoBranco.png"),size = (50, 50))
+        IconCoracao = CTkImage(light_image= Image.open("icons/Coracao.png"),size = (50, 50))
+        IconLocalizacao = CTkImage(light_image= Image.open("icons/Localizacao.png"),size = (50, 50))
+        IconSacola = CTkImage(light_image= Image.open("icons/Compras.png"),size = (50, 50))
+        IconUsuario = CTkImage(light_image= Image.open("icons/Usuario.png"),size = (50, 50))
+
+
 
         # Definindo a cor de fundo para o entry e o botão
         cor_fundo = "#f0f0f0"  # Pode ajustar para a cor que quiser
@@ -56,8 +62,20 @@ class TelaPrincipal:
         PesquisarButton = ctk.CTkButton(Frame_menu,text = "Pesquisar",font= ("Georgia",16),width=100)
         PesquisarButton.place(x = 380,y = 17)
         #BOTÃO DE CARRINHO
-        CarrinhoButton = ctk.CTkButton(Frame_menu,text = "Pesquisar",font= ("Georgia",16),width=100)
-        CarrinhoButton.place(x = 1400,y = 17)
+        CarrinhoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconCarrinho,corner_radius=0,fg_color="#5424A2",hover=False)
+        CarrinhoButton.place(x = 1450,y = 0)
+        #BOTÃO DE CORAÇÃO
+        CoracaoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconCoracao,corner_radius=0,fg_color="#5424A2",hover=False)
+        CoracaoButton.place(x = 1380,y = 0)
+        #BOTÃO DE LOCALIZAÇÃO
+        LocalizacaoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconLocalizacao,corner_radius=0,fg_color="#5424A2",hover=False)
+        LocalizacaoButton.place(x = 1200,y = 0)
+        #BOTÃO DE SACOLA DE COMPRA
+        SacolaButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconSacola,corner_radius=0,fg_color="#5424A2",hover=False)
+        SacolaButton.place(x = 1305,y = 0)
+        #BOTÃO DE USUARIO
+        UsuarioButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconUsuario,corner_radius=0,fg_color="#5424A2",hover=False)
+        UsuarioButton.place(x = 150,y = 0)
 
 
 
