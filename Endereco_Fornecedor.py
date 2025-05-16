@@ -2,18 +2,18 @@ import customtkinter as ctk
 import mysql.connector
 from tkinter import messagebox
 from tkinter import ttk
-from Crud_novo import get_connection,create_endereco_cliente
+from Crud_novo import get_connection,create_endereco_fornecedor
 from customtkinter import CTkImage
 import requests
 
-class ENDERECO_CLIENTE:
+class ENDERECO_FORNECEDOR:
 
     def __init__(self,root,main_window,callback,logradouro='',numero='',bairro='',cidade='',estado='',cod_endereco=''): 
         self.root = root
         self.main_window = main_window
         self.callback = callback
 
-        #PUXANDO VARIAVEIS DE CLIENTE
+        #PUXANDO VARIAVEIS DE FORNECEDOR
         self.logradouro = logradouro
         self.numero = numero
         self.bairro = bairro
@@ -24,7 +24,7 @@ class ENDERECO_CLIENTE:
 
         #CRIANDO JANELA
         ctk.set_appearance_mode("light")
-        # self.root.title("ENDEREÇO DE CLIENTES") #Titulo
+        # self.root.title("ENDEREÇO DE FORNECEDORES") #Titulo
         self.root.geometry("650x620") #Tamanho da janela
         self.root.configure(fg_color = "#5424A2") #Cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
@@ -52,7 +52,7 @@ class ENDERECO_CLIENTE:
         if all([self.estado, self.cidade, self.bairro, self.logradouro, self.numero, self.cod_endereco]):
             conn = get_connection()
             cursor = conn.cursor()
-            query = "SELECT cep FROM endereco_cliente WHERE status = TRUE and estado = %s and cidade = %s and bairro = %s and logradouro = %s and numero = %s and cod_endereco = %s"
+            query = "SELECT cep FROM endereco_fornecedor WHERE status = TRUE and estado = %s and cidade = %s and bairro = %s and logradouro = %s and numero = %s and cod_endereco = %s"
             cursor.execute(query,(self.estado,self.cidade,self.bairro,self.logradouro,self.numero,self.cod_endereco))
             self.cep = cursor.fetchone()
             cursor.close()
@@ -129,7 +129,7 @@ class ENDERECO_CLIENTE:
             if item:
                 valores = tabela.item(item,"values")
                 Cod_Endereco = valores[0]
-                cursor.execute("SELECT cep,estado,cidade,bairro,logradouro,numero, cod_endereco FROM endereco_cliente WHERE status = TRUE and cod_endereco = %s", (Cod_Endereco,))
+                cursor.execute("SELECT cep,estado,cidade,bairro,logradouro,numero, cod_endereco FROM endereco_fornecedor WHERE status = TRUE and cod_endereco = %s", (Cod_Endereco,))
                 resultado = cursor.fetchone()
                 if resultado:
 
@@ -172,7 +172,7 @@ class ENDERECO_CLIENTE:
                 if CEP and Estado and Cidade and Bairro and Logradouro and Numero:
                     
                     #Salva no banco e pega o cod_endereco
-                    cod_endereco = create_endereco_cliente(CEP,Estado,Cidade,Bairro,Logradouro,Numero)
+                    cod_endereco = create_endereco_fornecedor(CEP,Estado,Cidade,Bairro,Logradouro,Numero)
 
                     print(cod_endereco)
 
@@ -180,7 +180,7 @@ class ENDERECO_CLIENTE:
                     cursor = conn.cursor()
                     try:
                         #Faz uma consulta no banco 
-                        cursor.execute("SELECT CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado) as endereco_completo FROM endereco_cliente WHERE status = TRUE and cod_endereco = %s",(cod_endereco,))
+                        cursor.execute("SELECT CONCAT(logradouro, ', ', numero, ', ', bairro, ', ', cidade, ' - ', estado) as endereco_completo FROM endereco_fornecedor WHERE status = TRUE and cod_endereco = %s",(cod_endereco,))
                         #Rcebe a consulta
                         endereco_completo = cursor.fetchone()
                         #Recebe a consulta (só pra tirar uma virgula que ficava no final pois é uma tupla)
@@ -235,20 +235,20 @@ class ENDERECO_CLIENTE:
                 cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
                 try:
                     # CONSULTA NO BANCO
-                    cursor.execute("SELECT * FROM endereco_cliente WHERE status = TRUE and cod_endereco=%s ",(cod_endereco,))  
+                    cursor.execute("SELECT * FROM endereco_fornecedor WHERE status = TRUE and cod_endereco=%s ",(cod_endereco,))  
                     endereco_pesquisa = cursor.fetchone()
                         
-                    # Verificando se o cliente foi encontrado
+                    # Verificando se o fornecedor foi encontrado
                     if endereco_pesquisa:  # SE FOI ENCONTRADO...
                         if CEP and Estado and Cidade and Bairro and Logradouro and Numero and cod_endereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                            query = "UPDATE endereco_cliente SET cep = %s, estado = %s, cidade = %s, bairro = %s, logradouro = %s, numero = %s WHERE status = TRUE and cod_endereco = %s"
+                            query = "UPDATE endereco_fornecedor SET cep = %s, estado = %s, cidade = %s, bairro = %s, logradouro = %s, numero = %s WHERE status = TRUE and cod_endereco = %s"
                             cursor.execute(query,(CEP,Estado,Cidade,Bairro,Logradouro,Numero,cod_endereco)) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
                             
 
                             cod_endereco_tupla = (cod_endereco,)
 
 
-                            cursor.execute("SELECT estado,cidade,bairro,logradouro,numero FROM endereco_cliente WHERE status = TRUE and cod_endereco = %s",(cod_endereco_tupla))
+                            cursor.execute("SELECT estado,cidade,bairro,logradouro,numero FROM endereco_fornecedor WHERE status = TRUE and cod_endereco = %s",(cod_endereco_tupla))
 
                             endereco_completo = cursor.fetchone()
 
@@ -260,7 +260,7 @@ class ENDERECO_CLIENTE:
 
                             print(endereco_formatado)
 
-                            query = "UPDATE cliente SET endereco_cliente = %s WHERE cod_endereco = %s"
+                            query = "UPDATE fornecedor SET endereco_fornecedor = %s WHERE cod_endereco = %s"
                             cursor.execute(query,(endereco_formatado,cod_endereco))
 
                             endereco_completo = endereco_formatado
@@ -314,7 +314,7 @@ class ENDERECO_CLIENTE:
             cursor = conn.cursor()
             for linha in tabela.get_children():
                 tabela.delete(linha)
-            cursor.execute("SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_cliente WHERE status = TRUE")
+            cursor.execute("SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_fornecedor WHERE status = TRUE")
             consulta_tabela = cursor.fetchall()
 
             for linha in consulta_tabela:
@@ -331,7 +331,7 @@ class ENDERECO_CLIENTE:
             tabela.tag_configure('oddrow', background='white')  # Linha cinza clara
             tabela.tag_configure('evenrow', background='#DBE1FF')  # Linha branca
 
-            cursor.execute(" SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_cliente WHERE status = TRUE")
+            cursor.execute(" SELECT cod_endereco,cep,estado,cidade,bairro,logradouro,numero FROM endereco_fornecedor WHERE status = TRUE")
             consulta_tabela = cursor.fetchall()
 
             for i, linha in enumerate(consulta_tabela):
@@ -458,6 +458,6 @@ def valor_endereco_completo():
 
 if __name__ == "__main__":
     root = ctk.CTk()
-    app = ENDERECO_CLIENTE(root,main_window=None,callback=None)
+    app = ENDERECO_FORNECEDOR(root,main_window=None,callback=None)
     root.mainloop()
     

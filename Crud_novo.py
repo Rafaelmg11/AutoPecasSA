@@ -190,3 +190,51 @@ def create_endereco_cliente(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
     conn.close()
     return cod_endereco
 
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#FUNCÕES FORNECEDOR:
+def create_fornecedor(Nome,Telefone,Email,CNPJ,InscEstadual,Endereco,CodEndereco):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO fornecedor (nome_fornec,telefone_fornec,email_fornec,cnpj,inscestadual,endereco_fornec,cod_endereco) VALUES ( %s, %s , %s, %s, %s, %s,%s)"
+    cursor.execute(query,(Nome,Telefone,Email,CNPJ,InscEstadual,Endereco,CodEndereco))
+    conn.commit ()
+    cursor.close()
+    conn.close()
+
+
+def update_fornecedor(Cod_Fornecedor,Nome,Telefone,Email,CNPJ,InscEstadual,Endereco,CodEndereco):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "UPDATE fornecedor SET nome_fornec = %s, telefone_fornec = %s, email_fornec = %s, cnpj = %s,inscestadual = %s, endereco_fornec = %s, cod_endereco = %s WHERE cod_fornec = %s"
+    cursor.execute(query,(Nome,Telefone,Email,CNPJ,InscEstadual,Endereco,CodEndereco,Cod_Fornecedor))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def delete_fornecedor(Cod_Fornecedor):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "UPDATE fornecedor SET status = FALSE WHERE cod_fornec = %s"
+    cursor.execute(query,(Cod_Fornecedor,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+#ENDERECO FORNECEDOR:
+def create_endereco_fornecedor(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO endereco_fornecedor(cep,estado,cidade,bairro,logradouro,numero) VALUES (%s, %s , %s, %s, %s, %s)"
+    cursor.execute(query, (CEP,Estado,Cidade,Bairro,Logradouro,Numero))
+    conn.commit()
+    cod_endereco = cursor.lastrowid #PEGA O ID DA ULTIMA LINHA ADICIONADA (OU SEJA O CADASTRADO FEITO) 
+    cursor.close()
+    conn.close()
+    return cod_endereco
+
+
+
+
