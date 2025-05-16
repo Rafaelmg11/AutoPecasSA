@@ -75,7 +75,7 @@ class TelaPrincipal:
         SacolaButton.place(x = 1305,y = 0)
         #BOTÃO DE USUARIO
         UsuarioButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=IconUsuario,corner_radius=0,fg_color="#5424A2",hover=False)
-        UsuarioButton.place(x = 150,y = 0)
+        UsuarioButton.place(x = 50,y = 0)
 
 
 
