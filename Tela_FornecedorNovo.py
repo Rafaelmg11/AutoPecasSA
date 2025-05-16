@@ -136,6 +136,7 @@ class FORNECEDOR:
                     TelefoneEntry.delete(0, ctk.END)
                     EmailEntry.delete(0, ctk.END)
                     self.entry_endereco.delete(0, ctk.END)
+                    InscEstadualEntry.delete(0, ctk.END)
                     CodigoEntry.delete(0, ctk.END)
     
 
@@ -173,16 +174,17 @@ class FORNECEDOR:
                 messagebox.showerror("Error","Todos os campos são obrigatórios!")
 
 
-        #FUNÇÃO DE ALTERAR cliente:
-        def alterar_cliente():
+        #FUNÇÃO DE ALTERAR FORNECEDOR:
+        def alterar_fornecedor():
 
             #RECEBENDO VALORES
             Nome = NomeEntry.get()
-            CPF = CNPJEntry.get()
             Telefone = TelefoneEntry.get()
             Email = EmailEntry.get()
+            CNPJ = CNPJEntry.get()
+            InscEstadual = InscEstadualEntry.get()
             Endereco =  self.entry_endereco.get()
-            cod_cliente = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O cod_cliente DA TABELA
+            cod_fornecedor = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O cod_fornecedor DA TABELA
             CodEndereco = self.cod_endereco
 
             if "@" not in Email or "." not in Email:
@@ -194,88 +196,89 @@ class FORNECEDOR:
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT * FROM cliente WHERE status = TRUE and cod_cliente=%s ",(cod_cliente,))  
-                cliente_pesquisa = cursor.fetchone()
+                cursor.execute("SELECT * FROM fornecedor WHERE status = TRUE and cod_fornec=%s ",(cod_fornecedor,))  
+                fornecedor_pesquisa = cursor.fetchone()
                     
-                # Verificando se o cliente foi encontrado
-                if cliente_pesquisa:  # SE FOI ENCONTRADO...
-                    if cod_cliente and Nome and Telefone and Email and CPF and Endereco and CodEndereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
-                        update_fornecedor(cod_cliente,Nome,Telefone,Email,CPF,Endereco,CodEndereco) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
+                # Verificando se o fornecedor foi encontrado
+                if fornecedor_pesquisa:  # SE FOI ENCONTRADO...
+                    if cod_fornecedor and Nome and Telefone and Email and CNPJ and InscEstadual and Endereco and CodEndereco: #SE TODAS A VARIAVEIS FORAM PREENCHIDAS...
+                        update_fornecedor(cod_fornecedor,Nome,Telefone,Email,CNPJ,InscEstadual,Endereco,CodEndereco) #PUXANDO A FUNÇÃO DO CRUD E PASSANDO AS VARIAVEIS
                             
                         limparCampos()
 
-                        messagebox.showinfo("Success","Cliente alterado com sucesso!")
+                        messagebox.showinfo("Success","Fornecedor alterado com sucesso!")
 
                     else:
                         messagebox.showerror("Error","Todos os campos são obrigatórios")
                 else:
-                    messagebox.showerror("Error","Cadastro de Cliente não existe")
+                    messagebox.showerror("Error","Cadastro de Fornecedor não existe")
 
             except Exception as e:
                 print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
                     
 
         #FUNÇÃO DE EXCLUIR
-        def excluir_cliente():
-            cod_cliente = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O cod_cliente DA TABELA
+        def excluir_fornecedor():
+            cod_fornecedor = CodigoEntry.get() #RECEBENDO O VALOR QUE É PRA SER O cod_fornecedor DA TABELA
             conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT * FROM cliente WHERE status = TRUE and cod_cliente=%s ",(cod_cliente,)) 
-                cliente_pesquisa = cursor.fetchone()
+                cursor.execute("SELECT * FROM fornecedor WHERE status = TRUE and cod_fornec=%s ",(cod_fornecedor,)) 
+                fornecedor_pesquisa = cursor.fetchone()
                 
                 
                 
-                # Verificando se o cliente foi encontrado
-                if cliente_pesquisa:  # SE FOI ENCONTRADO...
-                    cursor.execute("SELECT cod_endereco FROM cliente WHERE status = TRUE AND cod_cliente=%s",(cod_cliente,))#SELECIONANDO O COD_ENDERECO
+                # Verificando se o fornecedor foi encontrado
+                if fornecedor_pesquisa:  # SE FOI ENCONTRADO...
+                    cursor.execute("SELECT cod_endereco FROM fornecedor WHERE status = TRUE AND cod_fornec=%s",(cod_fornecedor,))#SELECIONANDO O COD_ENDERECO
                     cod_endereco_consulta = cursor.fetchone()#RECEBENDO O COD_ENDERECO
-                    delete_fornecedor(cod_cliente) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
-                    cursor.execute("UPDATE endereco_cliente SET status = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
+                    delete_fornecedor(cod_fornecedor) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
+                    cursor.execute("UPDATE endereco_fornecedor SET status = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
                     limparCampos()
                     conn.commit()
                     cursor.close()
                     conn.close()
-                    messagebox.showinfo("Success","Cliente excluido com sucesso")
+                    messagebox.showinfo("Success","Fornecedor excluido com sucesso")
                 else:
-                    messagebox.showerror("Error","Codigo de Cliente não existe")
+                    messagebox.showerror("Error","Codigo de Fornecedor não existe")
             except Exception as e:
                 print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO 
 
 
         #FUNÇÃO DE PESQUISAR OBS: NAO TEM RELAÇÃO COM O CRUD
-        def pesquisar_cliente():
+        def pesquisar_fornecedor():
             pesquisa = PesquisaEntry.get() #RECEBENDO VALOR PARA PESQUISAR
             conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
             cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
             try:
                 # CONSULTA NO BANCO
-                cursor.execute("SELECT cod_cliente,nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente,cod_endereco FROM cliente WHERE status = TRUE and (cod_cliente=%s OR nome_cliente=%s OR cpf_cliente = %s)", (pesquisa,pesquisa,pesquisa)) 
-                # ACIMA SELECIONA AS COLUNAS DA TABELA SE cod_cliente OU nome_cliente == pesquisa (o que foi digitado no campo de pesquisa)
-                # PERMITE PESQUISA POR NOME E CODIGO DO cliente
-                cliente_pesquisa = cursor.fetchone()
+                cursor.execute("SELECT cod_fornec,nome_fornec,telefone_fornec,email_fornec,cnpj,inscestadual,endereco_fornec,cod_endereco FROM fornecedor WHERE status = TRUE and (cod_fornec=%s OR nome_fornec=%s OR cnpj = %s OR inscestadual = %s)", (pesquisa,pesquisa,pesquisa,pesquisa)) 
+                # ACIMA SELECIONA AS COLUNAS DA TABELA SE cod_fornecedor OU nome_fornecedor == pesquisa (o que foi digitado no campo de pesquisa)
+                # PERMITE PESQUISA POR NOME E CODIGO DO fornecedor
+                fornecedor_pesquisa = cursor.fetchone()
                 
-                # Verificando se o cliente foi encontrado
-                if cliente_pesquisa:  # SE FOI ENCONTRADO...
-                    cod_cliente,Nome,Telefone,Email,CPF,Endereco,CodEndereco = cliente_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
+                # Verificando se o fornecedor foi encontrado
+                if fornecedor_pesquisa:  # SE FOI ENCONTRADO...
+                    cod_fornecedor,Nome,Telefone,Email,CNPJ,InscEstadual,Endereco,CodEndereco = fornecedor_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
                 
                     limparCampos()
 
                     # Inserindo os dados nas entradas (Entry)
-                    CodigoEntry.insert(0, cod_cliente)
+                    CodigoEntry.insert(0, cod_fornecedor)
                     NomeEntry.insert(0, Nome)
                     TelefoneEntry.insert(0, Telefone)
                     EmailEntry.insert(0, Email)
-                    CNPJEntry.insert(0, CPF)
+                    CNPJEntry.insert(0, CNPJ)
+                    InscEstadualEntry.insert(0, InscEstadual)
                     self.entry_endereco.insert(0, Endereco)
                     CodEndereco = CodEndereco
                     print(CodEndereco)
                     #Inserindo os dado na combo box:
 
-                    messagebox.showinfo("Success", "Cliente encontrado")
+                    messagebox.showinfo("Success", "Fornecedor encontrado")
                 else:
-                    messagebox.showerror("Error", "Cliente não encontrado")
+                    messagebox.showerror("Error", "Fornecedor não encontrado")
                     limparCampos()
 
             except Exception as e:
@@ -294,7 +297,7 @@ class FORNECEDOR:
             tabela.tag_configure('oddrow', background='#f2f2f2')
             tabela.tag_configure('evenrow', background='#ffffff')
             
-            cursor.execute("SELECT cod_cliente,nome_cliente,cpf_cliente,telefone_cliente,email_cliente,endereco_cliente,cod_endereco FROM cliente WHERE status = TRUE and (cod_cliente=%s OR nome_cliente=%s OR nome_cliente LIKE %s OR cpf_cliente = %s OR email_cliente = %s OR telefone_cliente = %s) ",(pesquisa,pesquisa,f"%{pesquisa}%",pesquisa,pesquisa,pesquisa))
+            cursor.execute("SELECT cod_fornec,nome_fornec,cnpj,inscestadual,telefone_fornec,email_fornec,endereco_fornec,cod_endereco FROM fornecedor WHERE status = TRUE and (cod_fornec=%s OR nome_fornec=%s OR nome_fornec LIKE %s OR cnpj = %s OR email_fornec = %s OR telefone_fornec = %s OR inscestadual = %s) ",(pesquisa,pesquisa,f"%{pesquisa}%",pesquisa,pesquisa,pesquisa,pesquisa))
             consulta_tabela = cursor.fetchall()
 
             if consulta_tabela:
@@ -348,7 +351,9 @@ class FORNECEDOR:
             PesquisaEntry.focus()
             PesquisaTabelaEntry.delete(0, ctk.END)
             PesquisaTabelaEntry.focus()
-            
+            InscEstadualEntry.delete(0, ctk.END)
+            InscEstadualEntry.focus()
+
             FocusIvisivelEntry.focus()
        
             #TABELA
@@ -356,7 +361,7 @@ class FORNECEDOR:
             cursor = conn.cursor()
             for linha in tabela.get_children():
                 tabela.delete(linha)
-            cursor.execute("SELECT cod_cliente,nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente FROM cliente WHERE  status = TRUE ")
+            cursor.execute("SELECT cod_fornec,nome_fornec,telefone_fornec,email_fornec,cnpj,inscestadual,endereco_fornec FROM fornecedor WHERE  status = TRUE ")
             consulta_tabela = cursor.fetchall()
 
             for linha in consulta_tabela:
@@ -459,10 +464,10 @@ class FORNECEDOR:
         CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=140, command=cadastrar_fornecedor)
         CadastrarButton.place(x = 20 , y = 225)
         #BOTÃO ALTERAR
-        AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=140,command=alterar_cliente)
+        AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=140,command=alterar_fornecedor)
         AlterarButton.place(x = 175, y = 225)
         #BOTAO DE EXCLUIR
-        ExcluirButton = ctk.CTkButton(self.root,text = "EXCLUIR",font= ("Georgia",14),width=140,command=excluir_cliente)
+        ExcluirButton = ctk.CTkButton(self.root,text = "EXCLUIR",font= ("Georgia",14),width=140,command=excluir_fornecedor)
         ExcluirButton.place(x = 330, y = 225)
         #BOTÃO DE LIMPAR
         limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=160,command=limparCampos)
@@ -471,7 +476,7 @@ class FORNECEDOR:
         PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela", command=pesquisa_tabela)
         PesquisaTabelaButton.place(x = 24, y = 285)
         #BOTAO DE PESQUISA
-        PesquisarButton = ctk.CTkButton(self.root,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_cliente)
+        PesquisarButton = ctk.CTkButton(self.root,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_fornecedor)
         PesquisarButton.place(x = 20,y = 25)
         #BOTAO DE LISTAR
         ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_fornecedor)
