@@ -17,7 +17,7 @@ class TelaPrincipal:
         self.main_window = main_window
         ctk.set_appearance_mode("light")
         self.root.title("Tela Principal")
-        self.root.configure(fg_color = "WHITE") #Cor de fundo da self.root
+        self.root.configure(fg_color = "#F9F5FF") #Cor de fundo da self.root
 
         # Tamanho desejado da janela
         largura = 1600
@@ -123,7 +123,7 @@ class TelaPrincipal:
         #Adicionando Barra de Rolagem
         self.canvas = ctk.CTkCanvas(Frame_Pecas,bg = "BLACK",highlightthickness=0,width = 1245, height = 682)
         BarraRolagem = ctk.CTkScrollbar(Frame_Pecas,orientation="vertical",command=self.canvas.yview,height=543,bg_color="WHITE")
-        self.Rolavel_Frame = ctk.CTkFrame(self.canvas,fg_color="WHITE",width=1000,height=2820,corner_radius=0)
+        self.Rolavel_Frame = ctk.CTkFrame(self.canvas,fg_color="#F5EFFF",width=1000,height=2820,corner_radius=0)
         
         BarraRolagem.bind("<Configure>",lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
 
@@ -134,8 +134,8 @@ class TelaPrincipal:
         BarraRolagem.place(x = 980, y= 2)
 
         #Criar frame do produto
-        self.create_produto_frame(self.Rolavel_Frame)
-        self.pagina_unitaria()
+        self.create_produto_frame(self.Rolavel_Frame) #Declarando o parent_frame
+        self.pagina_unitaria(self.Rolavel_Frame)
 
         #ICONS:
         self.IconCarrinho = CTkImage(light_image= Image.open("icons/CarrinhoBranco.png"),size = (50, 50))
@@ -206,13 +206,23 @@ class TelaPrincipal:
         FreioButton = ctk.CTkButton(Frame_categorias,text = "FREIO",font= ("Georgia",16),compound="top",width=0,image=self.IconFreio,corner_radius=0,fg_color="#5424A2",command=self.click_freio)
         FreioButton.place(x = 888,y = 5)
 
-    def pagina_unitaria(self):
-        self.SoloFrame = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="WHITE",corner_radius=0)  
-        self.SoloFrame.place(x = 0, y = 0)
-        self.IconVoltar = CTkImage(light_image= Image.open("icons/Voltar.png"),size = (50, 50)) 
-        self.VoltarButton =  ctk.CTkButton(self.root,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
-        self.VoltarButton.place(x = 0 , y = 0)
+    def pagina_unitaria(self, parent_frame):
+        self.SoloFrame = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="BLUE",corner_radius=0)  
+        self.SoloFrame.place(x = 0, y = 60)
+        self.IconVoltar = CTkImage(light_image= Image.open("icons/X.png"),size = (50, 50)) 
+        self.VoltarButton =  ctk.CTkButton(self.SoloFrame,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
+        self.VoltarButton.place(x = 2 , y = 2)
 
+        self.InformacoesFrame = ctk.CTkFrame(self.SoloFrame, width= 500, height= 750, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=6)
+        self.InformacoesFrame.place(x = 1020, y = 15)
+        self.ImagemFrame = ctk.CTkFrame(self.SoloFrame, width= 500, height= 500, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=6)
+        self.ImagemFrame.place(x = 450, y = 15)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT cod_peca, cod_fornecedor, desc_peca, fornecedor, imagem, lote, qtde_estoque, tipo_peca , valor_unitario WHERE status = TRUE AND (desc_peca = )")
+
+        
 
 
     def click_motor(self):
@@ -317,12 +327,12 @@ class TelaPrincipal:
 
         for i, peca in enumerate(produtos_pagina):
 
-            Descricao = peca[0]
-            Preco = peca[1]
-            Imagem_Bytes = peca[2]
+            self.Descricao = peca[0]
+            self.Preco = peca[1]
+            self.Imagem_Bytes = peca[2]
             
             #Criar o frame do produto
-            produto_frame = ctk.CTkFrame (parent_frame,width=frame_width,height=frame_height,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=0)
+            produto_frame = ctk.CTkFrame (parent_frame,width=frame_width,height=frame_height,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=8)
             produto_frame.place(x = x , y = y)
 
             imagem_frame = ctk.CTkFrame (produto_frame,width=160,height=165,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=0)
@@ -333,14 +343,14 @@ class TelaPrincipal:
             # VerMaisButton = ctk.CTkButton(produto_frame,text = "VER MAIS",font= ("Georgia",14),width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command=pagina_unitaria)
             # VerMaisButton.place(x = 118, y = 240)
 
-            DescricaoLabel = ctk.CTkLabel(produto_frame,text = (Descricao),font = ("Georgia",14),fg_color = "WHITE", text_color = "#5424A2",width=160,wraplength=160,justify="left") 
-            DescricaoLabel.place(x = 20,y = 175)
+            self.DescricaoLabel = ctk.CTkLabel(produto_frame,text = (self.Descricao),font = ("Georgia",14),fg_color = "WHITE", text_color = "#5424A2",width=160,wraplength=160,justify="left") 
+            self.DescricaoLabel.place(x = 20,y = 175)
             
-            PrecoLabel = ctk.CTkLabel(produto_frame,text = f"R${Preco:.2f}",font = ("Georgia",20),fg_color = "WHITE", text_color = "#5424A2") 
-            PrecoLabel.place(x = 10 , y = 240)
+            self.PrecoLabel = ctk.CTkLabel(produto_frame,text = f"R${self.Preco:.2f}",font = ("Georgia",20),fg_color = "WHITE", text_color = "#5424A2") 
+            self.PrecoLabel.place(x = 10 , y = 240)
 
-            if Imagem_Bytes:
-                Imagem = Image.open(io.BytesIO(Imagem_Bytes))
+            if self.Imagem_Bytes:
+                Imagem = Image.open(io.BytesIO(self.Imagem_Bytes))
                 Imagem = Imagem.resize((120,120))
                 Imagem_Display = CTkImage(light_image=Imagem, size = (160,165))
                 Imagem_Label = ctk.CTkLabel(imagem_frame, image=Imagem_Display, text="")
