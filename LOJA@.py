@@ -38,12 +38,14 @@ class TelaPrincipal:
         self.itens_por_pagina = 40
         self.produto_scrollable_frame = None
 
+        self.contador_pagina()
         self.create_widgets()
-
-   
-
+ 
 
     def click_usuario(self):
+
+        def fechar_frame():
+            User_Frame.destroy()
 
         User_Frame =  ctk.CTkFrame (self.root,fg_color="#5424A2",border_width=1, border_color="#CCCCCC",corner_radius=0,width=330,height= 845)
         User_Frame.place(x = 0,y = 0 )
@@ -69,7 +71,7 @@ class TelaPrincipal:
         Userimagem_label.place(x = 1 , y = 40)
 
         #BOTÕES
-        XButton = ctk.CTkButton(User_Frame,text = "",font= ("Georgia",16),width=0,image=self.IconX,corner_radius=0,fg_color="#5424A2")
+        XButton = ctk.CTkButton(User_Frame,text = "",font= ("Georgia",16),width=0,image=self.IconX,corner_radius=0,fg_color="#5424A2",command=fechar_frame)
         XButton.place(x = 280,y = 10)
 
         InicioButton = ctk.CTkButton(User_Frame,text = "Início",font= ("Georgia",25),width=328,image=self.IconInicio,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
@@ -92,12 +94,6 @@ class TelaPrincipal:
 
         WhatsButton = ctk.CTkButton(User_Frame,text = "Whatsapp",font= ("Georgia",25),width=328,image=self.IconWhats,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
         WhatsButton.place(x = 1,y = 480)
-
-
-
-
-
-
 
 
     def create_widgets(self):
@@ -235,9 +231,15 @@ class TelaPrincipal:
         cursor.execute("SELECT desc_peca, valor_unitario, imagem FROM peca WHERE status = TRUE")
         Pecas = cursor.fetchall()
         conn.close()
+
+        #CALCULANDO O TOTAL DE PRODUTOS PARA LIMITE DE PAGINAÇÃO
+        total_produtos = len(Pecas)
+        total_paginas = (total_produtos + self.itens_por_pagina - 1) // self.itens_por_pagina #arredonda pra cima
         
-        offset = self.pagina_atual * self.itens_por_pagina
-        produtos_pagina = Pecas[offset : offset + self.itens_por_pagina]
+        #CALCULANDO PRODUTOS PARA TAIS PAGINAÇÕES
+        offset = self.pagina_atual * self.itens_por_pagina #Calcula o ponto de início da listagem dos produtos para a pagina atual
+        produtos_pagina = Pecas[offset : offset + self.itens_por_pagina] # == Começa por offset e pega até offset + itens_por_pagina
+
 
 
   
@@ -287,20 +289,44 @@ class TelaPrincipal:
             else:
                 x += 245    # Próxima coluna
 
-        anterior_btn = ctk.CTkButton(self.root, text="← Anterior", command=self.pagina_anterior)
-        anterior_btn.place(x=10, y=600)
+        AnteriorButton = ctk.CTkButton(self.root,text = "Anterior",font= ("Georgia",18),compound="top",width=100,corner_radius=5,fg_color="#5424A2",command=self.pagina_anterior)
+        AnteriorButton.place(x=1030, y=250)
 
-        proximo_btn = ctk.CTkButton(self.root, text="Próximo →", command=self.pagina_proxima)
-        proximo_btn.place(x=150, y=600)
+        ProximoButton = ctk.CTkButton(self.root,text = "Próximo",font= ("Georgia",18),compound="top",width=100,corner_radius=5,fg_color="#5424A2",command=self.pagina_proxima)
+        ProximoButton.place(x=1170, y=250)
+
+
+        # Desativa o botão "Anterior" se a página for = 0
+        if self.pagina_atual == 0:
+            AnteriorButton.configure(state = "disabled")
+
+        # Desativa o botão "Próximo" se estiver na última página
+        if self.pagina_atual >= total_paginas - 1:
+            ProximoButton.configure(state="disabled")
+
+
+    def contador_pagina(self):
+        def bloquear_tudo_exceto_setas(event):
+             return "break"
+        QtdePaginaEntry = ctk.CTkEntry(self.root,width=30,font=("Georgia",24))
+        QtdePaginaEntry.place(x = 1135, y = 245)
+        QtdePaginaEntry.delete(0, ctk.END)
+        QtdePaginaEntry.insert(0, self.pagina_atual)
+        QtdePaginaEntry.bind("<Key>",bloquear_tudo_exceto_setas)
+            
 
     def pagina_proxima(self):
+   
         self.pagina_atual += 1
         self.create_produto_frame(self.Rolavel_Frame)
+        self.contador_pagina()
 
     def pagina_anterior(self):
+
         if self.pagina_atual > 0:
             self.pagina_atual -= 1
             self.create_produto_frame(self.Rolavel_Frame)
+        self.contador_pagina()
 
 
 
