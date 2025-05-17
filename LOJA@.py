@@ -46,7 +46,7 @@ class TelaPrincipal:
 
         #CRIANDO ENTRY:
         self.PesquisaEntry = ctk.CTkEntry(self.Freme_menu,width=500,height=35,font= ("Georgia",14),placeholder_text = "Digite a sua pesquisa",fg_color="#f0f0f0",border_width=1, corner_radius=5)
-        self.PesquisaEntry.place(x = 500, y = 14)
+        self.PesquisaEntry.place(x = 600, y = 14)
 
         self.Pesquisa = None
 
@@ -64,7 +64,7 @@ class TelaPrincipal:
         User_Frame =  ctk.CTkFrame (self.root,fg_color="#5424A2",border_width=1, border_color="#CCCCCC",corner_radius=0,width=330,height= 845)
         User_Frame.place(x = 0,y = 0 )
 
-        Usuario_Label = ctk.CTkLabel(self.root,text = "NOME DO USUARIO: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+        Usuario_Label = ctk.CTkLabel(User_Frame,text = "NOME DO USUARIO: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         Usuario_Label.place(x = 80, y = 60)
 
     
@@ -88,7 +88,7 @@ class TelaPrincipal:
         XButton = ctk.CTkButton(User_Frame,text = "",font= ("Georgia",16),width=0,image=self.IconX,corner_radius=0,fg_color="#5424A2",command=fechar_frame)
         XButton.place(x = 280,y = 10)
 
-        InicioButton = ctk.CTkButton(User_Frame,text = "Início",font= ("Georgia",25),width=328,image=self.IconInicio,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        InicioButton = ctk.CTkButton(User_Frame,text = "Início",font= ("Georgia",25),width=328,image=self.IconInicio,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command=self.click_inicio)
         InicioButton.place(x = 1,y = 150)
 
         CarrinhoButton_Painel = ctk.CTkButton(User_Frame,text = "Carrinho",font= ("Georgia",25),width=328,image=self.IconCarrinho_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
@@ -108,6 +108,7 @@ class TelaPrincipal:
 
         WhatsButton = ctk.CTkButton(User_Frame,text = "Whatsapp",font= ("Georgia",25),width=328,image=self.IconWhats,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
         WhatsButton.place(x = 1,y = 480)
+
 
 
     def create_widgets(self):
@@ -134,6 +135,7 @@ class TelaPrincipal:
 
         #Criar frame do produto
         self.create_produto_frame(self.Rolavel_Frame)
+        self.pagina_unitaria()
 
         #ICONS:
         self.IconCarrinho = CTkImage(light_image= Image.open("icons/CarrinhoBranco.png"),size = (50, 50))
@@ -150,13 +152,17 @@ class TelaPrincipal:
         self.IconSuspensao = CTkImage(light_image= Image.open("icons/Suspensao.png"),size = (50, 50))
         self.IconTransmissao = CTkImage(light_image= Image.open("icons/Transmissao.png"),size = (50, 50))
         self.IconFreio = CTkImage(light_image= Image.open("icons/Freio.png"),size = (50, 50))
+        self.IconIncioPrincipal = CTkImage(light_image= Image.open("icons/InicioPrincipal.png"),size = (50, 50))
 
 
 
         #BOTÕES:
+        #BOTÃO DE INICIO
+        InicioButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),compound="top",width=0,image=self.IconIncioPrincipal,corner_radius=0,fg_color="#5424A2",command=self.click_inicio)
+        InicioButton.place(x = 150,y = 0)
         #BOTAO DE PESQUISA
         self.PesquisarButton = ctk.CTkButton(self.Freme_menu,text = "Pesquisar",font= ("Georgia",16),width=100,height=35,command=lambda: self.create_produto_frame(self.Rolavel_Frame))
-        self.PesquisarButton.place(x = 380,y = 14)
+        self.PesquisarButton.place(x = 480,y = 14)
         #BOTÃO DE CARRINHO
         CarrinhoButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCarrinho,corner_radius=0,fg_color="#5424A2")
         CarrinhoButton.place(x = 1450,y = 0)
@@ -200,6 +206,15 @@ class TelaPrincipal:
         FreioButton = ctk.CTkButton(Frame_categorias,text = "FREIO",font= ("Georgia",16),compound="top",width=0,image=self.IconFreio,corner_radius=0,fg_color="#5424A2",command=self.click_freio)
         FreioButton.place(x = 888,y = 5)
 
+    def pagina_unitaria(self):
+        self.SoloFrame = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="WHITE",corner_radius=0)  
+        self.SoloFrame.place(x = 0, y = 0)
+        self.IconVoltar = CTkImage(light_image= Image.open("icons/Voltar.png"),size = (50, 50)) 
+        self.VoltarButton =  ctk.CTkButton(self.root,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
+        self.VoltarButton.place(x = 0 , y = 0)
+
+
+
     def click_motor(self):
         self.Pesquisa = "Motor"
         self.create_produto_frame(self.Rolavel_Frame)
@@ -235,6 +250,10 @@ class TelaPrincipal:
     def click_arrefecimento(self):
         self.Pesquisa = "arrefecimento"
         self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_inicio(self):
+        self.Pesquisa = ""
+        self.create_produto_frame(self.Rolavel_Frame)
     
 
 
@@ -250,7 +269,7 @@ class TelaPrincipal:
         entrada = self.PesquisaEntry.get()
         self.Pesquisa = self.Pesquisa or entrada
         self.Pesquisa = self.Pesquisa.lower()
-
+        self.PesquisaEntry.delete(0, ctk.END)
 
         self.produto_scrollable_frame = parent_frame  # Armazena referência para trocar de página
 
@@ -264,14 +283,13 @@ class TelaPrincipal:
 
         #Imagem:
         self.Imagem_Padrao = CTkImage(light_image=Image.open("sem_imagem.png"),size=(160,165))
-
+        
         #Configurações dos frames de produto
         frame_width = 200
         frame_height = 270
         x = 30  # Posição X inicial
         y = 20  # Posição Y inicial
         
-
         #BANCO DE DADOS:
         conn = get_connection()
         cursor = conn.cursor()
@@ -287,15 +305,22 @@ class TelaPrincipal:
         offset = self.pagina_atual * self.itens_por_pagina #Calcula o ponto de início da listagem dos produtos para a pagina atual
         produtos_pagina = Pecas[offset : offset + self.itens_por_pagina] # == Começa por offset e pega até offset + itens_por_pagina
 
+        #SEM RESULTADOS
+        if not produtos_pagina:
+                self.SemResultado = CTkImage(light_image=Image.open("icons/SemResultadoVermelho.png"),size=(300,300))
+                Imagem_Label = ctk.CTkLabel(parent_frame, image=self.SemResultado, text="")
+                Imagem_Label.place(x = 350, y = 50)
+                SemResultadoLabel = ctk.CTkLabel(parent_frame,text = "Nenhum resultado econtrado!",font = ("Georgia",20),fg_color = "WHITE", text_color = "BLACK") 
+                SemResultadoLabel.place(x = 375, y = 400)
+                VoltarButton = ctk.CTkButton(parent_frame,text = "Voltar para o início",font= ("Georgia",16),compound="top",width=0,corner_radius=0,fg_color="#10E23A",command=self.click_inicio)
+                VoltarButton.place(x = 430, y = 450 )
 
-
-  
         for i, peca in enumerate(produtos_pagina):
 
             Descricao = peca[0]
             Preco = peca[1]
             Imagem_Bytes = peca[2]
-
+            
             #Criar o frame do produto
             produto_frame = ctk.CTkFrame (parent_frame,width=frame_width,height=frame_height,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=0)
             produto_frame.place(x = x , y = y)
@@ -303,8 +328,10 @@ class TelaPrincipal:
             imagem_frame = ctk.CTkFrame (produto_frame,width=160,height=165,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=0)
             imagem_frame.place(x = 20, y =9)
 
-            VerMaisButton = ctk.CTkButton(produto_frame,text = "VER MAIS",font= ("Georgia",14),width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
-            VerMaisButton.place(x = 118, y = 240)
+
+
+            # VerMaisButton = ctk.CTkButton(produto_frame,text = "VER MAIS",font= ("Georgia",14),width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command=pagina_unitaria)
+            # VerMaisButton.place(x = 118, y = 240)
 
             DescricaoLabel = ctk.CTkLabel(produto_frame,text = (Descricao),font = ("Georgia",14),fg_color = "WHITE", text_color = "#5424A2",width=160,wraplength=160,justify="left") 
             DescricaoLabel.place(x = 20,y = 175)
@@ -324,7 +351,7 @@ class TelaPrincipal:
 
             # Estado individual (usando lista para mutabilidade dentro da função)
             estado_favorito = [False]
-            # Criar botão e função com lambda para capturar esse botão e estad
+            # Criar botão e função com lambda para capturar esse botão e estado
             FavoritarButton = ctk.CTkButton(produto_frame,text = "",font= ("Georgia",14),image=self.IconCoracaoVazio_Produto,width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
             FavoritarButton.place(x = 161, y = 2)
             FavoritarButton.configure(command=lambda b=FavoritarButton,s=estado_favorito: self.favoritar(b, s))
@@ -336,9 +363,12 @@ class TelaPrincipal:
             else:
                 x += 245    # Próxima coluna
 
-            self.canvas.yview_moveto(0)#Põe a Barra de Rolagem no Topo
-            self.PesquisaEntry.delete(0, ctk.END)
-            self.Pesquisa = None
+        self.canvas.yview_moveto(0)#Põe a Barra de Rolagem no Topo
+        self.PesquisaEntry.delete(0, ctk.END)
+        FocusIvisivelEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Focus")
+        FocusIvisivelEntry.place(x = 10000, y = 10000)
+        FocusIvisivelEntry.focus()
+        self.Pesquisa = None
   
             
 
