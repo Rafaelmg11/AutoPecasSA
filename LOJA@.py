@@ -35,18 +35,18 @@ class TelaPrincipal:
         self.root.geometry(f"{largura}x{altura}+{x}+{y}")
 
         self.create_widgets()
-        self.click_usuario()
 
 
     def click_usuario(self):
+
         User_Frame =  ctk.CTkFrame (self.root,fg_color="#5424A2",border_width=1, border_color="#CCCCCC",corner_radius=0,width=330,height= 845)
         User_Frame.place(x = 0,y = 0 )
 
-        Painel_Label = ctk.CTkLabel(User_Frame,text = "PAINEL: ",font = ("Georgia",16),fg_color = "#5424A2", text_color = "WHITE") 
-        Painel_Label.place(x = 15, y = 15)
 
         Usuario_Label = ctk.CTkLabel(self.root,text = "NOME DO USUARIO: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
-        Usuario_Label.place(x = 40, y = 60)
+        Usuario_Label.place(x = 80, y = 60)
+
+    
 
         self.IconX = CTkImage(light_image= Image.open("icons/X.png"),size = (30, 30))      
         self.IconInicio = CTkImage(light_image= Image.open("icons/Inicio.png"),size = (25, 25))   
@@ -56,30 +56,35 @@ class TelaPrincipal:
         self.IconSacola_Painel = CTkImage(light_image= Image.open("icons/Compras.png"),size = (28, 28))
         self.IconConta = CTkImage(light_image= Image.open("icons/UsuarioPainel.png"),size = (28, 28))
         self.IconWhats = CTkImage(light_image= Image.open("icons/Whatsapp.png"),size = (28, 28))
+        self.IconUsuario_Painel = CTkImage(light_image= Image.open("icons/Usuario.png"),size = (70, 70))
+
+        Userimagem_label = ctk.CTkLabel(User_Frame,text = "",font=("Georgia",14))
+        Userimagem_label.configure(image=self.IconUsuario_Painel, text="")
+        Userimagem_label.place(x = 1 , y = 40)
 
         XButton = ctk.CTkButton(User_Frame,text = "",font= ("Georgia",16),width=0,image=self.IconX,corner_radius=0,fg_color="#5424A2",hover=False)
         XButton.place(x = 280,y = 10)
 
-        InicioButton = ctk.CTkButton(User_Frame,text = "Início",font= ("Georgia",25),width=331,image=self.IconInicio,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=2)
-        InicioButton.place(x = -1,y = 150)
+        InicioButton = ctk.CTkButton(User_Frame,text = "Início",font= ("Georgia",25),width=329,image=self.IconInicio,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        InicioButton.place(x = 1,y = 150)
 
-        CarrinhoButton_Painel = ctk.CTkButton(User_Frame,text = "Carrinho",font= ("Georgia",25),width=331,image=self.IconCarrinho_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=2)
-        CarrinhoButton_Painel.place(x = -1,y = 185)
+        CarrinhoButton_Painel = ctk.CTkButton(User_Frame,text = "Carrinho",font= ("Georgia",25),width=329,image=self.IconCarrinho_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        CarrinhoButton_Painel.place(x = 1,y = 205)
 
-        FavoritosButton_Painel = ctk.CTkButton(User_Frame,text = "Favoritos",font= ("Georgia",25),width=331,image=self.IconCoracao_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=2)
-        FavoritosButton_Painel.place(x = -1,y = 220)
+        FavoritosButton_Painel = ctk.CTkButton(User_Frame,text = "Favoritos",font= ("Georgia",25),width=329,image=self.IconCoracao_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        FavoritosButton_Painel.place(x = 1,y = 260)
 
-        PedidosButton = ctk.CTkButton(User_Frame,text = "Pedidos",font= ("Georgia",25),width=331,image=self.IconPedidos,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=2)
-        PedidosButton.place(x = -1, y = 255)
+        PedidosButton = ctk.CTkButton(User_Frame,text = "Pedidos",font= ("Georgia",25),width=329,image=self.IconPedidos,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        PedidosButton.place(x = 1, y = 315)
 
-        SacolaButton = ctk.CTkButton(User_Frame,text = "Compras",font= ("Georgia",25),width=331,image=self.IconSacola_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=2)
-        SacolaButton.place(x = -1,y = 290)
+        SacolaButton = ctk.CTkButton(User_Frame,text = "Compras",font= ("Georgia",25),width=329,image=self.IconSacola_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        SacolaButton.place(x = 1,y = 370)
 
-        ContaButton = ctk.CTkButton(User_Frame,text = "Conta",font= ("Georgia",25),width=331,image=self.IconConta,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=2)
-        ContaButton.place(x = -1,y = 325)
+        ContaButton = ctk.CTkButton(User_Frame,text = "Conta",font= ("Georgia",25),width=329,image=self.IconConta,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        ContaButton.place(x = 1,y = 425)
 
-        WhatsButton = ctk.CTkButton(User_Frame,text = "Whatsapp",font= ("Georgia",25),width=331,image=self.IconWhats,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=2)
-        WhatsButton.place(x = -1,y = 360)
+        WhatsButton = ctk.CTkButton(User_Frame,text = "Whatsapp",font= ("Georgia",25),width=329,image=self.IconWhats,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        WhatsButton.place(x = 1,y = 480)
 
 
 
