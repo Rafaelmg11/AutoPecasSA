@@ -42,12 +42,11 @@ class TelaPrincipal:
         User_Frame =  ctk.CTkFrame (self.root,fg_color="#5424A2",border_width=1, border_color="#CCCCCC",corner_radius=0,width=330,height= 845)
         User_Frame.place(x = 0,y = 0 )
 
-
         Usuario_Label = ctk.CTkLabel(self.root,text = "NOME DO USUARIO: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         Usuario_Label.place(x = 80, y = 60)
 
     
-
+        #ICONS
         self.IconX = CTkImage(light_image= Image.open("icons/X.png"),size = (30, 30))      
         self.IconInicio = CTkImage(light_image= Image.open("icons/Inicio.png"),size = (25, 25))   
         self.IconCarrinho_Painel = CTkImage(light_image=Image.open("icons/CarrinhoBranco.png"),size = (28,28))   
@@ -58,32 +57,34 @@ class TelaPrincipal:
         self.IconWhats = CTkImage(light_image= Image.open("icons/Whatsapp.png"),size = (28, 28))
         self.IconUsuario_Painel = CTkImage(light_image= Image.open("icons/Usuario.png"),size = (70, 70))
 
+
         Userimagem_label = ctk.CTkLabel(User_Frame,text = "",font=("Georgia",14))
         Userimagem_label.configure(image=self.IconUsuario_Painel, text="")
         Userimagem_label.place(x = 1 , y = 40)
 
-        XButton = ctk.CTkButton(User_Frame,text = "",font= ("Georgia",16),width=0,image=self.IconX,corner_radius=0,fg_color="#5424A2",hover=False)
+        #BOTÕES
+        XButton = ctk.CTkButton(User_Frame,text = "",font= ("Georgia",16),width=0,image=self.IconX,corner_radius=0,fg_color="#5424A2")
         XButton.place(x = 280,y = 10)
 
-        InicioButton = ctk.CTkButton(User_Frame,text = "Início",font= ("Georgia",25),width=329,image=self.IconInicio,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        InicioButton = ctk.CTkButton(User_Frame,text = "Início",font= ("Georgia",25),width=328,image=self.IconInicio,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
         InicioButton.place(x = 1,y = 150)
 
-        CarrinhoButton_Painel = ctk.CTkButton(User_Frame,text = "Carrinho",font= ("Georgia",25),width=329,image=self.IconCarrinho_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        CarrinhoButton_Painel = ctk.CTkButton(User_Frame,text = "Carrinho",font= ("Georgia",25),width=328,image=self.IconCarrinho_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
         CarrinhoButton_Painel.place(x = 1,y = 205)
 
-        FavoritosButton_Painel = ctk.CTkButton(User_Frame,text = "Favoritos",font= ("Georgia",25),width=329,image=self.IconCoracao_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        FavoritosButton_Painel = ctk.CTkButton(User_Frame,text = "Favoritos",font= ("Georgia",25),width=328,image=self.IconCoracao_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
         FavoritosButton_Painel.place(x = 1,y = 260)
 
-        PedidosButton = ctk.CTkButton(User_Frame,text = "Pedidos",font= ("Georgia",25),width=329,image=self.IconPedidos,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        PedidosButton = ctk.CTkButton(User_Frame,text = "Pedidos",font= ("Georgia",25),width=328,image=self.IconPedidos,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
         PedidosButton.place(x = 1, y = 315)
 
-        SacolaButton = ctk.CTkButton(User_Frame,text = "Compras",font= ("Georgia",25),width=329,image=self.IconSacola_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        SacolaButton = ctk.CTkButton(User_Frame,text = "Compras",font= ("Georgia",25),width=328,image=self.IconSacola_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
         SacolaButton.place(x = 1,y = 370)
 
-        ContaButton = ctk.CTkButton(User_Frame,text = "Conta",font= ("Georgia",25),width=329,image=self.IconConta,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        ContaButton = ctk.CTkButton(User_Frame,text = "Conta",font= ("Georgia",25),width=328,image=self.IconConta,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
         ContaButton.place(x = 1,y = 425)
 
-        WhatsButton = ctk.CTkButton(User_Frame,text = "Whatsapp",font= ("Georgia",25),width=329,image=self.IconWhats,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        WhatsButton = ctk.CTkButton(User_Frame,text = "Whatsapp",font= ("Georgia",25),width=328,image=self.IconWhats,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
         WhatsButton.place(x = 1,y = 480)
 
 
@@ -143,54 +144,54 @@ class TelaPrincipal:
         cor_fundo = "#f0f0f0"  # Pode ajustar para a cor que quiser
 
         #CRIANDO LABELS:
-        PesquisaEntry = ctk.CTkEntry(Frame_menu,width=500,font= ("Georgia",14),placeholder_text = "Digite a sua pesquisa",fg_color=cor_fundo,border_width=1, corner_radius=5)
-        PesquisaEntry.place(x = 500, y = 17)
+        PesquisaEntry = ctk.CTkEntry(Frame_menu,width=500,height=35,font= ("Georgia",14),placeholder_text = "Digite a sua pesquisa",fg_color=cor_fundo,border_width=1, corner_radius=5)
+        PesquisaEntry.place(x = 500, y = 14)
 
         #BOTÕES:
         #BOTAO DE PESQUISA
-        PesquisarButton = ctk.CTkButton(Frame_menu,text = "Pesquisar",font= ("Georgia",16),width=100)
-        PesquisarButton.place(x = 380,y = 17)
+        PesquisarButton = ctk.CTkButton(Frame_menu,text = "Pesquisar",font= ("Georgia",16),width=100,height=35 )
+        PesquisarButton.place(x = 380,y = 14)
         #BOTÃO DE CARRINHO
-        CarrinhoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCarrinho,corner_radius=0,fg_color="#5424A2",hover=False)
+        CarrinhoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCarrinho,corner_radius=0,fg_color="#5424A2")
         CarrinhoButton.place(x = 1450,y = 0)
         #BOTÃO DE CORAÇÃO
-        CoracaoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCoracao,corner_radius=0,fg_color="#5424A2",hover=False)
+        CoracaoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCoracao,corner_radius=0,fg_color="#5424A2")
         CoracaoButton.place(x = 1380,y = 0)
         #BOTÃO DE LOCALIZAÇÃO
-        LocalizacaoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconLocalizacao,corner_radius=0,fg_color="#5424A2",hover=False)
+        LocalizacaoButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconLocalizacao,corner_radius=0,fg_color="#5424A2")
         LocalizacaoButton.place(x = 1200,y = 0)
         #BOTÃO DE SACOLA DE COMPRA
-        SacolaButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconSacola,corner_radius=0,fg_color="#5424A2",hover=False)
+        SacolaButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconSacola,corner_radius=0,fg_color="#5424A2")
         SacolaButton.place(x = 1305,y = 0)
         #BOTÃO DE USUARIO
-        UsuarioButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconUsuario,corner_radius=0,fg_color="#5424A2",hover=False,command=self.click_usuario)
+        UsuarioButton = ctk.CTkButton(Frame_menu,text = "",font= ("Georgia",16),width=0,image=self.IconUsuario,corner_radius=0,fg_color="#5424A2",command=self.click_usuario)
         UsuarioButton.place(x = 50,y = 0)
         #BOTÃO DE CATEGORIAS 
-        CategoriasButton = ctk.CTkButton(Frame_categorias,text = "TODAS\n CATEGORIAS ",font= ("Georgia",16),compound="top",width=0,image=self.IconCategorias,corner_radius=0,fg_color="#5424A2",hover=True)
+        CategoriasButton = ctk.CTkButton(Frame_categorias,text = "TODAS\n CATEGORIAS ",font= ("Georgia",16),compound="top",width=0,image=self.IconCategorias,corner_radius=0,fg_color="#5424A2")
         CategoriasButton.place(x = 20,y = 5)
         #BOTÃO DE MOTOR
-        MotorButton = ctk.CTkButton(Frame_categorias,text = "MOTOR",font= ("Georgia",16),compound="top",width=0,image=self.IconMotor,corner_radius=0,fg_color="#5424A2",hover=True)
+        MotorButton = ctk.CTkButton(Frame_categorias,text = "MOTOR",font= ("Georgia",16),compound="top",width=0,image=self.IconMotor,corner_radius=0,fg_color="#5424A2")
         MotorButton.place(x = 165,y = 5)
         #BOTÃO DE EXTERIOR 
-        ExteriorButton = ctk.CTkButton(Frame_categorias,text = "EXTERIOR",font= ("Georgia",16),compound="top",width=0,image=self.IconExterior,corner_radius=0,fg_color="#5424A2",hover=True)
+        ExteriorButton = ctk.CTkButton(Frame_categorias,text = "EXTERIOR",font= ("Georgia",16),compound="top",width=0,image=self.IconExterior,corner_radius=0,fg_color="#5424A2")
         ExteriorButton.place(x = 250,y = 5)
         #BOTÃO DE INTERIOR
-        InteriorButton = ctk.CTkButton(Frame_categorias,text = "INTERIOR",font= ("Georgia",16),compound="top",width=0,image=self.IconInterior,corner_radius=0,fg_color="#5424A2",hover=True)
+        InteriorButton = ctk.CTkButton(Frame_categorias,text = "INTERIOR",font= ("Georgia",16),compound="top",width=0,image=self.IconInterior,corner_radius=0,fg_color="#5424A2")
         InteriorButton.place(x = 350,y = 5)
         #BOTÃO DE BATERIA
-        BateriaButton = ctk.CTkButton(Frame_categorias,text = "BATERIA",font= ("Georgia",16),compound="top",width=0,image=self.IconBateria,corner_radius=0,fg_color="#5424A2",hover=True)
+        BateriaButton = ctk.CTkButton(Frame_categorias,text = "BATERIA",font= ("Georgia",16),compound="top",width=0,image=self.IconBateria,corner_radius=0,fg_color="#5424A2")
         BateriaButton.place(x = 450,y = 5)
         #BOTÃO DE FAROLLanterna
-        FarolLanternaButton = ctk.CTkButton(Frame_categorias,text = "FAROL\n LANTERNA",font= ("Georgia",16),compound="top",width=0,image=self.IconFarolLanterna,corner_radius=0,fg_color="#5424A2",hover=True)
+        FarolLanternaButton = ctk.CTkButton(Frame_categorias,text = "FAROL\n LANTERNA",font= ("Georgia",16),compound="top",width=0,image=self.IconFarolLanterna,corner_radius=0,fg_color="#5424A2")
         FarolLanternaButton.place(x = 535,y = 5)
         #BOTÃO DE SUSPENSÂO
-        SuspensaoButton = ctk.CTkButton(Frame_categorias,text = "SUSPENSÃO",font= ("Georgia",16),compound="top",width=0,image=self.IconSuspensao,corner_radius=0,fg_color="#5424A2",hover=True)
+        SuspensaoButton = ctk.CTkButton(Frame_categorias,text = "SUSPENSÃO",font= ("Georgia",16),compound="top",width=0,image=self.IconSuspensao,corner_radius=0,fg_color="#5424A2")
         SuspensaoButton.place(x = 640,y = 5)
         #BOTÃO DE TRANSMISSÃO
-        TransmissaoButton = ctk.CTkButton(Frame_categorias,text = "TRANSMISSÃO",font= ("Georgia",16),compound="top",width=0,image=self.IconTransmissao,corner_radius=0,fg_color="#5424A2",hover=True)
+        TransmissaoButton = ctk.CTkButton(Frame_categorias,text = "TRANSMISSÃO",font= ("Georgia",16),compound="top",width=0,image=self.IconTransmissao,corner_radius=0,fg_color="#5424A2")
         TransmissaoButton.place(x = 750,y = 5)
         #BOTÃO DE FREIO
-        FreioButton = ctk.CTkButton(Frame_categorias,text = "FREIO",font= ("Georgia",16),compound="top",width=0,image=self.IconFreio,corner_radius=0,fg_color="#5424A2",hover=True)
+        FreioButton = ctk.CTkButton(Frame_categorias,text = "FREIO",font= ("Georgia",16),compound="top",width=0,image=self.IconFreio,corner_radius=0,fg_color="#5424A2")
         FreioButton.place(x = 888,y = 5)
 
     def create_produto_frame(self,parent_frame):
@@ -207,6 +208,16 @@ class TelaPrincipal:
             produto_frame = ctk.CTkFrame (parent_frame,width=frame_width,height=frame_height,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=0)
             produto_frame.place(x = x , y = y)
 
+            imagem_frame = ctk.CTkFrame (produto_frame,width=160,height=165,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=0)
+            imagem_frame.place(x = 20, y =9)
+
+            VerMaisButton = ctk.CTkButton(produto_frame,text = "VER MAIS",font= ("Georgia",14),width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+            VerMaisButton.place(x = 118, y = 220)
+
+            Preco = 0
+
+            Preco_Label = ctk.CTkLabel(produto_frame,text = ("R$",Preco),font = ("Georgia",20),fg_color = "WHITE", text_color = "#5424A2") 
+            Preco_Label.place(x = 20 , y = 220)
             
             # Cálculo para a próxima posição
             if i % 4 == 0:  # A cada 4 itens
@@ -215,9 +226,6 @@ class TelaPrincipal:
             else:
                 x += 245    # Próxima coluna
 
-            #Criar o frame do produto
-            produto_frame = ctk.CTkFrame (parent_frame,width=frame_width,height=frame_height,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=0)
-            produto_frame.place(x = x , y = y)
 
 
             
