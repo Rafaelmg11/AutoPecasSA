@@ -34,7 +34,13 @@ class TelaPrincipal:
         # Aplicar geometria centralizada
         self.root.geometry(f"{largura}x{altura}+{x}+{y}")
 
+        self.pagina_atual = 0 
+        self.itens_por_pagina = 40
+        self.produto_scrollable_frame = None
+
         self.create_widgets()
+
+   
 
 
     def click_usuario(self):
@@ -109,18 +115,18 @@ class TelaPrincipal:
         #Adicionando Barra de Rolagem
         canvas = ctk.CTkCanvas(Frame_Pecas,bg = "BLACK",highlightthickness=0,width = 1245, height = 682)
         BarraRolagem = ctk.CTkScrollbar(Frame_Pecas,orientation="vertical",command=canvas.yview,height=543,bg_color="WHITE")
-        Rolavel_Frame = ctk.CTkFrame(canvas,fg_color="WHITE",width=1000,height=2820,corner_radius=0)
+        self.Rolavel_Frame = ctk.CTkFrame(canvas,fg_color="WHITE",width=1000,height=2820,corner_radius=0)
         
         BarraRolagem.bind("<Configure>",lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-        canvas.create_window((570,565), window=Rolavel_Frame)
+        canvas.create_window((570,565), window=self.Rolavel_Frame)
         canvas.configure(yscrollcommand=BarraRolagem.set)
 
         canvas.place(x = 2, y = 2)
         BarraRolagem.place(x = 980, y= 2)
 
         #Criar frame do produto
-        self.create_produto_frame(Rolavel_Frame)
+        self.create_produto_frame(self.Rolavel_Frame)
 
         #ICONS:
         self.IconCarrinho = CTkImage(light_image= Image.open("icons/CarrinhoBranco.png"),size = (50, 50))
@@ -194,12 +200,21 @@ class TelaPrincipal:
         FreioButton = ctk.CTkButton(Frame_categorias,text = "FREIO",font= ("Georgia",16),compound="top",width=0,image=self.IconFreio,corner_radius=0,fg_color="#5424A2")
         FreioButton.place(x = 888,y = 5)
 
+
+
     def favoritar(self, botao, estado):
         estado[0] = not estado[0]
         nova_img = self.IconCoracaoCheio_Produto if estado[0] else self.IconCoracaoVazio_Produto
         botao.configure(image=nova_img)
 
     def create_produto_frame(self,parent_frame):
+
+        self.produto_scrollable_frame = parent_frame  # Armazena referência para trocar de página
+
+        #LIMPA A PAGINA
+        for widget in parent_frame.winfo_children():
+            widget.destroy()
+
         #ICONS
         self.IconCoracaoVazio_Produto = CTkImage(light_image= Image.open("icons/Coracao.png"),size = (25, 25)) 
         self.IconCoracaoCheio_Produto = CTkImage(light_image= Image.open("icons/CoracaoCheio.png"),size = (25, 25)) 
@@ -212,6 +227,7 @@ class TelaPrincipal:
         frame_height = 270
         x = 30  # Posição X inicial
         y = 20  # Posição Y inicial
+        
 
         #BANCO DE DADOS:
         conn = get_connection()
@@ -219,19 +235,17 @@ class TelaPrincipal:
         cursor.execute("SELECT desc_peca, valor_unitario, imagem FROM peca WHERE status = TRUE")
         Pecas = cursor.fetchall()
         conn.close()
+        
+        offset = self.pagina_atual * self.itens_por_pagina
+        produtos_pagina = Pecas[offset : offset + self.itens_por_pagina]
 
 
   
-        for i, peca in enumerate(Pecas):
+        for i, peca in enumerate(produtos_pagina):
 
             Descricao = peca[0]
             Preco = peca[1]
             Imagem_Bytes = peca[2]
-            print(Descricao)
-            print(Preco)
-
-
-            print(f"Item {i:02d} - Posição: ({x}, {y})")
 
             #Criar o frame do produto
             produto_frame = ctk.CTkFrame (parent_frame,width=frame_width,height=frame_height,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=0)
@@ -272,6 +286,21 @@ class TelaPrincipal:
                 y += 280    # Nova linha
             else:
                 x += 245    # Próxima coluna
+
+        anterior_btn = ctk.CTkButton(self.root, text="← Anterior", command=self.pagina_anterior)
+        anterior_btn.place(x=10, y=600)
+
+        proximo_btn = ctk.CTkButton(self.root, text="Próximo →", command=self.pagina_proxima)
+        proximo_btn.place(x=150, y=600)
+
+    def pagina_proxima(self):
+        self.pagina_atual += 1
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def pagina_anterior(self):
+        if self.pagina_atual > 0:
+            self.pagina_atual -= 1
+            self.create_produto_frame(self.Rolavel_Frame)
 
 
 
