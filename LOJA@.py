@@ -48,11 +48,13 @@ class TelaPrincipal:
         self.PesquisaEntry = ctk.CTkEntry(self.Freme_menu,width=500,height=35,font= ("Georgia",14),placeholder_text = "Digite a sua pesquisa",fg_color="#f0f0f0",border_width=1, corner_radius=5)
         self.PesquisaEntry.place(x = 500, y = 14)
 
+        self.Pesquisa = None
+
 
 
         self.contador_pagina()
         self.create_widgets()
- 
+
 
     def click_usuario(self):
 
@@ -115,19 +117,19 @@ class TelaPrincipal:
         Frame_categorias.place (x = 290,y = 120)
 
         Frame_Pecas = ctk.CTkFrame(self.root, width=1000, height=550, fg_color="WHITE",border_width= 1,corner_radius=0)
-        Frame_Pecas.place(x = 270,y = 280)  
+        Frame_Pecas.place(x = 275,y = 280)  
 
         #Adicionando Barra de Rolagem
-        canvas = ctk.CTkCanvas(Frame_Pecas,bg = "BLACK",highlightthickness=0,width = 1245, height = 682)
-        BarraRolagem = ctk.CTkScrollbar(Frame_Pecas,orientation="vertical",command=canvas.yview,height=543,bg_color="WHITE")
-        self.Rolavel_Frame = ctk.CTkFrame(canvas,fg_color="WHITE",width=1000,height=2820,corner_radius=0)
+        self.canvas = ctk.CTkCanvas(Frame_Pecas,bg = "BLACK",highlightthickness=0,width = 1245, height = 682)
+        BarraRolagem = ctk.CTkScrollbar(Frame_Pecas,orientation="vertical",command=self.canvas.yview,height=543,bg_color="WHITE")
+        self.Rolavel_Frame = ctk.CTkFrame(self.canvas,fg_color="WHITE",width=1000,height=2820,corner_radius=0)
         
-        BarraRolagem.bind("<Configure>",lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        BarraRolagem.bind("<Configure>",lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
 
-        canvas.create_window((570,565), window=self.Rolavel_Frame)
-        canvas.configure(yscrollcommand=BarraRolagem.set)
+        self.canvas.create_window((570,565), window=self.Rolavel_Frame)
+        self.canvas.configure(yscrollcommand=BarraRolagem.set)
 
-        canvas.place(x = 2, y = 2)
+        self.canvas.place(x = 2, y = 2)
         BarraRolagem.place(x = 980, y= 2)
 
         #Criar frame do produto
@@ -144,7 +146,7 @@ class TelaPrincipal:
         self.IconExterior = CTkImage(light_image= Image.open("icons/Exterior.png"),size = (50, 50))
         self.IconInterior = CTkImage(light_image= Image.open("icons/Interior.png"),size = (50, 50))
         self.IconBateria = CTkImage(light_image= Image.open("icons/Bateria.png"),size = (50, 50))
-        self.IconFarolLanterna = CTkImage(light_image= Image.open("icons/Farol.png"),size = (50, 50))
+        self.IconArrefecimento = CTkImage(light_image= Image.open("icons/Arrefecimento.png"),size = (50, 50))
         self.IconSuspensao = CTkImage(light_image= Image.open("icons/Suspensao.png"),size = (50, 50))
         self.IconTransmissao = CTkImage(light_image= Image.open("icons/Transmissao.png"),size = (50, 50))
         self.IconFreio = CTkImage(light_image= Image.open("icons/Freio.png"),size = (50, 50))
@@ -174,29 +176,67 @@ class TelaPrincipal:
         CategoriasButton = ctk.CTkButton(Frame_categorias,text = "TODAS\n CATEGORIAS ",font= ("Georgia",16),compound="top",width=0,image=self.IconCategorias,corner_radius=0,fg_color="#5424A2")
         CategoriasButton.place(x = 20,y = 5)
         #BOTÃO DE MOTOR
-        MotorButton = ctk.CTkButton(Frame_categorias,text = "MOTOR",font= ("Georgia",16),compound="top",width=0,image=self.IconMotor,corner_radius=0,fg_color="#5424A2")
-        MotorButton.place(x = 165,y = 5)
+        MotorButton = ctk.CTkButton(Frame_categorias,text = "MOTOR",font= ("Georgia",16),compound="top",width=0,image=self.IconMotor,corner_radius=0,fg_color="#5424A2",command= self.click_motor)
+        MotorButton.place(x = 140,y = 5)
         #BOTÃO DE EXTERIOR 
-        ExteriorButton = ctk.CTkButton(Frame_categorias,text = "EXTERIOR",font= ("Georgia",16),compound="top",width=0,image=self.IconExterior,corner_radius=0,fg_color="#5424A2")
-        ExteriorButton.place(x = 250,y = 5)
+        ExteriorButton = ctk.CTkButton(Frame_categorias,text = "EXTERIOR",font= ("Georgia",16),compound="top",width=0,image=self.IconExterior,corner_radius=0,fg_color="#5424A2",command=self.click_exterior)
+        ExteriorButton.place(x = 230,y = 5)
         #BOTÃO DE INTERIOR
-        InteriorButton = ctk.CTkButton(Frame_categorias,text = "INTERIOR",font= ("Georgia",16),compound="top",width=0,image=self.IconInterior,corner_radius=0,fg_color="#5424A2")
-        InteriorButton.place(x = 350,y = 5)
-        #BOTÃO DE BATERIA
-        BateriaButton = ctk.CTkButton(Frame_categorias,text = "BATERIA",font= ("Georgia",16),compound="top",width=0,image=self.IconBateria,corner_radius=0,fg_color="#5424A2")
-        BateriaButton.place(x = 450,y = 5)
-        #BOTÃO DE FAROLLanterna
-        FarolLanternaButton = ctk.CTkButton(Frame_categorias,text = "FAROL\n LANTERNA",font= ("Georgia",16),compound="top",width=0,image=self.IconFarolLanterna,corner_radius=0,fg_color="#5424A2")
-        FarolLanternaButton.place(x = 535,y = 5)
+        InteriorButton = ctk.CTkButton(Frame_categorias,text = "INTERIOR",font= ("Georgia",16),compound="top",width=0,image=self.IconInterior,corner_radius=0,fg_color="#5424A2",command=self.click_interior)
+        InteriorButton.place(x = 330,y = 5)
+        #BOTÃO DE ELÉTRICA
+        EletricaButton = ctk.CTkButton(Frame_categorias,text = "ELÉTRICA",font= ("Georgia",16),compound="top",width=0,image=self.IconBateria,corner_radius=0,fg_color="#5424A2",command=self.click_eletrica)
+        EletricaButton.place(x = 429,y = 5)
+        #BOTÃO DE ARREFECIMENTO
+        ArrefecimentoButton = ctk.CTkButton(Frame_categorias,text = "SISTEMA\nARREFECIMENTO",font= ("Georgia",16),compound="top",width=0,image=self.IconArrefecimento,corner_radius=0,fg_color="#5424A2",command=self.click_arrefecimento)
+        ArrefecimentoButton.place(x = 510,y = 5)
         #BOTÃO DE SUSPENSÂO
-        SuspensaoButton = ctk.CTkButton(Frame_categorias,text = "SUSPENSÃO",font= ("Georgia",16),compound="top",width=0,image=self.IconSuspensao,corner_radius=0,fg_color="#5424A2")
+        SuspensaoButton = ctk.CTkButton(Frame_categorias,text = "SUSPENSÃO",font= ("Georgia",16),compound="top",width=0,image=self.IconSuspensao,corner_radius=0,fg_color="#5424A2",command=self.click_suspensao)
         SuspensaoButton.place(x = 640,y = 5)
         #BOTÃO DE TRANSMISSÃO
-        TransmissaoButton = ctk.CTkButton(Frame_categorias,text = "TRANSMISSÃO",font= ("Georgia",16),compound="top",width=0,image=self.IconTransmissao,corner_radius=0,fg_color="#5424A2")
+        TransmissaoButton = ctk.CTkButton(Frame_categorias,text = "TRANSMISSÃO",font= ("Georgia",16),compound="top",width=0,image=self.IconTransmissao,corner_radius=0,fg_color="#5424A2",command=self.click_transmissao)
         TransmissaoButton.place(x = 750,y = 5)
         #BOTÃO DE FREIO
-        FreioButton = ctk.CTkButton(Frame_categorias,text = "FREIO",font= ("Georgia",16),compound="top",width=0,image=self.IconFreio,corner_radius=0,fg_color="#5424A2")
+        FreioButton = ctk.CTkButton(Frame_categorias,text = "FREIO",font= ("Georgia",16),compound="top",width=0,image=self.IconFreio,corner_radius=0,fg_color="#5424A2",command=self.click_freio)
         FreioButton.place(x = 888,y = 5)
+
+    def click_motor(self):
+        self.Pesquisa = "Motor"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_exterior(self):
+        self.Pesquisa = "Exterior"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_interior(self):
+        self.Pesquisa = "Interior"
+        self.create_produto_frame(self.Rolavel_Frame)
+    
+    def click_suspensao(self):
+        self.Pesquisa = "Suspensao"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_suspensao(self):
+        self.Pesquisa = "Suspensao"
+        self.create_produto_frame(self.Rolavel_Frame)
+    
+    def click_transmissao(self):
+        self.Pesquisa = "Transmissao"
+        self.create_produto_frame(self.Rolavel_Frame)
+    
+    def click_freio(self):
+        self.Pesquisa = "Freio"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_eletrica(self):
+        self.Pesquisa = "Eletrica"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_arrefecimento(self):
+        self.Pesquisa = "arrefecimento"
+        self.create_produto_frame(self.Rolavel_Frame)
+    
+
 
 
 
@@ -207,9 +247,10 @@ class TelaPrincipal:
 
     def create_produto_frame(self,parent_frame):
 
-        Pesquisa = None
-        Pesquisa = self.PesquisaEntry.get()
-        Pesquisa = Pesquisa.lower()
+        entrada = self.PesquisaEntry.get()
+        self.Pesquisa = self.Pesquisa or entrada
+        self.Pesquisa = self.Pesquisa.lower()
+
 
         self.produto_scrollable_frame = parent_frame  # Armazena referência para trocar de página
 
@@ -234,7 +275,7 @@ class TelaPrincipal:
         #BANCO DE DADOS:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT desc_peca, valor_unitario, imagem FROM peca WHERE status = TRUE and (desc_peca LIKE %s OR tipo_peca LIKE %s)",(f"%{Pesquisa}%",f"%{Pesquisa}%"))
+        cursor.execute("SELECT desc_peca, valor_unitario, imagem FROM peca WHERE status = TRUE and (desc_peca LIKE %s OR tipo_peca LIKE %s)",(f"%{self.Pesquisa}%",f"%{self.Pesquisa}%"))
         Pecas = cursor.fetchall()
         conn.close()
 
@@ -294,6 +335,12 @@ class TelaPrincipal:
                 y += 280    # Nova linha
             else:
                 x += 245    # Próxima coluna
+
+            self.canvas.yview_moveto(0)#Põe a Barra de Rolagem no Topo
+            self.PesquisaEntry.delete(0, ctk.END)
+            self.Pesquisa = None
+  
+            
 
         AnteriorButton = ctk.CTkButton(self.root,text = "Anterior",font= ("Georgia",18),compound="top",width=100,corner_radius=5,fg_color="#5424A2",command=self.pagina_anterior)
         AnteriorButton.place(x=1030, y=250)
