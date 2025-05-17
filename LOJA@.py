@@ -109,7 +109,7 @@ class TelaPrincipal:
         #Adicionando Barra de Rolagem
         canvas = ctk.CTkCanvas(Frame_Pecas,bg = "BLACK",highlightthickness=0,width = 1245, height = 682)
         BarraRolagem = ctk.CTkScrollbar(Frame_Pecas,orientation="vertical",command=canvas.yview,height=543,bg_color="WHITE")
-        Rolavel_Frame = ctk.CTkFrame(canvas,fg_color="WHITE",width=1000,height=2800,corner_radius=0)
+        Rolavel_Frame = ctk.CTkFrame(canvas,fg_color="WHITE",width=1000,height=2820,corner_radius=0)
         
         BarraRolagem.bind("<Configure>",lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
@@ -194,14 +194,43 @@ class TelaPrincipal:
         FreioButton = ctk.CTkButton(Frame_categorias,text = "FREIO",font= ("Georgia",16),compound="top",width=0,image=self.IconFreio,corner_radius=0,fg_color="#5424A2")
         FreioButton.place(x = 888,y = 5)
 
+    def favoritar(self, botao, estado):
+        estado[0] = not estado[0]
+        nova_img = self.IconCoracaoCheio_Produto if estado[0] else self.IconCoracaoVazio_Produto
+        botao.configure(image=nova_img)
+
     def create_produto_frame(self,parent_frame):
+        #ICONS
+        self.IconCoracaoVazio_Produto = CTkImage(light_image= Image.open("icons/Coracao.png"),size = (25, 25)) 
+        self.IconCoracaoCheio_Produto = CTkImage(light_image= Image.open("icons/CoracaoCheio.png"),size = (25, 25)) 
+
+        #Imagem:
+        self.Imagem_Padrao = CTkImage(light_image=Image.open("sem_imagem.png"),size=(160,165))
+
         #Configurações dos frames de produto
         frame_width = 200
-        frame_height = 250
+        frame_height = 270
         x = 30  # Posição X inicial
         y = 20  # Posição Y inicial
 
-        for i in range(1, 41):  # De 1 a 40
+        #BANCO DE DADOS:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT desc_peca, valor_unitario, imagem FROM peca WHERE status = TRUE")
+        Pecas = cursor.fetchall()
+        conn.close()
+
+
+  
+        for i, peca in enumerate(Pecas):
+
+            Descricao = peca[0]
+            Preco = peca[1]
+            Imagem_Bytes = peca[2]
+            print(Descricao)
+            print(Preco)
+
+
             print(f"Item {i:02d} - Posição: ({x}, {y})")
 
             #Criar o frame do produto
@@ -212,15 +241,33 @@ class TelaPrincipal:
             imagem_frame.place(x = 20, y =9)
 
             VerMaisButton = ctk.CTkButton(produto_frame,text = "VER MAIS",font= ("Georgia",14),width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
-            VerMaisButton.place(x = 118, y = 220)
+            VerMaisButton.place(x = 118, y = 240)
 
-            Preco = 0
-
-            Preco_Label = ctk.CTkLabel(produto_frame,text = ("R$",Preco),font = ("Georgia",20),fg_color = "WHITE", text_color = "#5424A2") 
-            Preco_Label.place(x = 20 , y = 220)
+            DescricaoLabel = ctk.CTkLabel(produto_frame,text = (Descricao),font = ("Georgia",14),fg_color = "WHITE", text_color = "#5424A2",width=160,wraplength=160,justify="left") 
+            DescricaoLabel.place(x = 20,y = 175)
             
+            PrecoLabel = ctk.CTkLabel(produto_frame,text = f"R${Preco:.2f}",font = ("Georgia",20),fg_color = "WHITE", text_color = "#5424A2") 
+            PrecoLabel.place(x = 10 , y = 240)
+
+            if Imagem_Bytes:
+                Imagem = Image.open(io.BytesIO(Imagem_Bytes))
+                Imagem = Imagem.resize((120,120))
+                Imagem_Display = CTkImage(light_image=Imagem, size = (160,165))
+                Imagem_Label = ctk.CTkLabel(imagem_frame, image=Imagem_Display, text="")
+                Imagem_Label.place(x = 0, y = 0)
+            else:
+                Imagem_Label = ctk.CTkLabel(imagem_frame, image=self.Imagem_Padrao, text="")
+                Imagem_Label.place(x = 0, y = 0)
+
+            # Estado individual (usando lista para mutabilidade dentro da função)
+            estado_favorito = [False]
+            # Criar botão e função com lambda para capturar esse botão e estad
+            FavoritarButton = ctk.CTkButton(produto_frame,text = "",font= ("Georgia",14),image=self.IconCoracaoVazio_Produto,width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
+            FavoritarButton.place(x = 161, y = 2)
+            FavoritarButton.configure(command=lambda b=FavoritarButton,s=estado_favorito: self.favoritar(b, s))
+
             # Cálculo para a próxima posição
-            if i % 4 == 0:  # A cada 4 itens
+            if (i + 1) % 4 == 0:  # A cada 4 itens
                 x = 30      # Reinicia X
                 y += 280    # Nova linha
             else:
