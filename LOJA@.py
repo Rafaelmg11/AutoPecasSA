@@ -236,31 +236,31 @@ class TelaPrincipal:
             Imagem_Label.place(x = 2, y = 2)
 
         #LABELS:
-        DescricaoLabel = ctk.CTkLabel(InformacoesFrame,text = Descricao ,font = ("Georgia",20),fg_color = "WHITE", text_color = "BLACK") 
-        DescricaoLabel.place(x = 20, y = 20)
+        DescricaoLabel = ctk.CTkLabel(InformacoesFrame,text = Descricao ,font = ("Georgia",30),fg_color = "WHITE", text_color = "BLACK",wraplength=450,justify="left") 
+        DescricaoLabel.place(x = 30, y = 40)
 
-        PrecoLabel = ctk.CTkLabel(InformacoesFrame,text = f"R$ {Preco:.2f}" ,font = ("Georgia",20),fg_color = "WHITE", text_color = "BLACK") 
-        PrecoLabel.place(x = 20, y = 300)
+        PrecoLabel = ctk.CTkLabel(InformacoesFrame,text = f"R$ {Preco:.2f}" ,font = ("Georgia",40),fg_color = "WHITE", text_color = "BLACK") 
+        PrecoLabel.place(x = 30, y = 170)
 
-        Estoque = ctk.CTkLabel(InformacoesFrame,text = f"Quantidade: {QtdeEstoque}" ,font = ("Georgia",20),fg_color = "WHITE", text_color = "BLACK") 
-        Estoque.place(x = 20, y = 200)
+        Estoque = ctk.CTkLabel(InformacoesFrame,text = f"Estoque: {QtdeEstoque}" ,font = ("Georgia",16),fg_color = "WHITE", text_color = "#A8A7A7") 
+        Estoque.place(x = 32, y = 290)
 
-        Fornecedor = ctk.CTkLabel(InformacoesFrame,text = f"Fornecedor: {Fornecedor}" ,font = ("Georgia",20),fg_color = "WHITE", text_color = "BLACK") 
-        Fornecedor.place (x = 20, y = 50)
+        Fornecedor = ctk.CTkLabel(InformacoesFrame,text = f"Fornecedor: {Fornecedor}" ,font = ("Georgia",20),fg_color = "WHITE", text_color = "#A8A7A7") 
+        Fornecedor.place (x = 30, y = 120)
 
         #Botão de voltar
         def voltar():
             SoloFrame.destroy()
-        self.IconVoltar = CTkImage(light_image= Image.open("icons/X.png"),size = (50, 50)) 
-        self.VoltarButton =  ctk.CTkButton(SoloFrame,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 , command=voltar)
+        self.IconVoltar = CTkImage(light_image= Image.open("icons/XRoxo.png"),size = (50, 50)) 
+        self.VoltarButton =  ctk.CTkButton(SoloFrame,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#F9F5FF",border_color="WHITE",anchor="w",  border_width=0 , command=voltar)
         self.VoltarButton.place(x = 2 , y = 2)
 
         #Botão de Comprar
-        ComprarButton =  ctk.CTkButton(InformacoesFrame,text = "COMPRAR AGORA ",font= ("Georgia",25),image=self.IconSacola,compound="left",width=30,corner_radius=8,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 , command=voltar)
-        ComprarButton.place(x = 100 , y = 500)
+        ComprarButton =  ctk.CTkButton(InformacoesFrame,text = "COMPRAR AGORA ",font= ("Georgia",25),image=self.IconSacola,compound="left",width=30,corner_radius=6,fg_color="#0CF048",border_color="WHITE",anchor="w",  border_width=0 , text_color="WHITE", command=voltar)
+        ComprarButton.place(x = 105 , y = 350)
         #Botão de Carrinho
-        CarrinhoButton =  ctk.CTkButton(InformacoesFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",25),image=self.IconCarrinho,compound="left",width=30,corner_radius=8,fg_color="#5424A2",border_color="WHITE",anchor="center",  border_width=0 , command=voltar)
-        CarrinhoButton.place(x = 50 , y = 580)
+        CarrinhoButton =  ctk.CTkButton(InformacoesFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",25),image=self.IconCarrinho,compound="left",width=30,corner_radius=6,fg_color="#5A70FF",border_color="WHITE",anchor="center",  border_width=0 , text_color="WHITE", command=voltar)
+        CarrinhoButton.place(x = 55 , y = 430)
 
 
         #COMBOX:
@@ -269,6 +269,7 @@ class TelaPrincipal:
             print("Selecionado {}".format(QtdeCompra)) #PRINT DE CONFIRMAÇÃO APENAS
             PrecoQtde = float(Preco) * float(QtdeCompra)
             PrecoLabel.configure(text = f"R$ {PrecoQtde:.2f}")
+            QuantidadeCB.set(f"Quantidade: {QtdeCompra}")
             print(PrecoQtde)
             self.FocusIvisivelEntry.focus()
             
@@ -278,12 +279,11 @@ class TelaPrincipal:
                 return  # deixa passar
             return "break"  # bloqueia tudo o resto
 
-        style_combobox(self.root)
+
         QuantidadeLista =  [str(i) for i in range(1, QtdeEstoque + 1)]
-        QuantidadeCB = ttk.Combobox (InformacoesFrame,style="CBPecas.TCombobox",values=QuantidadeLista,font=("Georgia",13),width=22) #Criando ComboBox
-        QuantidadeCB.place(x = 20, y = 250)
-        QuantidadeCB.set("1")
-        QuantidadeCB.bind("<<ComboboxSelected>>",selecionado_quantidade) #AÇÃO DE SELECIONAR
+        QuantidadeCB = ctk.CTkComboBox (InformacoesFrame,corner_radius=5,fg_color="WHITE",bg_color="WHITE",border_width=3,text_color="BLACK",values=QuantidadeLista,font=("Georgia",18),width=180,height=40,command=selecionado_quantidade) #Criando ComboBox
+        QuantidadeCB.place(x = 30, y = 250)
+        QuantidadeCB.set("Quantidade: 1")
         QuantidadeCB.bind("<Key>", bloquear_tudo_exceto_setas)
 
 
@@ -341,60 +341,6 @@ class TelaPrincipal:
 
             x = x + 245
 
-
-
-
-
-
-
-
-        
-
-
-    def click_motor(self):
-        self.Pesquisa = "Motor"
-        self.create_produto_frame(self.Rolavel_Frame)
-
-    def click_exterior(self):
-        self.Pesquisa = "Exterior"
-        self.create_produto_frame(self.Rolavel_Frame)
-
-    def click_interior(self):
-        self.Pesquisa = "Interior"
-        self.create_produto_frame(self.Rolavel_Frame)
-    
-    def click_suspensao(self):
-        self.Pesquisa = "Suspensao"
-        self.create_produto_frame(self.Rolavel_Frame)
-
-    def click_suspensao(self):
-        self.Pesquisa = "Suspensao"
-        self.create_produto_frame(self.Rolavel_Frame)
-    
-    def click_transmissao(self):
-        self.Pesquisa = "Transmissao"
-        self.create_produto_frame(self.Rolavel_Frame)
-    
-    def click_freio(self):
-        self.Pesquisa = "Freio"
-        self.create_produto_frame(self.Rolavel_Frame)
-
-    def click_eletrica(self):
-        self.Pesquisa = "Eletrica"
-        self.create_produto_frame(self.Rolavel_Frame)
-
-    def click_arrefecimento(self):
-        self.Pesquisa = "arrefecimento"
-        self.create_produto_frame(self.Rolavel_Frame)
-
-    def click_inicio(self):
-        self.Pesquisa = ""
-        self.create_produto_frame(self.Rolavel_Frame)
-
-    def favoritar(self, botao, estado):
-        estado[0] = not estado[0]
-        nova_img = self.IconCoracaoCheio_Produto if estado[0] else self.IconCoracaoVazio_Produto
-        botao.configure(image=nova_img)
 
     def create_produto_frame(self,parent_frame):
 
@@ -461,7 +407,6 @@ class TelaPrincipal:
             imagem_frame.place(x = 20, y =9)
 
 
-
             VerMaisButton = ctk.CTkButton(produto_frame,text = "VER MAIS",font= ("Georgia",14),width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command= lambda peca=peca: self.ver_mais_peca(peca))
             VerMaisButton.place(x = 118, y = 240)
 
@@ -522,7 +467,6 @@ class TelaPrincipal:
 
 
 
-
     def contador_pagina(self):
         def bloquear_tudo_exceto_setas(event):
              return "break"
@@ -546,6 +490,50 @@ class TelaPrincipal:
             self.create_produto_frame(self.Rolavel_Frame)
         self.contador_pagina()
 
+    def click_motor(self):
+        self.Pesquisa = "Motor"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_exterior(self):
+        self.Pesquisa = "Exterior"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_interior(self):
+        self.Pesquisa = "Interior"
+        self.create_produto_frame(self.Rolavel_Frame)
+    
+    def click_suspensao(self):
+        self.Pesquisa = "Suspensao"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_suspensao(self):
+        self.Pesquisa = "Suspensao"
+        self.create_produto_frame(self.Rolavel_Frame)
+    
+    def click_transmissao(self):
+        self.Pesquisa = "Transmissao"
+        self.create_produto_frame(self.Rolavel_Frame)
+    
+    def click_freio(self):
+        self.Pesquisa = "Freio"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_eletrica(self):
+        self.Pesquisa = "Eletrica"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_arrefecimento(self):
+        self.Pesquisa = "arrefecimento"
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def click_inicio(self):
+        self.Pesquisa = ""
+        self.create_produto_frame(self.Rolavel_Frame)
+
+    def favoritar(self, botao, estado):
+        estado[0] = not estado[0]
+        nova_img = self.IconCoracaoCheio_Produto if estado[0] else self.IconCoracaoVazio_Produto
+        botao.configure(image=nova_img)
 
 
             
