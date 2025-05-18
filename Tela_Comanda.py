@@ -7,6 +7,9 @@ import io #Fluxo de bytes (transforma imagem em bytes)
 from Crud_novo import get_connection,selecionar_fornecedores,selecionar_tipopeca,obter_cod_fornecedor,create_peca,update_peca,delete_peca
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
+from datetime import datetime
+
+
 
 class PECA:
 
@@ -28,9 +31,20 @@ class PECA:
         self.PecaFrame = ctk.CTkFrame(self.root, width=1080, height=500, fg_color="#5424A2",border_color="#CCCCCC",border_width=0)  
         self.PecaFrame.place (x = 450, y = 20)
 
-        #Criando Frames:
-        self.ClienteFrame = ctk.CTkFrame(self.root, width=1080, height=500, fg_color="#5424A2",border_color="#CCCCCC",border_width=2)  
+
+        self.ClienteFrame = ctk.CTkFrame(self.root, width=1080, height=500, fg_color="#5424A2",border_color="#CCCCCC",border_width=0)  
         self.ClienteFrame.place (x = 450, y = 440)
+
+
+        self.FuncionarioFrame = ctk.CTkFrame(self.root, width=450, height=380, fg_color="#5424A2",border_color="#CCCCCC",border_width=0)  
+        self.FuncionarioFrame.place (x =10, y = 450)
+
+        self.HorizontalFrame = ctk.CTkFrame(self.root, width=1800, height=2, fg_color="#5424A2",border_color="#CCCCCC",border_width=1)  
+        self.HorizontalFrame.place(x = 0 , y = 445)
+
+        self.VerticalFrame = ctk.CTkFrame(self.root, width=2, height=450, fg_color="#5424A2",border_color="#CCCCCC",border_width=1)  
+        self.VerticalFrame.place(x = 450 , y = 445)
+
 
         #Imagem atual em bytes
         global imagem_bytes
@@ -56,8 +70,6 @@ class PECA:
         cursor = conn.cursor()
         
 
-
-
     def selecionado_quantidade(self,event):
         QtdeCompra = self.QuantidadeCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
         print("Selecionado {}".format(QtdeCompra)) #PRINT DE CONFIRMAÇÃO APENAS
@@ -78,18 +90,17 @@ class PECA:
 
         #Criando frames
 
-        frame_img = ctk.CTkFrame(self.root, width=400, height=400, fg_color="#C9A8FF")  
-        frame_img.place(x= 40 , y = 40)
+        self.frame_img = ctk.CTkFrame(self.root, width=400, height=400, fg_color="#C9A8FF")  
+        self.frame_img.place(x= 40 , y = 40)
 
         self.frame_tabela = ctk.CTkFrame (self.PecaFrame,width= 700,height = 200, fg_color= "#5424A2")
         self.frame_tabela.place(x = 377, y = 210)
 
-        self.frame_tabelaCliente = ctk.CTkFrame (self.ClienteFrame,width= 700,height = 200, fg_color= "#5424A2",border_color="#CCCCCC",border_width=2)
+        self.frame_tabelaCliente = ctk.CTkFrame (self.ClienteFrame,width= 700,height = 200, fg_color= "#5424A2",border_color="#CCCCCC",border_width=0)
         self.frame_tabelaCliente.place(x = 377, y = 190)
-        
 
         #IMAGEM:
-        self.imagem_label = ctk.CTkLabel(frame_img,text = "",font=("Georgia",20))
+        self.imagem_label = ctk.CTkLabel(self.frame_img,text = "",font=("Georgia",20))
         self.imagem_label.configure(image=self.imagem_padrao, text="")
         self.imagem_label.place(x =  9, y = 9)
 
@@ -105,6 +116,13 @@ class PECA:
         EmailLabel =ctk.CTkLabel (self.ClienteFrame,text= "Email: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
         CodigoClienteLabel =ctk.CTkLabel (self.ClienteFrame,text= "Cod. Cliente: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
 
+        FuncionarioLabel =ctk.CTkLabel(self.FuncionarioFrame,text= "FUNCIONARIO ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        NomeFuncionarioLabel =ctk.CTkLabel(self.FuncionarioFrame,text= "Nome: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        CPFFuncionarioLabel =ctk.CTkLabel(self.FuncionarioFrame,text= "CPF: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        CodigoFuncionarioLabel =ctk.CTkLabel(self.FuncionarioFrame,text= "Cod: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        DataLabel =ctk.CTkLabel(self.FuncionarioFrame,text= "Data: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+
+
 
         #POSICIONANDO LabelS:
         DescricaoLabel.place(x = 20, y = 80)
@@ -118,6 +136,11 @@ class PECA:
         EmailLabel.place(x = 20, y =200)
         CodigoClienteLabel.place(x = 20 , y = 240)
 
+        FuncionarioLabel.place(x = 130, y = 20)
+        NomeFuncionarioLabel.place(x = 20, y = 80)
+        CPFFuncionarioLabel.place(x = 20, y = 120)
+        CodigoFuncionarioLabel.place(x = 20, y = 160)
+        DataLabel.place(x = 20 , y = 200)
 
         #CRIANDO CAMPOS DE ENTRADAS:
         self.DescricaoEntry = ctk.CTkEntry(self.PecaFrame,width=450,font=("Georgia",20),placeholder_text = "Descrição da Peça")
@@ -134,6 +157,14 @@ class PECA:
         self.PesquisaClienteEntry = ctk.CTkEntry(self.ClienteFrame,width=510,font= ("Georgia",22),placeholder_text = "Pesquisa de Cliente")
         self.PesquisaTabelaClienteEntry = ctk.CTkEntry(self.ClienteFrame,width=380,font= ("Georgia",20),placeholder_text = "Pesquisa de Cliente na Tabela")
 
+        self.NomeFuncionarioEntry = ctk.CTkEntry(self.FuncionarioFrame,width=300,font=("Georgia",20),placeholder_text = "Nome do Funcionario")
+        self.CPFFUncionarioEntry = ctk.CTkEntry(self.FuncionarioFrame,width=250,font=("Georgia",20),placeholder_text = "CPF do Funcionario")
+        self.CodigoFuncionarioEntry = ctk.CTkEntry(self.FuncionarioFrame,width=250,font=("Georgia",20),placeholder_text = "Codigo do Funcionario")
+        self.DataEntry = ctk.CTkEntry(self.FuncionarioFrame,width=130,font=("Georgia",20),placeholder_text = "xx/xx/xxxx")
+        self.DataEntry.bind("<KeyRelease>", self.formatar_entrada)
+
+
+
         #POSICIONA OS CAMPOS DE ENTRADAS:
         self.DescricaoEntry.place(x = 150, y = 82)
         self.CodigoEntry.place(x = 210, y = 132)
@@ -141,7 +172,7 @@ class PECA:
         self.PesquisaEntry.place(x = 140,y = 25)
         self.FocusIvisivelEntry.place(x = 330000000, y = 300000000)
 
-        #POSICIONA OS CAMPOS DE ENTRADAS:
+
         self.NomeEntry.place(x = 110, y = 82)
         self.CPFEntry.place(x = 90, y = 122)
         self.TelefoneEntry.place(x = 140 , y = 162)
@@ -150,6 +181,11 @@ class PECA:
 
         self.PesquisaTabelaClienteEntry.place(x = 555, y =162)
         self.PesquisaClienteEntry.place(x = 140,y = 25)
+
+        self.NomeFuncionarioEntry.place(x = 110, y =82)
+        self.CPFFUncionarioEntry.place(x = 90, y = 122)
+        self.CodigoFuncionarioEntry.place(x = 90, y = 162)
+        self.DataEntry.place(x = 110, y = 202)
 
         #TABELA:
         # Estilo da Treeview
@@ -240,6 +276,14 @@ class PECA:
         ListarButton = ctk.CTkButton(self.PecaFrame,text = "Listar",font= ("Georgia",21),width=130,command=self.listar_pecas)
         ListarButton.place(x = 925 , y = 182)
 
+        #BOTAO DE AVANÇAR
+        AvancarButton = ctk.CTkButton(self.PecaFrame,text = "AVANÇAR",font= ("Georgia",24),width=328,height=50,fg_color="#1DDB50",corner_radius=8,command=self.avancar)
+        AvancarButton.place(x = 30 , y = 280)
+        #BOTAO DE ADICIONAR AO CARRINHO
+        CarrinhoButton = ctk.CTkButton(self.PecaFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",24),width=200,height=50,fg_color="#5A70FF",corner_radius=8,command=self.listar_pecas)
+        CarrinhoButton.place(x = 30 , y = 340)
+
+
         #BOTAO DE PESQUISA CLIENTE
         PesquisarClienteButton = ctk.CTkButton(self.ClienteFrame,text = "Pesquisar",font= ("Georgia",22),width=100,command=self.pesquisar_cliente)
         PesquisarClienteButton.place(x = 20,y = 25)
@@ -254,9 +298,9 @@ class PECA:
         PesquisaTabelaClienteButton.place(x = 380, y = 162)
 
 
-        # #BOTÃO DE VOLTAR:
-        # voltar_button = ctk.CTkButton(self.PecaFrame, text="VOLTAR", width=130, font=("Georgia", 24), command=self.voltar_para_principal) #AÇÃO PARA O BOTÃO
-        # voltar_button.place(x=20, y=540)
+        #BOTÃO DE VOLTAR:
+        voltar_button = ctk.CTkButton(self.FuncionarioFrame, text="VOLTAR", width=130, font=("Georgia", 24), command=self.voltar_para_principal) #AÇÃO PARA O BOTÃO
+        voltar_button.place(x=20, y=340)
 
 
         self.QuantidadeLista =  [str(i) for i in range(1, self.QtdeEstoque + 1)]
@@ -265,6 +309,32 @@ class PECA:
         self.QuantidadeCB.set("Quantidade: 1")
         self.QuantidadeCB.bind("<Key>", self.bloquear_tudo_exceto_setas)
 
+    def formatar_entrada(self,event):
+        valor = self.DataEntry.get().replace("/", "")  # Remove qualquer barra existente
+        self.novo_valor = ""
+
+        # Adiciona as barras automaticamente enquanto digita
+        if len(valor) > 0:
+            self.novo_valor += valor[:2]
+        if len(valor) > 2:
+            self.novo_valor += "/" + valor[2:4]
+        if len(valor) > 4:
+            self.novo_valor += "/" + valor[4:8]
+
+        self.DataEntry.delete(0, "end")
+        self.DataEntry.insert(0, self.novo_valor)
+
+    def data_mysql(self):
+        try:
+            # Pega o valor já formatado como dd/mm/aaaa
+            data_formatada = self.DataEntry.get()
+            data_obj = datetime.strptime(data_formatada, "%d/%m/%Y")
+            data_mysql = data_obj.strftime("%Y-%m-%d")
+            print(data_mysql)
+            return data_mysql
+        except ValueError:
+            messagebox.showerror("Error","Data inválida")  # Retorna None se a data for inválida
+
     def reabrir_janela(self):
         self.PecaFrame.deiconify()  # Reexibe a janela principal
         self.PecaFrame.quit()  # Encerra o loop de eventos da janela de cadastro
@@ -272,9 +342,8 @@ class PECA:
     def voltar_para_principal(self):
         # Fechar a janela atual de cadastro de peças e voltar para a janela principal
         # self.PecaFrame.quit()  # Fecha a janela de cadastro de peças (destrói a instância)
-        self.PecaFrame.destroy()  # Fecha a janela de cadastro de peças, liberando recursos
+        self.root.destroy()  # Fecha a janela de cadastro de peças, liberando recursos
         self.main_window.deiconify()  # Reexibe a janela principal
-
 
     def selecionar_linha(self,event):
         conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
@@ -343,10 +412,6 @@ class PECA:
                 self.CPFEntry.insert(0, resultado[3])
                 self.CodigoClienteEntry.insert(0, resultado[5])
 
-
-
-
-
     #FUNÇÃO PARA CARREGAR IMAGEM:
     def carregar_imagem(self):
         global imagem_bytes, imagem_display #Variaveis globais
@@ -362,7 +427,6 @@ class PECA:
         else:
             self.imagem_label.configure(image= self.imagem_padrao, text="")
             messagebox.showwarning("Atenção","Imagem não selecionada")
-
 
     #FUNÇÃO DE PESQUISAR OBS: NAO TEM RELAÇÃO COM O CRUD
     def pesquisar_peca(self):
@@ -455,7 +519,6 @@ class PECA:
         except Exception as e:
             print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO
 
-
     def pesquisa_tabela(self):
         conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
         cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
@@ -499,9 +562,6 @@ class PECA:
         else:
             messagebox.showerror("Error", "Nenhum resultado encontrado")
 
-
-
-
     def listar_pecas(self):
         conn = get_connection()
         cursor = conn.cursor()
@@ -536,8 +596,6 @@ class PECA:
             tag = 'evenrow' if i % 2 == 0 else 'oddrow'
             self.tabelaCliente.insert("", "end", values=linha, tags=(tag,))
 
-
-    #WIDGETS:
     #FUNÇÃO DE LIMPAR
     def limparCampos(self):
         self.DescricaoEntry.delete(0, ctk.END)
@@ -609,6 +667,32 @@ class PECA:
             self.tabela.insert("","end",values = "")
 
 
+    def avancar(self):
+        #DESTRUINDO TODOS OS FRAMES
+        self.PecaFrame.destroy()
+        self.ClienteFrame.destroy()
+        self.FuncionarioFrame.destroy()
+        self.frame_tabela.destroy()
+        self.frame_tabelaCliente.destroy()
+        self.HorizontalFrame.destroy()
+        self.VerticalFrame.destroy()
+        self.frame_img.destroy()
+
+        self.CarrinhoFrame = ctk.CTkFrame(self.root, width=800, height=800, fg_color="BLACK",border_color="#CCCCCC",border_width=2)
+        self.CarrinhoFrame.place(x = 350, y = 20)
+
+        #Adicionando Barra de Rolagem
+        self.CanvasCarrinho = ctk.CTkCanvas(self.CarrinhoFrame,bg = "WHITE",highlightthickness=0,width = 990, height = 990, )
+        BarraRolagem = ctk.CTkScrollbar(self.CarrinhoFrame,orientation="vertical",command=self.CanvasCarrinho.yview,height=543,bg_color="BLUE")
+        self.Frame_Rolavel = ctk.CTkFrame(self.CanvasCarrinho,fg_color="#F5EFFF",width=1000,height=2820,corner_radius=0)
+
+        BarraRolagem.bind("<Configure>",lambda e: self.CanvasCarrinho.configure(scrollregion=self.CanvasCarrinho.bbox("all")))
+
+        self.CanvasCarrinho.create_window((570,565), window=self.Frame_Rolavel)
+        self.CanvasCarrinho.configure(yscrollcommand=BarraRolagem.set)
+
+        self.CanvasCarrinho.place(x = 5, y = 5)
+        BarraRolagem.place(x = 400, y= 2)
 
 
 if __name__ == "__main__":
