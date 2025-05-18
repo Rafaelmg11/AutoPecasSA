@@ -25,8 +25,12 @@ class PECA:
         self.imagem_padrao = CTkImage(self.imagem_padrao_pil,size= (380 , 380)) #Converte imagem 
 
         #Criando Frames:
-        self.PecaFrame = ctk.CTkFrame(self.root, width=830, height=500, fg_color="#5424A2",border_color="#CCCCCC",border_width=0)  
-        self.PecaFrame.place (x = 550, y = 20)
+        self.PecaFrame = ctk.CTkFrame(self.root, width=1080, height=500, fg_color="#5424A2",border_color="#CCCCCC",border_width=0)  
+        self.PecaFrame.place (x = 450, y = 20)
+
+        #Criando Frames:
+        self.ClienteFrame = ctk.CTkFrame(self.root, width=1080, height=500, fg_color="#5424A2",border_color="#CCCCCC",border_width=2)  
+        self.ClienteFrame.place (x = 450, y = 440)
 
         #Imagem atual em bytes
         global imagem_bytes
@@ -78,7 +82,11 @@ class PECA:
         frame_img.place(x= 40 , y = 40)
 
         self.frame_tabela = ctk.CTkFrame (self.PecaFrame,width= 700,height = 200, fg_color= "#5424A2")
-        self.frame_tabela.place(x = 20, y = 290)
+        self.frame_tabela.place(x = 377, y = 210)
+
+        self.frame_tabelaCliente = ctk.CTkFrame (self.ClienteFrame,width= 700,height = 200, fg_color= "#5424A2",border_color="#CCCCCC",border_width=2)
+        self.frame_tabelaCliente.place(x = 377, y = 190)
+        
 
         #IMAGEM:
         self.imagem_label = ctk.CTkLabel(frame_img,text = "",font=("Georgia",20))
@@ -91,12 +99,24 @@ class PECA:
         CodigoLabel =ctk.CTkLabel (self.PecaFrame,text="Codigo de Peça: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
         self.PrecoLabel =ctk.CTkLabel (self.PecaFrame,text= "R$ ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
 
+        NomeLabel =ctk.CTkLabel(self.ClienteFrame,text= "Nome: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        CPFLabel =ctk.CTkLabel (self.ClienteFrame,text= "CPF: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE") 
+        TelefoneLabel =ctk.CTkLabel (self.ClienteFrame,text="Telefone: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        EmailLabel =ctk.CTkLabel (self.ClienteFrame,text= "Email: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        CodigoClienteLabel =ctk.CTkLabel (self.ClienteFrame,text= "Cod. Cliente: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+
+
         #POSICIONANDO LabelS:
         DescricaoLabel.place(x = 20, y = 80)
         QuantidadeLabel.place(x =20, y = 175 )
         CodigoLabel.place(x = 20, y = 130 )
         self.PrecoLabel.place(x = 20, y = 215)
 
+        NomeLabel.place(x = 20, y = 80)
+        CPFLabel.place(x = 20, y = 120 )
+        TelefoneLabel.place(x = 20, y = 160)
+        EmailLabel.place(x = 20, y =200)
+        CodigoClienteLabel.place(x = 20 , y = 240)
 
 
         #CRIANDO CAMPOS DE ENTRADAS:
@@ -106,13 +126,30 @@ class PECA:
         self.PesquisaTabelaEntry = ctk.CTkEntry(self.PecaFrame,width=360,font= ("Georgia",20),placeholder_text = "Pesquisa de Peça na Tabela")
         self.FocusIvisivelEntry = ctk.CTkEntry(self.PecaFrame,width=350,font= ("Georgia",20),placeholder_text = "Focus")
 
+        self.NomeEntry = ctk.CTkEntry(self.ClienteFrame,width=450,font=("Georgia",20),placeholder_text = "Nome do Cliente")
+        self.CPFEntry = ctk.CTkEntry(self.ClienteFrame,width=200,font=("Georgia",20),placeholder_text = "CPF do Cliente")
+        self.TelefoneEntry = ctk.CTkEntry(self.ClienteFrame,width=210,font= ("Georgia",22),placeholder_text = "Telefone do Cliente")
+        self.EmailEntry = ctk.CTkEntry(self.ClienteFrame,width=250,font= ("Georgia",20),placeholder_text = "E-mail do Cliente")
+        self.CodigoClienteEntry = ctk.CTkEntry(self.ClienteFrame,width=180,font= ("Georgia",20),placeholder_text = "Codigo do Cliente")
+        self.PesquisaClienteEntry = ctk.CTkEntry(self.ClienteFrame,width=510,font= ("Georgia",22),placeholder_text = "Pesquisa de Cliente")
+        self.PesquisaTabelaClienteEntry = ctk.CTkEntry(self.ClienteFrame,width=380,font= ("Georgia",20),placeholder_text = "Pesquisa de Cliente na Tabela")
 
         #POSICIONA OS CAMPOS DE ENTRADAS:
         self.DescricaoEntry.place(x = 150, y = 82)
         self.CodigoEntry.place(x = 210, y = 132)
-        self.PesquisaTabelaEntry.place(x = 200, y =260)
+        self.PesquisaTabelaEntry.place(x = 555, y =182)
         self.PesquisaEntry.place(x = 140,y = 25)
         self.FocusIvisivelEntry.place(x = 330000000, y = 300000000)
+
+        #POSICIONA OS CAMPOS DE ENTRADAS:
+        self.NomeEntry.place(x = 110, y = 82)
+        self.CPFEntry.place(x = 90, y = 122)
+        self.TelefoneEntry.place(x = 140 , y = 162)
+        self.EmailEntry.place(x = 110 , y = 202)
+        self.CodigoClienteEntry.place(x = 180, y = 242)
+
+        self.PesquisaTabelaClienteEntry.place(x = 555, y =162)
+        self.PesquisaClienteEntry.place(x = 140,y = 25)
 
         #TABELA:
         # Estilo da Treeview
@@ -151,19 +188,72 @@ class PECA:
         self.tabela.config(yscrollcommand=BarraRolamento.set)
         BarraRolamento.config(command=self.tabela.yview)
 
+        #----------------------------------------------------------------------------------------------------------------------------------------------
+
+        #TABELA CLIENTE
+        # Estilo da Tabela
+        style = ttk.Style()
+
+        # Estilo geral da Tabela
+        style.configure("Treeview",foreground="black",font=("Segoe UI", 10))
+        # Estilo do cabeçalho
+        style.configure("Treeview.Heading",foreground="black",font=("Segoe UI", 10))
+        #Criando tabela:
+        self.tabelaCliente = ttk.Treeview(self.frame_tabelaCliente,columns=("cod","nome","cpf","telefone","email","endereco"),show ="headings",height=10)
+        #Cabeçalho de cada coluna
+        self.tabelaCliente.heading("cod", text="Código")
+        self.tabelaCliente.heading("nome", text="Nome")
+        self.tabelaCliente.heading("cpf", text="CPF")
+        self.tabelaCliente.heading("telefone", text="Telefone")
+        self.tabelaCliente.heading("email",text="E-mail")
+        self.tabelaCliente.heading("endereco",text="Endereço")
+
+        #Tamanho de cada coluna
+        self.tabelaCliente.column("cod", width=55)
+        self.tabelaCliente.column("nome", width=150)
+        self.tabelaCliente.column("cpf", width=100)
+        self.tabelaCliente.column("telefone", width=110)
+        self.tabelaCliente.column("email",width = 190)
+        self.tabelaCliente.column("endereco",width = 230)
+        #Posicionando
+        self.tabelaCliente.place(x = 5, y = 13)
+        #Ação ao selecionar uma linha
+        self.tabelaCliente.bind("<<TreeviewSelect>>", self.selecionar_linhaCliente)
+        #Barra de Rolamento:
+        BarraRolamento = ttk.Scrollbar(self.frame_tabelaCliente, orient="vertical")
+        BarraRolamento.place(x = 850, y = 14, height=self.frame_tabelaCliente.winfo_height() + 223)  # Ajustando o tamanho da barra de rolagem
+        #Conectando barra com a tabela
+        self.tabelaCliente.config(yscrollcommand=BarraRolamento.set)
+        BarraRolamento.config(command=self.tabelaCliente.yview)
+
 
         #BOTÃO DE LIMPAR
         limparButton = ctk.CTkButton(self.PecaFrame,text = "LIMPAR",font= ("Georgia",22),width=160,command=self.limparCampos)
         limparButton.place(x = 655, y = 25)
         #BOTÃO DE PESQUISA NA TABELA
         PesquisaTabelaButton = ctk.CTkButton(self.PecaFrame, text="Pesquisar Tabela", font= ("Georgia",21),command=self.pesquisa_tabela)
-        PesquisaTabelaButton.place(x = 25, y = 260)
+        PesquisaTabelaButton.place(x = 380, y = 182)
         #BOTAO DE PESQUISA
         PesquisarButton = ctk.CTkButton(self.PecaFrame,text = "Pesquisar",font= ("Georgia",22),width=100,command=self.pesquisar_peca)
         PesquisarButton.place(x = 20,y = 25)
         #BOTAO DE LISTAR
         ListarButton = ctk.CTkButton(self.PecaFrame,text = "Listar",font= ("Georgia",21),width=130,command=self.listar_pecas)
-        ListarButton.place(x = 570 , y = 260)
+        ListarButton.place(x = 925 , y = 182)
+
+        #BOTAO DE PESQUISA CLIENTE
+        PesquisarClienteButton = ctk.CTkButton(self.ClienteFrame,text = "Pesquisar",font= ("Georgia",22),width=100,command=self.pesquisar_cliente)
+        PesquisarClienteButton.place(x = 20,y = 25)
+        #BOTÃO DE LIMPAR Cliente
+        limparClienteButton = ctk.CTkButton(self.ClienteFrame,text = "LIMPAR",font= ("Georgia",22),width=160,command=self.limparCamposCliente)
+        limparClienteButton.place(x = 655, y = 25)
+        #BOTAO DE LISTAR CLIENTE
+        ListarClienteButton = ctk.CTkButton(self.ClienteFrame,text = "Listar",font= ("Georgia",21),width=130,command=self.listar_cliente)
+        ListarClienteButton.place(x = 945 , y = 162)
+        #BOTÃO DE PESQUISA NA TABELA CLIENTE
+        PesquisaTabelaClienteButton = ctk.CTkButton(self.ClienteFrame, text="Pesquisar Tabela", font= ("Georgia",21),command=self.pesquisa_tabelaCliente)
+        PesquisaTabelaClienteButton.place(x = 380, y = 162)
+
+
         # #BOTÃO DE VOLTAR:
         # voltar_button = ctk.CTkButton(self.PecaFrame, text="VOLTAR", width=130, font=("Georgia", 24), command=self.voltar_para_principal) #AÇÃO PARA O BOTÃO
         # voltar_button.place(x=20, y=540)
@@ -228,6 +318,33 @@ class PECA:
         self.QuantidadeCB.configure(values=self.QuantidadeLista)
         self.QuantidadeCB.set("Quantidade: 1")  # ou "", se quiser vazio
 
+    def selecionar_linhaCliente(self,event):
+        conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
+        cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
+
+        item = self.tabelaCliente.selection()
+        if item:
+            valores = self.tabelaCliente.item(item,"values")
+            cod_cliente = valores[0]
+            cursor.execute("SELECT nome_cliente, telefone_cliente, email_cliente, cpf_cliente, endereco_cliente, cod_cliente, cod_endereco FROM cliente WHERE status = TRUE and cod_cliente=%s", (cod_cliente,))
+            resultado = cursor.fetchone()
+            if resultado:
+
+                self.NomeEntry.delete(0, ctk.END)
+                self.CPFEntry.delete(0, ctk.END)
+                self.TelefoneEntry.delete(0, ctk.END)
+                self.EmailEntry.delete(0, ctk.END)
+                self.CodigoClienteEntry.delete(0, ctk.END)
+
+                #INSERINDO DADOS NOS CAMPOS
+                self.NomeEntry.insert(0, resultado[0])
+                self.TelefoneEntry.insert(0, resultado[1])
+                self.EmailEntry.insert(0, resultado[2])
+                self.CPFEntry.insert(0, resultado[3])
+                self.CodigoClienteEntry.insert(0, resultado[5])
+
+
+
 
 
     #FUNÇÃO PARA CARREGAR IMAGEM:
@@ -247,7 +364,7 @@ class PECA:
             messagebox.showwarning("Atenção","Imagem não selecionada")
 
 
-        #FUNÇÃO DE PESQUISAR OBS: NAO TEM RELAÇÃO COM O CRUD
+    #FUNÇÃO DE PESQUISAR OBS: NAO TEM RELAÇÃO COM O CRUD
     def pesquisar_peca(self):
         pesquisa = self.PesquisaEntry.get() #RECEBENDO VALOR PARA PESQUISAR
 
@@ -304,6 +421,39 @@ class PECA:
         self.QuantidadeCB.configure(values=self.QuantidadeLista)
         self.QuantidadeCB.set("Quantidade: 1")  # ou "", se quiser vazio
 
+    #FUNÇÃO DE PESQUISAR OBS: NAO TEM RELAÇÃO COM O CRUD
+    def pesquisar_cliente(self):
+        pesquisa = self.PesquisaClienteEntry.get() #RECEBENDO VALOR PARA PESQUISAR
+        conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
+        cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
+        try:
+            # CONSULTA NO BANCO
+            cursor.execute("SELECT cod_cliente,nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente,cod_endereco FROM cliente WHERE status = TRUE and (cod_cliente=%s OR nome_cliente=%s OR cpf_cliente = %s)", (pesquisa,pesquisa,pesquisa)) 
+            # ACIMA SELECIONA AS COLUNAS DA TABELA SE cod_cliente OU nome_cliente == pesquisa (o que foi digitado no campo de pesquisa)
+            # PERMITE PESQUISA POR NOME E CODIGO DO cliente
+            cliente_pesquisa = cursor.fetchone()
+            
+            # Verificando se o cliente foi encontrado
+            if cliente_pesquisa:  # SE FOI ENCONTRADO...
+                cod_cliente,Nome,Telefone,Email,CPF,Endereco,CodEndereco = cliente_pesquisa #ESSAS VARIAVEIS VAI RECEBER OS VALORES DA COLUNA DE ACORDO COM A ORDEM
+            
+                self.limparCampos()
+
+                # Inserindo os dados nas entradas (Entry)
+                self.CodigoClienteEntry.insert(0, cod_cliente)
+                self.NomeEntry.insert(0, Nome)
+                self.TelefoneEntry.insert(0, Telefone)
+                self.EmailEntry.insert(0, Email)
+                self.CPFEntry.insert(0, CPF)
+ 
+
+                messagebox.showinfo("Success", "Cliente encontrado")
+            else:
+                messagebox.showerror("Error", "Cliente não encontrado")
+                self.limparCampos()
+
+        except Exception as e:
+            print(f'Error: {e}') #SE EXEPT, EXIBE O ERRO
 
 
     def pesquisa_tabela(self):
@@ -325,6 +475,31 @@ class PECA:
             tag = 'evenrow' if i % 2 == 0 else 'oddrow'
             self.tabela.insert("", "end", values=linha, tags=(tag,))
 
+    def pesquisa_tabelaCliente(self):
+        conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
+        cursor = conn.cursor() #conn TRABALHAR COM A CONEXAO
+
+        #PARTE DA TABELA:
+        pesquisa = self.PesquisaTabelaClienteEntry.get()
+        for linha in self.tabelaCliente.get_children():
+            self.tabelaCliente.delete(linha)
+
+        self.tabelaCliente.tag_configure('oddrow', background='#f2f2f2')
+        self.tabelaCliente.tag_configure('evenrow', background='#ffffff')
+        
+        cursor.execute("SELECT cod_cliente,nome_cliente,cpf_cliente,telefone_cliente,email_cliente,endereco_cliente,cod_endereco FROM cliente WHERE status = TRUE and (cod_cliente=%s OR nome_cliente=%s OR nome_cliente LIKE %s OR cpf_cliente = %s OR email_cliente = %s OR telefone_cliente = %s) ",(pesquisa,pesquisa,f"%{pesquisa}%",pesquisa,pesquisa,pesquisa))
+        consulta_tabela = cursor.fetchall()
+
+        if consulta_tabela:
+
+            for i, linha in enumerate(consulta_tabela):
+                tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+                self.tabelaCliente.insert("", "end", values=linha, tags=(tag,))
+
+        else:
+            messagebox.showerror("Error", "Nenhum resultado encontrado")
+
+
 
 
     def listar_pecas(self):
@@ -343,6 +518,23 @@ class PECA:
         for i, linha in enumerate(consulta_tabela):
             tag = 'evenrow' if i % 2 == 0 else 'oddrow'
             self.tabela.insert("", "end", values=linha, tags=(tag,))
+
+    def listar_cliente(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        for linha in self.tabelaCliente.get_children():
+            self.tabelaCliente.delete(linha)
+
+        self.tabelaCliente.tag_configure('oddrow', background='white')  # Linha cinza clara
+        self.tabelaCliente.tag_configure('evenrow', background='#DBE1FF')  # Linha branca
+
+        cursor.execute(" SELECT cod_cliente,nome_cliente,cpf_cliente,telefone_cliente,email_cliente,endereco_cliente FROM cliente WHERE  status = TRUE ")
+        consulta_tabela = cursor.fetchall()
+
+        for i, linha in enumerate(consulta_tabela):
+            tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+            self.tabelaCliente.insert("", "end", values=linha, tags=(tag,))
 
 
     #WIDGETS:
@@ -386,6 +578,35 @@ class PECA:
         for linha in consulta_tabela:
             self.tabela.insert("","end",values = "")
 
+    #FUNÇÃO DE LIMPAR
+    def limparCamposCliente(self):
+        self.NomeEntry.delete(0, ctk.END)
+        self.NomeEntry.focus()
+        self.CPFEntry.delete(0, ctk.END)
+        self.CPFEntry.focus()
+        self.TelefoneEntry.delete(0, ctk.END)
+        self.TelefoneEntry.focus()
+        self.EmailEntry.delete(0, ctk.END)
+        self.EmailEntry.focus()
+        self.CodigoClienteEntry.delete(0, ctk.END)
+        self.CodigoClienteEntry.focus()
+        self.PesquisaClienteEntry.delete(0, ctk.END)
+        self.PesquisaClienteEntry.focus()
+        self.PesquisaTabelaClienteEntry.delete(0, ctk.END)
+        self.PesquisaTabelaClienteEntry.focus()
+        
+        self.FocusIvisivelEntry.focus()
+    
+        #TABELA
+        conn = get_connection()
+        cursor = conn.cursor()
+        for linha in self.tabelaCliente.get_children():
+            self.tabelaCliente.delete(linha)
+        cursor.execute("SELECT cod_cliente,nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente FROM cliente WHERE  status = TRUE ")
+        consulta_tabela = cursor.fetchall()
+
+        for linha in consulta_tabela:
+            self.tabela.insert("","end",values = "")
 
 
 
