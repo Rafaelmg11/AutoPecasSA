@@ -25,8 +25,8 @@ class PECA:
         self.imagem_padrao = CTkImage(self.imagem_padrao_pil,size= (380 , 380)) #Converte imagem 
 
         #Criando Frames:
-        self.SistemaFrame = ctk.CTkFrame(self.root, width=940, height=580, fg_color="#5424A2",border_color="#CCCCCC",border_width=4)  
-        self.SistemaFrame.place (x = 580, y = 40)
+        self.PecaFrame = ctk.CTkFrame(self.root, width=830, height=500, fg_color="#5424A2",border_color="#CCCCCC",border_width=0)  
+        self.PecaFrame.place (x = 550, y = 20)
 
         #Imagem atual em bytes
         global imagem_bytes
@@ -77,8 +77,8 @@ class PECA:
         frame_img = ctk.CTkFrame(self.root, width=400, height=400, fg_color="#C9A8FF")  
         frame_img.place(x= 40 , y = 40)
 
-        self.frame_tabela = ctk.CTkFrame (self.SistemaFrame,width= 700,height = 200, fg_color= "#5424A2")
-        self.frame_tabela.place(x = 20, y = 330)
+        self.frame_tabela = ctk.CTkFrame (self.PecaFrame,width= 700,height = 200, fg_color= "#5424A2")
+        self.frame_tabela.place(x = 20, y = 290)
 
         #IMAGEM:
         self.imagem_label = ctk.CTkLabel(frame_img,text = "",font=("Georgia",20))
@@ -86,37 +86,31 @@ class PECA:
         self.imagem_label.place(x =  9, y = 9)
 
         #CRIANDO LabelS:
-        DescricaoLabel =ctk.CTkLabel(self.SistemaFrame,text= "Descrição: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
-        QuantidadeLabel =ctk.CTkLabel (self.SistemaFrame,text= "Quantidade: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE") 
-        ValorLabel =ctk.CTkLabel (self.SistemaFrame,text="Valor: ",font=("Georgia",26),fg_color = "#5424A2", text_color = "WHITE") 
-        CodigoLabel =ctk.CTkLabel (self.SistemaFrame,text="Codigo de Peça: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
-        self.PrecoLabel =ctk.CTkLabel (self.SistemaFrame,text= "R$ ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        DescricaoLabel =ctk.CTkLabel(self.PecaFrame,text= "Descrição: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        QuantidadeLabel =ctk.CTkLabel (self.PecaFrame,text= "Quantidade: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE") 
+        CodigoLabel =ctk.CTkLabel (self.PecaFrame,text="Codigo de Peça: ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
+        self.PrecoLabel =ctk.CTkLabel (self.PecaFrame,text= "R$ ",font = ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
 
         #POSICIONANDO LabelS:
         DescricaoLabel.place(x = 20, y = 80)
-        QuantidadeLabel.place(x =20, y = 160 )
-        ValorLabel.place(x = 20 , y = 200)
-        CodigoLabel.place(x = 20, y = 120 )
-        self.PrecoLabel.place(x = 100, y = 200)
+        QuantidadeLabel.place(x =20, y = 175 )
+        CodigoLabel.place(x = 20, y = 130 )
+        self.PrecoLabel.place(x = 20, y = 215)
 
 
 
         #CRIANDO CAMPOS DE ENTRADAS:
-        self.DescricaoEntry = ctk.CTkEntry(self.SistemaFrame,width=400,font=("Georgia",20),placeholder_text = "Descrição da Peça")
-        # QuantidadeEntry = ctk.CTkEntry(self.SistemaFrame,width=250,font=("Georgia",20),placeholder_text = "Quantidade da Peça")
-        # ValorEntry = ctk.CTkEntry(self.SistemaFrame,width=250,font=("Georgia",20),placeholder_text = "Valor da Peça")
-        self.CodigoEntry = ctk.CTkEntry(self.SistemaFrame,width=250,font=("Georgia",20),placeholder_text = "Codigo da Peça")
-        self.PesquisaEntry = ctk.CTkEntry(self.SistemaFrame,width=510,font= ("Georgia",22),placeholder_text = "Pesquisa de Peça")
-        self.PesquisaTabelaEntry = ctk.CTkEntry(self.SistemaFrame,width=360,font= ("Georgia",20),placeholder_text = "Pesquisa de Peça na Tabela")
-        self.FocusIvisivelEntry = ctk.CTkEntry(self.SistemaFrame,width=350,font= ("Georgia",20),placeholder_text = "Focus")
+        self.DescricaoEntry = ctk.CTkEntry(self.PecaFrame,width=450,font=("Georgia",20),placeholder_text = "Descrição da Peça")
+        self.CodigoEntry = ctk.CTkEntry(self.PecaFrame,width=200,font=("Georgia",20),placeholder_text = "Codigo da Peça")
+        self.PesquisaEntry = ctk.CTkEntry(self.PecaFrame,width=510,font= ("Georgia",22),placeholder_text = "Pesquisa de Peça")
+        self.PesquisaTabelaEntry = ctk.CTkEntry(self.PecaFrame,width=360,font= ("Georgia",20),placeholder_text = "Pesquisa de Peça na Tabela")
+        self.FocusIvisivelEntry = ctk.CTkEntry(self.PecaFrame,width=350,font= ("Georgia",20),placeholder_text = "Focus")
 
 
         #POSICIONA OS CAMPOS DE ENTRADAS:
         self.DescricaoEntry.place(x = 150, y = 82)
-        # QuantidadeEntry.place(x = 170, y = 162)
-        # ValorEntry.place(x = 100, y =202)
-        self.CodigoEntry.place(x = 210, y = 122)
-        self.PesquisaTabelaEntry.place(x = 200, y =300)
+        self.CodigoEntry.place(x = 210, y = 132)
+        self.PesquisaTabelaEntry.place(x = 200, y =260)
         self.PesquisaEntry.place(x = 140,y = 25)
         self.FocusIvisivelEntry.place(x = 330000000, y = 300000000)
 
@@ -159,36 +153,36 @@ class PECA:
 
 
         #BOTÃO DE LIMPAR
-        limparButton = ctk.CTkButton(self.SistemaFrame,text = "LIMPAR",font= ("Georgia",22),width=160,command=self.limparCampos)
+        limparButton = ctk.CTkButton(self.PecaFrame,text = "LIMPAR",font= ("Georgia",22),width=160,command=self.limparCampos)
         limparButton.place(x = 655, y = 25)
         #BOTÃO DE PESQUISA NA TABELA
-        PesquisaTabelaButton = ctk.CTkButton(self.SistemaFrame, text="Pesquisar Tabela", font= ("Georgia",21),command=self.pesquisa_tabela)
-        PesquisaTabelaButton.place(x = 25, y = 300)
+        PesquisaTabelaButton = ctk.CTkButton(self.PecaFrame, text="Pesquisar Tabela", font= ("Georgia",21),command=self.pesquisa_tabela)
+        PesquisaTabelaButton.place(x = 25, y = 260)
         #BOTAO DE PESQUISA
-        PesquisarButton = ctk.CTkButton(self.SistemaFrame,text = "Pesquisar",font= ("Georgia",22),width=100,command=self.pesquisar_peca)
+        PesquisarButton = ctk.CTkButton(self.PecaFrame,text = "Pesquisar",font= ("Georgia",22),width=100,command=self.pesquisar_peca)
         PesquisarButton.place(x = 20,y = 25)
         #BOTAO DE LISTAR
-        ListarButton = ctk.CTkButton(self.SistemaFrame,text = "Listar",font= ("Georgia",21),width=130,command=self.listar_pecas)
-        ListarButton.place(x = 570 , y = 300)
-        #BOTÃO DE VOLTAR:
-        voltar_button = ctk.CTkButton(self.SistemaFrame, text="VOLTAR", width=130, font=("Georgia", 24), command=self.voltar_para_principal) #AÇÃO PARA O BOTÃO
-        voltar_button.place(x=20, y=540)
+        ListarButton = ctk.CTkButton(self.PecaFrame,text = "Listar",font= ("Georgia",21),width=130,command=self.listar_pecas)
+        ListarButton.place(x = 570 , y = 260)
+        # #BOTÃO DE VOLTAR:
+        # voltar_button = ctk.CTkButton(self.PecaFrame, text="VOLTAR", width=130, font=("Georgia", 24), command=self.voltar_para_principal) #AÇÃO PARA O BOTÃO
+        # voltar_button.place(x=20, y=540)
 
 
         self.QuantidadeLista =  [str(i) for i in range(1, self.QtdeEstoque + 1)]
-        self.QuantidadeCB = ctk.CTkComboBox (self.SistemaFrame,corner_radius=5,fg_color="WHITE",bg_color="WHITE",border_width=3,text_color="BLACK",values=self.QuantidadeLista,font=("Georgia",18),width=180,height=40,command=self.selecionado_quantidade) #Criando ComboBox
-        self.QuantidadeCB.place(x = 270, y = 162)
+        self.QuantidadeCB = ctk.CTkComboBox (self.PecaFrame,corner_radius=5,fg_color="WHITE",bg_color="#5424A2",border_width=3,text_color="BLACK",values=self.QuantidadeLista,font=("Georgia",18),width=180,height=40,command=self.selecionado_quantidade) #Criando ComboBox
+        self.QuantidadeCB.place(x = 170, y = 172)
         self.QuantidadeCB.set("Quantidade: 1")
         self.QuantidadeCB.bind("<Key>", self.bloquear_tudo_exceto_setas)
 
     def reabrir_janela(self):
-        self.SistemaFrame.deiconify()  # Reexibe a janela principal
-        self.SistemaFrame.quit()  # Encerra o loop de eventos da janela de cadastro
+        self.PecaFrame.deiconify()  # Reexibe a janela principal
+        self.PecaFrame.quit()  # Encerra o loop de eventos da janela de cadastro
 
     def voltar_para_principal(self):
         # Fechar a janela atual de cadastro de peças e voltar para a janela principal
-        # self.SistemaFrame.quit()  # Fecha a janela de cadastro de peças (destrói a instância)
-        self.SistemaFrame.destroy()  # Fecha a janela de cadastro de peças, liberando recursos
+        # self.PecaFrame.quit()  # Fecha a janela de cadastro de peças (destrói a instância)
+        self.PecaFrame.destroy()  # Fecha a janela de cadastro de peças, liberando recursos
         self.main_window.deiconify()  # Reexibe a janela principal
 
 
@@ -364,6 +358,15 @@ class PECA:
         self.PesquisaTabelaEntry.focus()
         
         self.FocusIvisivelEntry.focus()
+
+
+        self.PrecoLabel.configure(text="R$ ")
+
+        self.QtdeEstoque = 0
+
+        self.QuantidadeLista = [str(i) for i in range(1, self.QtdeEstoque + 1)]
+        self.QuantidadeCB.configure(values=self.QuantidadeLista)
+        self.QuantidadeCB.set("Quantidade: 1")  # ou "", se quiser vazio
         
 
         global imagem_bytes
