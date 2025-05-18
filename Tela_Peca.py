@@ -25,6 +25,9 @@ class PECA:
         self.imagem_padrao_pil = Image.open("sem_imagem.png") #Puxa imagem
         self.imagem_padrao = CTkImage(self.imagem_padrao_pil,size= (110 , 110)) #Converte imagem 
 
+        # #Criando Frames:
+        # self.SistemaFrame = ctk.CTkFrame(self.root, width=1560, height=60, fg_color="#5424A2")  
+        # self.SistemaFrame.place (x = 500, y = 200)
 
         #Imagem atual em bytes
         global imagem_bytes
