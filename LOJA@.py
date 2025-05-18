@@ -9,6 +9,7 @@ from StyleComboBox import style_combobox
 from customtkinter import CTkImage
 
 
+
 class TelaPrincipal:
 
 
@@ -135,7 +136,7 @@ class TelaPrincipal:
 
         #Criar frame do produto
         self.create_produto_frame(self.Rolavel_Frame) #Declarando o parent_frame
-        self.pagina_unitaria(self.Rolavel_Frame)
+
 
         #ICONS:
         self.IconCarrinho = CTkImage(light_image= Image.open("icons/CarrinhoBranco.png"),size = (50, 50))
@@ -206,21 +207,146 @@ class TelaPrincipal:
         FreioButton = ctk.CTkButton(Frame_categorias,text = "FREIO",font= ("Georgia",16),compound="top",width=0,image=self.IconFreio,corner_radius=0,fg_color="#5424A2",command=self.click_freio)
         FreioButton.place(x = 888,y = 5)
 
-    def pagina_unitaria(self, parent_frame):
-        self.SoloFrame = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="BLUE",corner_radius=0)  
-        self.SoloFrame.place(x = 0, y = 60)
+    def ver_mais_peca(self, peca):
+
+        #RECEBENDO VALORES DA PEÇA:
+        Descricao, Preco, Imagem_Bytes, TipoPeca, QtdeEstoque, Fornecedor, CodPeca, CodFornecedor = peca
+
+        #FRAMES:
+        SoloFrame = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="#F9F5FF",corner_radius=0)  
+        SoloFrame.place(x = 0, y = 60)
+
+        InformacoesFrame = ctk.CTkFrame(SoloFrame, width= 500, height= 750, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=6)
+        InformacoesFrame.place(x = 1020, y = 15)
+        ImagemFrame = ctk.CTkFrame(SoloFrame, width= 455, height= 455, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=0)
+        ImagemFrame.place(x = 450, y = 15)
+        SugeridosFrame = ctk.CTkFrame(SoloFrame, width= 960, height= 280, fg_color="#F9F5FF",border_width=0,border_color="#CCCCCC",corner_radius=6)
+        SugeridosFrame.place(x = 30, y = 485 )
+
+        #IMAGEM:
+        Imagem_Padrao = CTkImage(light_image=Image.open("sem_imagem.png"),size=(450,450))
+        if Imagem_Bytes:
+            Imagem = Image.open(io.BytesIO(Imagem_Bytes))
+            Imagem = Imagem.resize((450,450))
+            Imagem_Display = CTkImage(light_image=Imagem, size = (450,450))
+            Imagem_Label = ctk.CTkLabel(ImagemFrame, image=Imagem_Display, text="")
+            Imagem_Label.place(x = 2, y = 2)
+        else:
+            Imagem_Label = ctk.CTkLabel(ImagemFrame, image=Imagem_Padrao, text="")
+            Imagem_Label.place(x = 2, y = 2)
+
+        #LABELS:
+        DescricaoLabel = ctk.CTkLabel(InformacoesFrame,text = Descricao ,font = ("Georgia",20),fg_color = "WHITE", text_color = "BLACK") 
+        DescricaoLabel.place(x = 20, y = 20)
+
+        PrecoLabel = ctk.CTkLabel(InformacoesFrame,text = f"R$ {Preco:.2f}" ,font = ("Georgia",20),fg_color = "WHITE", text_color = "BLACK") 
+        PrecoLabel.place(x = 20, y = 300)
+
+        Estoque = ctk.CTkLabel(InformacoesFrame,text = f"Quantidade: {QtdeEstoque}" ,font = ("Georgia",20),fg_color = "WHITE", text_color = "BLACK") 
+        Estoque.place(x = 20, y = 200)
+
+        Fornecedor = ctk.CTkLabel(InformacoesFrame,text = f"Fornecedor: {Fornecedor}" ,font = ("Georgia",20),fg_color = "WHITE", text_color = "BLACK") 
+        Fornecedor.place (x = 20, y = 50)
+
+        #Botão de voltar
+        def voltar():
+            SoloFrame.destroy()
         self.IconVoltar = CTkImage(light_image= Image.open("icons/X.png"),size = (50, 50)) 
-        self.VoltarButton =  ctk.CTkButton(self.SoloFrame,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
+        self.VoltarButton =  ctk.CTkButton(SoloFrame,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 , command=voltar)
         self.VoltarButton.place(x = 2 , y = 2)
 
-        self.InformacoesFrame = ctk.CTkFrame(self.SoloFrame, width= 500, height= 750, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=6)
-        self.InformacoesFrame.place(x = 1020, y = 15)
-        self.ImagemFrame = ctk.CTkFrame(self.SoloFrame, width= 500, height= 500, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=6)
-        self.ImagemFrame.place(x = 450, y = 15)
+        #Botão de Comprar
+        ComprarButton =  ctk.CTkButton(InformacoesFrame,text = "COMPRAR AGORA ",font= ("Georgia",25),image=self.IconSacola,compound="left",width=30,corner_radius=8,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 , command=voltar)
+        ComprarButton.place(x = 100 , y = 500)
+        #Botão de Carrinho
+        CarrinhoButton =  ctk.CTkButton(InformacoesFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",25),image=self.IconCarrinho,compound="left",width=30,corner_radius=8,fg_color="#5424A2",border_color="WHITE",anchor="center",  border_width=0 , command=voltar)
+        CarrinhoButton.place(x = 50 , y = 580)
 
+
+        #COMBOX:
+        def selecionado_quantidade(event): 
+            QtdeCompra = QuantidadeCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
+            print("Selecionado {}".format(QtdeCompra)) #PRINT DE CONFIRMAÇÃO APENAS
+            PrecoQtde = float(Preco) * float(QtdeCompra)
+            PrecoLabel.configure(text = f"R$ {PrecoQtde:.2f}")
+            print(PrecoQtde)
+            self.FocusIvisivelEntry.focus()
+            
+        def bloquear_tudo_exceto_setas(event):
+            # Permitir apenas as teclas de seta
+            if event.keysym in ["Left", "Right", "Up", "Down"]:
+                return  # deixa passar
+            return "break"  # bloqueia tudo o resto
+
+        style_combobox(self.root)
+        QuantidadeLista =  [str(i) for i in range(1, QtdeEstoque + 1)]
+        QuantidadeCB = ttk.Combobox (InformacoesFrame,style="CBPecas.TCombobox",values=QuantidadeLista,font=("Georgia",13),width=22) #Criando ComboBox
+        QuantidadeCB.place(x = 20, y = 250)
+        QuantidadeCB.set("1")
+        QuantidadeCB.bind("<<ComboboxSelected>>",selecionado_quantidade) #AÇÃO DE SELECIONAR
+        QuantidadeCB.bind("<Key>", bloquear_tudo_exceto_setas)
+
+
+
+        #SUGERIDOS: 
+        TipoPeca = str(TipoPeca)
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT cod_peca, cod_fornecedor, desc_peca, fornecedor, imagem, lote, qtde_estoque, tipo_peca , valor_unitario WHERE status = TRUE AND (desc_peca = )")
+        cursor.execute("SELECT desc_peca,valor_unitario,imagem,tipo_peca,qtde_estoque,fornecedor,cod_peca,cod_fornecedor FROM peca WHERE status = True and (tipo_peca = %s) LIMIT 4",(TipoPeca,))
+        sugeridos = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        x = 12
+
+        for i,sugerido in enumerate(sugeridos):
+
+
+            DescricaoSug = sugerido[0]
+            PrecoSug = sugerido[1]
+            Imagem_BytesSug = sugerido[2]
+
+            produto_frame = ctk.CTkFrame (SugeridosFrame,width=200,height=270,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=8)
+            produto_frame.place(x = x , y = 5)
+
+            imagem_frame = ctk.CTkFrame (produto_frame,width=160,height=165,fg_color="WHITE",border_width=1, border_color="#CCCCCC",corner_radius=0)
+            imagem_frame.place(x = 20, y =9)
+
+            VerMaisButton = ctk.CTkButton(produto_frame,text = "VER MAIS",font= ("Georgia",14),width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command= lambda p=sugerido: self.ver_mais_peca(p))
+            VerMaisButton.place(x = 118, y = 240)
+
+            self.DescricaoLabel = ctk.CTkLabel(produto_frame,text = (DescricaoSug),font = ("Georgia",14),fg_color = "WHITE", text_color = "#5424A2",width=160,wraplength=160,justify="left") 
+            self.DescricaoLabel.place(x = 20,y = 175)
+            
+            self.PrecoLabel = ctk.CTkLabel(produto_frame,text = f"R${PrecoSug:.2f}",font = ("Georgia",20),fg_color = "WHITE", text_color = "#5424A2") 
+            self.PrecoLabel.place(x = 10 , y = 240)
+
+            if Imagem_BytesSug:
+                Imagem = Image.open(io.BytesIO(Imagem_BytesSug))
+                Imagem = Imagem.resize((120,120))
+                Imagem_Display = CTkImage(light_image=Imagem, size = (160,165))
+                Imagem_Label = ctk.CTkLabel(imagem_frame, image=Imagem_Display, text="")
+                Imagem_Label.place(x = 0, y = 0)
+            else:
+                Imagem_Label = ctk.CTkLabel(imagem_frame, image=self.Imagem_Padrao, text="")
+                Imagem_Label.place(x = 0, y = 0)
+
+            # Estado individual (usando lista para mutabilidade dentro da função)
+            estado_favorito = [False]
+            # Criar botão e função com lambda para capturar esse botão e estado
+            FavoritarButton = ctk.CTkButton(produto_frame,text = "",font= ("Georgia",14),image=self.IconCoracaoVazio_Produto,width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
+            FavoritarButton.place(x = 161, y = 2)
+            FavoritarButton.configure(command=lambda b=FavoritarButton,s=estado_favorito: self.favoritar(b, s))
+            
+
+            x = x + 245
+
+
+
+
+
+
+
 
         
 
@@ -264,10 +390,6 @@ class TelaPrincipal:
     def click_inicio(self):
         self.Pesquisa = ""
         self.create_produto_frame(self.Rolavel_Frame)
-    
-
-
-
 
     def favoritar(self, botao, estado):
         estado[0] = not estado[0]
@@ -303,7 +425,7 @@ class TelaPrincipal:
         #BANCO DE DADOS:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT desc_peca, valor_unitario, imagem FROM peca WHERE status = TRUE and (desc_peca LIKE %s OR tipo_peca LIKE %s)",(f"%{self.Pesquisa}%",f"%{self.Pesquisa}%"))
+        cursor.execute("SELECT desc_peca, valor_unitario, imagem, tipo_peca, qtde_estoque,fornecedor,cod_peca,cod_fornecedor FROM peca WHERE status = TRUE and (desc_peca LIKE %s OR tipo_peca LIKE %s)",(f"%{self.Pesquisa}%",f"%{self.Pesquisa}%"))
         Pecas = cursor.fetchall()
         conn.close()
 
@@ -340,8 +462,8 @@ class TelaPrincipal:
 
 
 
-            # VerMaisButton = ctk.CTkButton(produto_frame,text = "VER MAIS",font= ("Georgia",14),width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command=pagina_unitaria)
-            # VerMaisButton.place(x = 118, y = 240)
+            VerMaisButton = ctk.CTkButton(produto_frame,text = "VER MAIS",font= ("Georgia",14),width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command= lambda peca=peca: self.ver_mais_peca(peca))
+            VerMaisButton.place(x = 118, y = 240)
 
             self.DescricaoLabel = ctk.CTkLabel(produto_frame,text = (self.Descricao),font = ("Georgia",14),fg_color = "WHITE", text_color = "#5424A2",width=160,wraplength=160,justify="left") 
             self.DescricaoLabel.place(x = 20,y = 175)
@@ -375,9 +497,9 @@ class TelaPrincipal:
 
         self.canvas.yview_moveto(0)#Põe a Barra de Rolagem no Topo
         self.PesquisaEntry.delete(0, ctk.END)
-        FocusIvisivelEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Focus")
-        FocusIvisivelEntry.place(x = 10000, y = 10000)
-        FocusIvisivelEntry.focus()
+        self.FocusIvisivelEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Focus")
+        self.FocusIvisivelEntry.place(x = 10000, y = 10000)
+        self.FocusIvisivelEntry.focus()
         self.Pesquisa = None
   
             
