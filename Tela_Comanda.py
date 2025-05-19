@@ -27,6 +27,8 @@ class PECA:
         self.imagem_padrao_pil = Image.open("sem_imagem.png") #Puxa imagem
         self.imagem_padrao = CTkImage(self.imagem_padrao_pil,size= (380 , 380)) #Converte imagem 
 
+        self.imagem_foi_carregada = False
+
         #Criando Frames:
         self.PecaFrame = ctk.CTkFrame(self.root, width=1080, height=500, fg_color="#5424A2",border_color="#CCCCCC",border_width=0)  
         self.PecaFrame.place (x = 450, y = 20)
@@ -145,7 +147,9 @@ class PECA:
 
         #CRIANDO CAMPOS DE ENTRADAS:
         self.DescricaoEntry = ctk.CTkEntry(self.PecaFrame,width=450,font=("Georgia",20),placeholder_text = "Descrição da Peça")
+        self.DescricaoEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
         self.CodigoEntry = ctk.CTkEntry(self.PecaFrame,width=200,font=("Georgia",20),placeholder_text = "Codigo da Peça")
+        self.CodigoEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
         self.PesquisaEntry = ctk.CTkEntry(self.PecaFrame,width=510,font= ("Georgia",22),placeholder_text = "Pesquisa de Peça")
         self.PesquisaTabelaEntry = ctk.CTkEntry(self.PecaFrame,width=360,font= ("Georgia",20),placeholder_text = "Pesquisa de Peça na Tabela")
         self.FocusIvisivelEntry = ctk.CTkEntry(self.PecaFrame,width=350,font= ("Georgia",20),placeholder_text = "Focus")
@@ -311,7 +315,7 @@ class PECA:
         self.QuantidadeCB.bind("<Key>", self.bloquear_tudo_exceto_setas)
 
         #ICONS:
-        self.IconLixo = self.IconCarrinho = CTkImage(light_image= Image.open("icons/Lixo.png"),size = (50, 50))
+        self.IconLixo = self.IconCarrinho = CTkImage(light_image= Image.open("icons/Lixo.png"),size = (25, 25))
 
 
 
@@ -346,6 +350,7 @@ class PECA:
             return data_mysql
         except ValueError:
             messagebox.showerror("Error","Data inválida")  # Retorna None se a data for inválida
+            return None
 
     def reabrir_janela(self):
         self.PecaFrame.deiconify()  # Reexibe a janela principal
@@ -392,9 +397,12 @@ class PECA:
                     self.imagem_display = CTkImage(self.imagem_pil,size = (380 , 380))
                     self.imagem_label.configure(image=self.imagem_display,text = "")
                     self.imagem_label.image = self.imagem_display
+                    self.imagem_foi_carregada = True  #  MARCA QUE A IMAGEM FOI CARREGADA
                 else:
                     self.imagem_label.configure(image=self.imagem_padrao,text = "")
                     self.imagem_label.image = self.imagem_padrao
+                    self.imagem_foi_carregada = False  # <- MARCA QUE NÃO TEM IMAGEM CARREGADA
+
         # ATUALIZA A QUANTIDADE NA COMBOBOX
         self.QtdeEstoque = int(resultado[2]) if resultado[2] else 1  # qtde_estoque
         self.QuantidadeLista = [str(i) for i in range(1, self.QtdeEstoque + 1)]
@@ -482,9 +490,11 @@ class PECA:
                     self.imagem_display = CTkImage(self.imagem_pil,size = (380 , 380))
                     self.imagem_label.configure(image=self.imagem_display,text = "")
                     self.imagem_label.image = self.imagem_display
+                    self.imagem_foi_carregada = True  #  MARCA QUE A IMAGEM FOI CARREGADA
                 else:
                     self.imagem_label.configure(image=self.imagem_padrao,text = "")
                     self.imagem_label.image = self.imagem_padrao
+                    self.imagem_foi_carregada = False  # <- MARCA QUE NÃO TEM IMAGEM CARREGADA
 
                 messagebox.showinfo("Success", "Peça encontrado")
   
@@ -685,23 +695,89 @@ class PECA:
 
 
     def AdicionarCarrinho(self):
-        #TRAZENDO INFORMAÇÕES:
+
+        #VERIFICAÇÕES
+
+        #Verificando Data
+        Data = self.data_mysql()
+        if Data == None: #Verificando se a data é ou não valida
+            return #Sai da Funcao
+        
+        #Verificando Funcionario
+        NomeFunc = self.NomeFuncionarioEntry.get()
+        CpfFunc = self.CPFFUncionarioEntry.get()
+        CodFunc = self.CodigoFuncionarioEntry.get()
+        Data = self.DataEntry.get()
+
+        print(NomeFunc,CpfFunc,CodFunc)
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT nome_func, cpf_func, cod_func FROM funcionario WHERE status = True and nome_func = %s and cpf_func =%s and cod_func = %s",(NomeFunc,CpfFunc,CodFunc,))
+        VerificacaoFuncionario = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if VerificacaoFuncionario:
+            NomeFunc, CpfFunc, CodFunc = VerificacaoFuncionario
+            print( NomeFunc, CpfFunc, CodFunc)
+        else:
+            messagebox.showerror("Error","Funcionario não encontrado")
+            return #Encerra Função
+  
+        #Verificando Cliente
+        NomeCliente = self.NomeEntry.get()
+        CpfCliente = self.CPFEntry.get()
+        CodCliente = self.CodigoClienteEntry.get()
+        
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT nome_cliente, cpf_cliente, cod_cliente FROM cliente WHERE status = True and nome_cliente =%s and cpf_cliente =%s and cod_cliente = %s",(NomeCliente,CpfCliente,CodCliente,))
+        VerificacaoCliente = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if VerificacaoCliente:
+            NomeCliente, CpfCliente, CodCliente = VerificacaoCliente
+        else:
+            messagebox.showerror("Error","Cliente não encontrado")
+            return #Fecha a Função
+        
+            
+        #CONTINUANDO O CODIGO ........
+        #TRAZENDO INFORMAÇÕES
+        imagem_pil = None
 
         DescricaoCarinho = self.DescricaoEntry.get()
         QuantidadeCarrinho = self.QuantidadeCB.get()
         PrecoCarinho = self.PrecoQtde
+        CodPeca = self.CodigoEntry.get()
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT qtde_estoque FROM peca WHERE status = TRUE and cod_peca = %s",(CodPeca,))
+        EstoqueConsulta = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        Estoque = EstoqueConsulta[0]
+
+
 
         # Usa imagem atual (produto), ou padrão se não tiver
-        if hasattr(self, 'imagem_pil') and self.imagem_pil is not None:
-            imagem_pil = self.imagem_pil.copy()  # <- ESSENCIAL!
+        if hasattr(self, 'imagem_pil') and self.imagem_foi_carregada:
+            imagem_pil = self.imagem_pil.copy()
         else:
             imagem_pil = self.imagem_padrao_pil.copy()
 
-        item = {"Descricao": DescricaoCarinho, "Quantidade": QuantidadeCarrinho, "Preco":PrecoCarinho, "Imagem": imagem_pil}
+        item = {"Descricao": DescricaoCarinho, "Quantidade": QuantidadeCarrinho, "Preco":PrecoCarinho, "Imagem": imagem_pil, "Estoque": Estoque, "CodPeca": CodPeca}
         
         self.itens_carrinho.append(item)
 
         print(DescricaoCarinho, QuantidadeCarrinho, PrecoCarinho)
+
+        messagebox.showinfo("Success","Adicionado no carrinho com sucesso")
+        self.limparCampos()
 
 
     def excluir_item_do_carrinho(self, indice):
@@ -719,6 +795,8 @@ class PECA:
         
         # Recria todos os itens do carrinho para garantir a ordem correta
         self.recriar_todos_itens_carrinho()
+
+        print(self.itens_carrinho)
         
     def avancar(self):
         
@@ -751,6 +829,10 @@ class PECA:
         for i,item in enumerate(self.itens_carrinho):
             y = 10 + i * 200
             self.criar_item_carrinho(self.Frame_Rolavel,item,y,i)
+
+        print(f"Carrinho {self.itens_carrinho}")
+
+        print(f"Frame: {self.frames_carrinho}")
 
     def recriar_todos_itens_carrinho(self):
         # Destrói todos os frames existentes
@@ -800,13 +882,32 @@ class PECA:
         ExcluirButton = ctk.CTkButton(item_frame,text = "",font= ("Georgia",16),width=0,image=self.IconLixo,corner_radius=0,fg_color="#FF0000",command=lambda idx=indice: self.excluir_item_do_carrinho(idx))
         ExcluirButton.place(x = 700, y = 150)
 
+        #COMBO BOX:
+        estoque_disponivel = int(item.get("Estoque", 1))
+        Quantidades = [str(i) for i in range(1, estoque_disponivel + 1)]
+        QuantidadeCB = ctk.CTkComboBox(item_frame, values=Quantidades, width=130,height=30,corner_radius=4,font= ("Georgia",16))
+        QuantidadeCB.set(item["Quantidade"])  # valor atual do carrinho
+        QuantidadeCB.place(x=600, y=60)
+
+        def QuantidadeAlterada(value):
+            Qtde = int(value)
+            PrecoUnitario = float(item["Preco"]) / int(item["Quantidade"]) #Preço unitario
+            NovoPreco = PrecoUnitario * Qtde
+            QuantidadeLabel.configure(text = f"Quantidade: {Qtde}")
+
+            #ATUALIZA O DICIONARIO
+            # Atualiza dicionário também!
+            self.itens_carrinho[indice]["Quantidade"] = Qtde
+            self.itens_carrinho[indice]["Preco"] = round(NovoPreco, 2)
+
+            PrecoLabel.configure(text = f"R$ {self.itens_carrinho[indice]['Preco']:.2f}")
+
+            print(self.itens_carrinho[indice])
+
+        QuantidadeCB.configure(command=lambda value=QuantidadeCB.get(): QuantidadeAlterada(value))
+
         #ARMAZENA OS DADOS
         self.frames_carrinho.append(item_frame)
-
-
-
-
-
 
 
 
