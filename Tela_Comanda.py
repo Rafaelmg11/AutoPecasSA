@@ -281,7 +281,7 @@ class PECA:
         AvancarButton = ctk.CTkButton(self.PecaFrame,text = "AVANÇAR",font= ("Georgia",24),width=328,height=50,fg_color="#1DDB50",corner_radius=8,command=self.avancar)
         AvancarButton.place(x = 30 , y = 280)
         #BOTAO DE ADICIONAR AO CARRINHO
-        CarrinhoButton = ctk.CTkButton(self.PecaFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",24),width=200,height=50,fg_color="#5A70FF",corner_radius=8,command=self.carrinho)
+        CarrinhoButton = ctk.CTkButton(self.PecaFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",24),width=200,height=50,fg_color="#5A70FF",corner_radius=8,command=self.AdicionarCarrinho)
         CarrinhoButton.place(x = 30 , y = 340)
 
 
@@ -312,6 +312,14 @@ class PECA:
 
         #ICONS:
         self.IconLixo = self.IconCarrinho = CTkImage(light_image= Image.open("icons/Lixo.png"),size = (50, 50))
+
+
+
+
+        #LISTA COM OS ITEMS:
+        self.itens_carrinho = []
+        #LISTA DE FRAMES TRABALHANDO EM CONJUNTO:
+        self.frames_carrinho = []
 
     def formatar_entrada(self,event):
         valor = self.DataEntry.get().replace("/", "")  # Remove qualquer barra existente
@@ -673,32 +681,47 @@ class PECA:
 
         for linha in consulta_tabela:
             self.tabela.insert("","end",values = "")
-
-
-    def excluir(self):
         
 
 
-    def carrinho(self):
+    def AdicionarCarrinho(self):
         #TRAZENDO INFORMAÇÕES:
-        self.DescricaoCarinho = self.DescricaoEntry.get()
-        self.QuantidadeCarrinho = self.QuantidadeCB.get()
-        self.PrecoCarinho = self.PrecoQtde
 
-        try:
-            self.imagem_pil
-            self.Imagem_Pil_Carrinho = self.imagem_pil
-        except:
-            self.Imagem_Pil_Carrinho = self.imagem_padrao_pil
+        DescricaoCarinho = self.DescricaoEntry.get()
+        QuantidadeCarrinho = self.QuantidadeCB.get()
+        PrecoCarinho = self.PrecoQtde
 
-        self.ImagemCarrinho = CTkImage(self.Imagem_Pil_Carrinho,size = (170 , 170))
+        # Usa imagem atual (produto), ou padrão se não tiver
+        if hasattr(self, 'imagem_pil') and self.imagem_pil is not None:
+            imagem_pil = self.imagem_pil.copy()  # <- ESSENCIAL!
+        else:
+            imagem_pil = self.imagem_padrao_pil.copy()
 
-        print( self.DescricaoCarinho, self.QuantidadeCarrinho, self.PrecoCarinho)
+        item = {"Descricao": DescricaoCarinho, "Quantidade": QuantidadeCarrinho, "Preco":PrecoCarinho, "Imagem": imagem_pil}
+        
+        self.itens_carrinho.append(item)
+
+        print(DescricaoCarinho, QuantidadeCarrinho, PrecoCarinho)
 
 
-    
-    
+    def excluir_item_do_carrinho(self, indice):
+        # Verificação adicional de segurança
+        if not self.itens_carrinho or indice >= len(self.itens_carrinho):
+            return
+        
+        # Remove o item da lista
+        self.itens_carrinho.pop(indice)
+        
+        # Destrói o frame correspondente
+        if indice < len(self.frames_carrinho):
+            self.frames_carrinho[indice].destroy()
+            self.frames_carrinho.pop(indice)
+        
+        # Recria todos os itens do carrinho para garantir a ordem correta
+        self.recriar_todos_itens_carrinho()
+        
     def avancar(self):
+        
         #DESTRUINDO TODOS OS FRAMES
         self.PecaFrame.destroy()
         self.ClienteFrame.destroy()
@@ -724,29 +747,63 @@ class PECA:
         self.CanvasCarrinho.place(x = 5, y = 5)
         BarraRolagem.place(x = 780, y= 2)
 
+        #Criar os itens em cada frame no carrinho
+        for i,item in enumerate(self.itens_carrinho):
+            y = 10 + i * 200
+            self.criar_item_carrinho(self.Frame_Rolavel,item,y,i)
+
+    def recriar_todos_itens_carrinho(self):
+        # Destrói todos os frames existentes
+        for frame in self.frames_carrinho:
+            frame.destroy()
+        self.frames_carrinho = []
+        
+        # Recria todos os itens
+        for i, item in enumerate(self.itens_carrinho):
+            y = 10 + i * 200
+            self.criar_item_carrinho(self.Frame_Rolavel, item, y, i)
+
+
+
+    def criar_item_carrinho(self,parent,item,y,indice):
+
+        y = 10 + indice * 200  # Calcula baseado no índice, não na quantidade
+
 
         #CRIANDO FRAME UNITARIO
-        item_frame = ctk.CTkFrame(self.Frame_Rolavel, fg_color="#FF0000", width=760, height=190)
-        item_frame.place(x=50, y = 10)
+        item_frame = ctk.CTkFrame(parent, fg_color="#FF0000", width=760, height=190)
+        item_frame.place(x=50, y = y)
+
+        # Redimensiona e cria nova CTkImage
+        imagem_redimensionada = item["Imagem"].resize((170, 170), Image.LANCZOS)
+        imagem_ctk = CTkImage(light_image=imagem_redimensionada, dark_image=imagem_redimensionada, size=(170, 170))
 
         #POSICIONANDO INFORMAÇÕES:
         Imagem_FrameCarinho = ctk.CTkFrame(item_frame, fg_color="#00FF37", width=170, height=170)
         Imagem_FrameCarinho.place(x = 20, y = 10)
 
-        DescricaoLabel = ctk.CTkLabel(item_frame,text= self.DescricaoCarinho ,font= ("Georgia",22),fg_color = "#FF0000", text_color = "WHITE",wraplength=500,justify="left")
+        DescricaoLabel = ctk.CTkLabel(item_frame,text= item["Descricao"] ,font= ("Georgia",22),fg_color = "#FF0000", text_color = "WHITE",wraplength=500,justify="left")
         DescricaoLabel.place(x = 220, y = 20)
 
-        QuantidadeLabel = ctk.CTkLabel(item_frame,text= f"Quantidade: {self.QuantidadeCarrinho}" ,font= ("Georgia",16),fg_color = "#FF0000", text_color = "#CCCCCC")
+        QuantidadeLabel = ctk.CTkLabel(item_frame,text= f"Quantidade: {item['Quantidade']}" ,font= ("Georgia",16),fg_color = "#FF0000", text_color = "#CCCCCC")
         QuantidadeLabel.place(x = 220, y = 120)
 
-        PrecoLabel = ctk.CTkLabel(item_frame,text= f"R$ {self.PrecoCarinho}" ,font= ("Georgia",28),fg_color = "#FF0000", text_color = "WHITE")
+        PrecoLabel = ctk.CTkLabel(item_frame,text= f"R$ {item['Preco']}" ,font= ("Georgia",28),fg_color = "#FF0000", text_color = "WHITE")
         PrecoLabel.place(x = 220, y = 150)
 
+        imagem_label = ctk.CTkLabel(Imagem_FrameCarinho, text="", image=imagem_ctk)
+        imagem_label.place(x=0, y=0)
+        imagem_label.image = imagem_ctk  # <- Mantém referência
 
-        self.ImagemCarrinhoLabel = ctk.CTkLabel(Imagem_FrameCarinho,text = "",font=("Georgia",20))
-        self.ImagemCarrinhoLabel.place(x = 0, y = 0)
-        self.ImagemCarrinhoLabel.configure(image= self.ImagemCarrinho,text = "")
-        self.ImagemCarrinhoLabel.image =  self.ImagemCarrinho
+
+        #BOTÃO DE EXCLUIR:
+        ExcluirButton = ctk.CTkButton(item_frame,text = "",font= ("Georgia",16),width=0,image=self.IconLixo,corner_radius=0,fg_color="#FF0000",command=lambda idx=indice: self.excluir_item_do_carrinho(idx))
+        ExcluirButton.place(x = 700, y = 150)
+
+        #ARMAZENA OS DADOS
+        self.frames_carrinho.append(item_frame)
+
+
 
 
 
