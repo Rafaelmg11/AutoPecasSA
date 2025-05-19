@@ -55,6 +55,7 @@ class PECA:
             imagem_bytes = f.read() #Recebe a leitura e fecha o arquivo
 
         #Criação de Widgets
+
         self.create_widgets()
 
         
@@ -70,16 +71,16 @@ class PECA:
         cursor = conn.cursor()
         
 
-    def selecionado_quantidade(self,event):
+    def selecionado_quantidade(self,event = None):
         QtdeCompra = self.QuantidadeCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
         print("Selecionado {}".format(QtdeCompra)) #PRINT DE CONFIRMAÇÃO APENAS
-        PrecoQtde = float(self.Preco) * float(QtdeCompra)
-        self.PrecoLabel.configure(text = f"R$ {PrecoQtde:.2f}")
-        self.QuantidadeCB.set(f"Quantidade: {QtdeCompra}")
-        print(PrecoQtde)
+        self.PrecoQtde = float(self.Preco) * float(QtdeCompra)
+        self.PrecoLabel.configure(text = f"R$ {self.PrecoQtde:.2f}")
+        self.QuantidadeCB.set(str(QtdeCompra))
+        print(self.PrecoQtde)
         self.FocusIvisivelEntry.focus()
         
-    def bloquear_tudo_exceto_setas(event):
+    def bloquear_tudo_exceto_setas(self, event):
         # Permitir apenas as teclas de seta
         if event.keysym in ["Left", "Right", "Up", "Down"]:
             return  # deixa passar
@@ -280,7 +281,7 @@ class PECA:
         AvancarButton = ctk.CTkButton(self.PecaFrame,text = "AVANÇAR",font= ("Georgia",24),width=328,height=50,fg_color="#1DDB50",corner_radius=8,command=self.avancar)
         AvancarButton.place(x = 30 , y = 280)
         #BOTAO DE ADICIONAR AO CARRINHO
-        CarrinhoButton = ctk.CTkButton(self.PecaFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",24),width=200,height=50,fg_color="#5A70FF",corner_radius=8,command=self.listar_pecas)
+        CarrinhoButton = ctk.CTkButton(self.PecaFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",24),width=200,height=50,fg_color="#5A70FF",corner_radius=8,command=self.carrinho)
         CarrinhoButton.place(x = 30 , y = 340)
 
 
@@ -306,8 +307,11 @@ class PECA:
         self.QuantidadeLista =  [str(i) for i in range(1, self.QtdeEstoque + 1)]
         self.QuantidadeCB = ctk.CTkComboBox (self.PecaFrame,corner_radius=5,fg_color="WHITE",bg_color="#5424A2",border_width=3,text_color="BLACK",values=self.QuantidadeLista,font=("Georgia",18),width=180,height=40,command=self.selecionado_quantidade) #Criando ComboBox
         self.QuantidadeCB.place(x = 170, y = 172)
-        self.QuantidadeCB.set("Quantidade: 1")
+        self.QuantidadeCB.set("1")
         self.QuantidadeCB.bind("<Key>", self.bloquear_tudo_exceto_setas)
+
+        #ICONS:
+        self.IconLixo = self.IconCarrinho = CTkImage(light_image= Image.open("icons/Lixo.png"),size = (50, 50))
 
     def formatar_entrada(self,event):
         valor = self.DataEntry.get().replace("/", "")  # Remove qualquer barra existente
@@ -370,14 +374,16 @@ class PECA:
                 self.Preco = float(valor_unitario)
                 self.PrecoLabel.configure(text=f"R$ {self.Preco:.2f}")
 
-                global imagem_bytes,imagem_display
+                self.selecionado_quantidade()
+
+                global imagem_bytes
                 imagem_bytes = resultado[6]
                 if imagem_bytes:
-                    imagem_pil = Image.open(io.BytesIO(imagem_bytes))
-                    imagem_pil = imagem_pil
-                    imagem_display = CTkImage(imagem_pil,size = (380 , 380))
-                    self.imagem_label.configure(image=imagem_display,text = "")
-                    self.imagem_label.image = imagem_display
+                    self.imagem_pil = Image.open(io.BytesIO(imagem_bytes))
+                    self.imagem_pil = self.imagem_pil
+                    self.imagem_display = CTkImage(self.imagem_pil,size = (380 , 380))
+                    self.imagem_label.configure(image=self.imagem_display,text = "")
+                    self.imagem_label.image = self.imagem_display
                 else:
                     self.imagem_label.configure(image=self.imagem_padrao,text = "")
                     self.imagem_label.image = self.imagem_padrao
@@ -385,7 +391,7 @@ class PECA:
         self.QtdeEstoque = int(resultado[2]) if resultado[2] else 1  # qtde_estoque
         self.QuantidadeLista = [str(i) for i in range(1, self.QtdeEstoque + 1)]
         self.QuantidadeCB.configure(values=self.QuantidadeLista)
-        self.QuantidadeCB.set("Quantidade: 1")  # ou "", se quiser vazio
+        self.QuantidadeCB.set("1")  # ou "", se quiser vazio
 
     def selecionar_linhaCliente(self,event):
         conn = get_connection() #VARIAVEL PARA RECEBER A CONEXÃO
@@ -414,16 +420,16 @@ class PECA:
 
     #FUNÇÃO PARA CARREGAR IMAGEM:
     def carregar_imagem(self):
-        global imagem_bytes, imagem_display #Variaveis globais
+        global imagem_bytes #Variaveis globais
         caminho = filedialog.askopenfilename(filetypes=[("Imagens","*.png;*.jpg;*.jpeg")]) # Abre gerenciador de arquivos na pasta "Imagens"(recebe o caminho do arquivo)
         if caminho:
             with open(caminho,"rb") as f: #Abre o arquivo localizado em modo de leitura binaria(bytes)
                 imagem_bytes = f.read() #Recebe a leitura e fecha o arquivo
 
-            imagem_pil = Image.open(io.BytesIO(imagem_bytes)) #Transforma os bytes num objeto de manipulação do pyhton e abre a imagem
-            imagem_pil = imagem_pil #Redimenziona a imagem
-            imagem_display = CTkImage(imagem_pil,size = (380 , 380)) #Converte em widget
-            self.imagem_label.configure(image = imagem_display,text="") #Exibe
+            self.imagem_pil = Image.open(io.BytesIO(imagem_bytes)) #Transforma os bytes num objeto de manipulação do pyhton e abre a imagem
+            self.imagem_pil = self.imagem_pil #Redimenziona a imagem
+            self.imagem_display = CTkImage(self.imagem_pil,size = (380 , 380)) #Converte em widget
+            self.imagem_label.configure(image = self.imagem_display,text="") #Exibe
         else:
             self.imagem_label.configure(image= self.imagem_padrao, text="")
             messagebox.showwarning("Atenção","Imagem não selecionada")
@@ -458,20 +464,22 @@ class PECA:
                 self.Preco = float(valor_unitario)
                 self.PrecoLabel.configure(text=f"R$ {self.Preco:.2f}")
 
-                global imagem_bytes,imagem_display
+                self.selecionado_quantidade()
+
+                global imagem_bytes
                 imagem_bytes = imagem_pesquisa
                 if imagem_bytes:
-                    imagem_pil = Image.open(io.BytesIO(imagem_bytes))
-                    imagem_pil = imagem_pil
-                    imagem_display = CTkImage(imagem_pil,size = (380 , 380))
-                    self.imagem_label.configure(image=imagem_display,text = "")
-                    self.imagem_label.image = imagem_display
+                    self.imagem_pil = Image.open(io.BytesIO(imagem_bytes))
+                    self.imagem_pil = self.imagem_pil
+                    self.imagem_display = CTkImage(self.imagem_pil,size = (380 , 380))
+                    self.imagem_label.configure(image=self.imagem_display,text = "")
+                    self.imagem_label.image = self.imagem_display
                 else:
                     self.imagem_label.configure(image=self.imagem_padrao,text = "")
                     self.imagem_label.image = self.imagem_padrao
 
                 messagebox.showinfo("Success", "Peça encontrado")
-                self.selecionado_quantidade()
+  
             else:
                 messagebox.showwarning("Não encontrado", "Peça não encontrado")
                 self.limparCampos()
@@ -483,7 +491,7 @@ class PECA:
         self.QtdeEstoque = int(peca_pesquisa[2]) if peca_pesquisa[2] else 1  # qtde_estoque
         self.QuantidadeLista = [str(i) for i in range(1, self.QtdeEstoque + 1)]
         self.QuantidadeCB.configure(values=self.QuantidadeLista)
-        self.QuantidadeCB.set("Quantidade: 1")  # ou "", se quiser vazio
+        self.QuantidadeCB.set("1")  # ou "", se quiser vazio
 
     #FUNÇÃO DE PESQUISAR OBS: NAO TEM RELAÇÃO COM O CRUD
     def pesquisar_cliente(self):
@@ -616,7 +624,7 @@ class PECA:
 
         self.QuantidadeLista = [str(i) for i in range(1, self.QtdeEstoque + 1)]
         self.QuantidadeCB.configure(values=self.QuantidadeLista)
-        self.QuantidadeCB.set("Quantidade: 1")  # ou "", se quiser vazio
+        self.QuantidadeCB.set("1")  # ou "", se quiser vazio
         
 
         global imagem_bytes
@@ -667,6 +675,29 @@ class PECA:
             self.tabela.insert("","end",values = "")
 
 
+    def excluir(self):
+        
+
+
+    def carrinho(self):
+        #TRAZENDO INFORMAÇÕES:
+        self.DescricaoCarinho = self.DescricaoEntry.get()
+        self.QuantidadeCarrinho = self.QuantidadeCB.get()
+        self.PrecoCarinho = self.PrecoQtde
+
+        try:
+            self.imagem_pil
+            self.Imagem_Pil_Carrinho = self.imagem_pil
+        except:
+            self.Imagem_Pil_Carrinho = self.imagem_padrao_pil
+
+        self.ImagemCarrinho = CTkImage(self.Imagem_Pil_Carrinho,size = (170 , 170))
+
+        print( self.DescricaoCarinho, self.QuantidadeCarrinho, self.PrecoCarinho)
+
+
+    
+    
     def avancar(self):
         #DESTRUINDO TODOS OS FRAMES
         self.PecaFrame.destroy()
@@ -678,21 +709,50 @@ class PECA:
         self.VerticalFrame.destroy()
         self.frame_img.destroy()
 
+
+        #CRIANDO FRAME PRINCIPAL
         self.CarrinhoFrame = ctk.CTkFrame(self.root, width=800, height=800, fg_color="BLACK",border_color="#CCCCCC",border_width=2)
         self.CarrinhoFrame.place(x = 350, y = 20)
 
         #Adicionando Barra de Rolagem
         self.CanvasCarrinho = ctk.CTkCanvas(self.CarrinhoFrame,bg = "WHITE",highlightthickness=0,width = 990, height = 990, )
-        BarraRolagem = ctk.CTkScrollbar(self.CarrinhoFrame,orientation="vertical",command=self.CanvasCarrinho.yview,height=543,bg_color="BLUE")
+        BarraRolagem = ctk.CTkScrollbar(self.CarrinhoFrame,orientation="vertical",command=self.CanvasCarrinho.yview,height=800,bg_color="BLUE")
         self.Frame_Rolavel = ctk.CTkFrame(self.CanvasCarrinho,fg_color="#F5EFFF",width=1000,height=2820,corner_radius=0)
-
         BarraRolagem.bind("<Configure>",lambda e: self.CanvasCarrinho.configure(scrollregion=self.CanvasCarrinho.bbox("all")))
-
         self.CanvasCarrinho.create_window((570,565), window=self.Frame_Rolavel)
         self.CanvasCarrinho.configure(yscrollcommand=BarraRolagem.set)
-
         self.CanvasCarrinho.place(x = 5, y = 5)
-        BarraRolagem.place(x = 400, y= 2)
+        BarraRolagem.place(x = 780, y= 2)
+
+
+        #CRIANDO FRAME UNITARIO
+        item_frame = ctk.CTkFrame(self.Frame_Rolavel, fg_color="#FF0000", width=760, height=190)
+        item_frame.place(x=50, y = 10)
+
+        #POSICIONANDO INFORMAÇÕES:
+        Imagem_FrameCarinho = ctk.CTkFrame(item_frame, fg_color="#00FF37", width=170, height=170)
+        Imagem_FrameCarinho.place(x = 20, y = 10)
+
+        DescricaoLabel = ctk.CTkLabel(item_frame,text= self.DescricaoCarinho ,font= ("Georgia",22),fg_color = "#FF0000", text_color = "WHITE",wraplength=500,justify="left")
+        DescricaoLabel.place(x = 220, y = 20)
+
+        QuantidadeLabel = ctk.CTkLabel(item_frame,text= f"Quantidade: {self.QuantidadeCarrinho}" ,font= ("Georgia",16),fg_color = "#FF0000", text_color = "#CCCCCC")
+        QuantidadeLabel.place(x = 220, y = 120)
+
+        PrecoLabel = ctk.CTkLabel(item_frame,text= f"R$ {self.PrecoCarinho}" ,font= ("Georgia",28),fg_color = "#FF0000", text_color = "WHITE")
+        PrecoLabel.place(x = 220, y = 150)
+
+
+        self.ImagemCarrinhoLabel = ctk.CTkLabel(Imagem_FrameCarinho,text = "",font=("Georgia",20))
+        self.ImagemCarrinhoLabel.place(x = 0, y = 0)
+        self.ImagemCarrinhoLabel.configure(image= self.ImagemCarrinho,text = "")
+        self.ImagemCarrinhoLabel.image =  self.ImagemCarrinho
+
+
+
+
+
+
 
 
 if __name__ == "__main__":

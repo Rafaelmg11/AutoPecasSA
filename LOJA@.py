@@ -127,13 +127,6 @@ class TelaPrincipal:
         BarraRolagem = ctk.CTkScrollbar(Frame_Pecas,orientation="vertical",command=self.canvas.yview,height=543,bg_color="WHITE")
         self.Rolavel_Frame = ctk.CTkFrame(self.canvas,fg_color="#F5EFFF",width=1000,height=2820,corner_radius=0)
         
-        BarraRolagem.bind("<Configure>",lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
-
-        self.canvas.create_window((570,565), window=self.Rolavel_Frame)
-        self.canvas.configure(yscrollcommand=BarraRolagem.set)
-
-        self.canvas.place(x = 2, y = 2)
-        BarraRolagem.place(x = 980, y= 2)
 
         #Criar frame do produto
         self.create_produto_frame(self.Rolavel_Frame) #Declarando o parent_frame
