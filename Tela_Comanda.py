@@ -325,11 +325,14 @@ class PECA:
 
 
 
-
+        #LISTAS:
         #LISTA COM OS ITEMS:
         self.itens_carrinho = []
         #LISTA DE FRAMES TRABALHANDO EM CONJUNTO:
         self.frames_carrinho = []
+        #LISTA CHACK:
+        self.check_vars_carrinho = []
+
 
     def formatar_entrada(self,event):
         valor = self.DataEntry.get().replace("/", "")  # Remove qualquer barra existente
@@ -650,6 +653,17 @@ class PECA:
         self.PesquisaTabelaClienteEntry.focus()
         self.FocusIvisivelEntry.focus
 
+        #TABELA
+        conn = get_connection()
+        cursor = conn.cursor()
+        for linha in self.tabelaCliente.get_children():
+            self.tabelaCliente.delete(linha)
+        cursor.execute("SELECT cod_cliente,nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente FROM cliente WHERE  status = TRUE ")
+        consulta_tabela = cursor.fetchall()
+
+        for linha in consulta_tabela:
+            self.tabela.insert("","end",values = "")
+
     def limparCamposFuncionario(self):
         self.NomeFuncionarioEntry.delete(0, ctk.END)
         self.NomeFuncionarioEntry.focus()
@@ -701,66 +715,126 @@ class PECA:
             self.tabela.insert("","end",values = "")
 
     
-        #TABELA
-        conn = get_connection()
-        cursor = conn.cursor()
-        for linha in self.tabelaCliente.get_children():
-            self.tabelaCliente.delete(linha)
-        cursor.execute("SELECT cod_cliente,nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente FROM cliente WHERE  status = TRUE ")
-        consulta_tabela = cursor.fetchall()
 
-        for linha in consulta_tabela:
-            self.tabela.insert("","end",values = "")
         
+    def get_itens_selecionados(self):
+        selecionados = []
+        for i, var in enumerate(self.check_vars_carrinho):
+            if var.get(): #Se checkboz estiver marcado
+                selecionados.append(self.itens_carrinho[i])
+        return selecionados
+    
+    def valor_total(self):
+        selecionados = self.get_itens_selecionados()
+        if not selecionados:
+            messagebox.showerror("Error","Não existe nenhum item selecionado para finalização da compra!")
+            return
+        
+        valor_total = 0 
+        for i,item in enumerate(selecionados):
+            valor_total += item["Preco"]
+
+        
+        self.PrecoTotalLabel.configure(text = f"R$ {valor_total:.2f}")
+        
+    
+    def finalizar_compra(self):
+        selecionados = self.get_itens_selecionados()
+        if not selecionados:
+            messagebox.showerror("Error","Não existe nenhum item selecionado para finalização da compra!")
+            return
+        
+        valor_total = 0 
+        for i,item in enumerate(selecionados):
+            valor_total += item["Preco"]
+
+        
+        self.PrecoTotalLabel.configure(text = f"R$ {valor_total:.2f}")
+        
+
+        TipoPagamento = self.TipoPagamentoCB.get()
+
+        if TipoPagamento == None or TipoPagamento == "Tipo de Pagemento":
+            messagebox.showerror("Error","Tipo de Pagemento Inválido")
+            return
+        
+        CodFunc = selecionados[0]["CodFunc"]
+        CodCliente = selecionados[0]["CodCliente"]
+        Data = selecionados[0]["Data"]
+
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            query = "INSERT INTO compra (cod_funcionario, cod_cliente, data_compra, tipo_pagamento, valor_total) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(query, (CodFunc, CodCliente, Data, TipoPagamento, valor_total))
+            cod_compra = cursor.lastrowid  # Pega o último ID gerado 
+
+            
+            #INSERINDO OS DADOS DE PECA_COMPRA:
+            for item in selecionados:
+                cod_peca = item["CodPeca"]
+                quantidade = item["Quantidade"]
+                query_peca = "INSERT INTO peca_compra (cod_compra,cod_peca,quantidade) VALUES (%s,%s,%s)"
+                cursor.execute(query_peca,(cod_compra,cod_peca,quantidade))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            messagebox.showinfo("Sucesso","Compra Finalizada com sucesso!")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao finalizar compra: {e}")
+
+
+        itens_texto = "\n".join(f"- {item['Descricao']} (Qtd: {item['Quantidade']})" for item in selecionados)
+        mensagem = f"{len(selecionados)} item(s) finalizado(s) com sucesso!\n\nItens comprados:\n{itens_texto}"
+        messagebox.showinfo("Compra", mensagem)
 
 
     def AdicionarCarrinho(self):
 
-        # #VERIFICAÇÕES
+        #VERIFICAÇÕES
 
-        # #Verificando Data
-        # Data = self.data_mysql()
-        # if Data == None: #Verificando se a data é ou não valida
-        #     return #Sai da Funcao
+        #Verificando Data
+        Data = self.data_mysql()
+        if Data == None: #Verificando se a data é ou não valida
+            return #Sai da Funcao
         
-        # #Verificando Funcionario
-        # NomeFunc = self.NomeFuncionarioEntry.get()
-        # CpfFunc = self.CPFFUncionarioEntry.get()
-        # CodFunc = self.CodigoFuncionarioEntry.get()
-        # Data = self.DataEntry.get()
+        #Verificando Funcionario
+        NomeFunc = self.NomeFuncionarioEntry.get()
+        CpfFunc = self.CPFFUncionarioEntry.get()
+        CodFunc = self.CodigoFuncionarioEntry.get()
 
-        # conn = get_connection()
-        # cursor = conn.cursor()
-        # cursor.execute("SELECT nome_func, cpf_func, cod_func FROM funcionario WHERE status = True and nome_func = %s and cpf_func =%s and cod_func = %s",(NomeFunc,CpfFunc,CodFunc,))
-        # VerificacaoFuncionario = cursor.fetchone()
-        # cursor.close()
-        # conn.close()
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT nome_func, cpf_func, cod_func FROM funcionario WHERE status = True and nome_func = %s and cpf_func =%s and cod_func = %s",(NomeFunc,CpfFunc,CodFunc,))
+        VerificacaoFuncionario = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
-        # if VerificacaoFuncionario:
-        #     NomeFunc, CpfFunc, CodFunc = VerificacaoFuncionario
-        #     print( NomeFunc, CpfFunc, CodFunc)
-        # else:
-        #     messagebox.showerror("Error","Funcionario não encontrado")
-        #     return #Encerra Função
+        if VerificacaoFuncionario:
+            NomeFunc, CpfFunc, CodFunc = VerificacaoFuncionario
+            print( NomeFunc, CpfFunc, CodFunc)
+        else:
+            messagebox.showerror("Error","Funcionario não encontrado")
+            return #Encerra Função
   
-        # #Verificando Cliente
-        # NomeCliente = self.NomeEntry.get()
-        # CpfCliente = self.CPFEntry.get()
-        # CodCliente = self.CodigoClienteEntry.get()
+        #Verificando Cliente
+        NomeCliente = self.NomeEntry.get()
+        CpfCliente = self.CPFEntry.get()
+        CodCliente = self.CodigoClienteEntry.get()
         
-        # conn = get_connection()
-        # cursor = conn.cursor()
-        # cursor.execute("SELECT nome_cliente, cpf_cliente, cod_cliente FROM cliente WHERE status = True and nome_cliente =%s and cpf_cliente =%s and cod_cliente = %s",(NomeCliente,CpfCliente,CodCliente,))
-        # VerificacaoCliente = cursor.fetchone()
-        # cursor.close()
-        # conn.close()
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT nome_cliente, cpf_cliente, cod_cliente FROM cliente WHERE status = True and nome_cliente =%s and cpf_cliente =%s and cod_cliente = %s",(NomeCliente,CpfCliente,CodCliente,))
+        VerificacaoCliente = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
-        # if VerificacaoCliente:
-        #     NomeCliente, CpfCliente, CodCliente = VerificacaoCliente
-        #     print(NomeCliente,CpfCliente,CodCliente)
-        # else:
-        #     messagebox.showerror("Error","Cliente não encontrado")
-        #     return #Fecha a Função
+        if VerificacaoCliente:
+            NomeCliente, CpfCliente, CodCliente = VerificacaoCliente
+            print(NomeCliente,CpfCliente,CodCliente)
+        else:
+            messagebox.showerror("Error","Cliente não encontrado")
+            return #Fecha a Função
         
 
         #TRAZENDO INFORMAÇÕES
@@ -801,7 +875,7 @@ class PECA:
         else:
             imagem_pil = self.imagem_padrao_pil.copy()
 
-        item = {"Descricao": DescricaoCarinho, "Quantidade": QuantidadeCarrinho, "Preco":PrecoCarinho, "Imagem": imagem_pil, "Estoque": Estoque, "CodPeca": CodPeca}
+        item = {"Descricao": DescricaoCarinho, "Quantidade": QuantidadeCarrinho, "Preco":PrecoCarinho, "Imagem": imagem_pil, "Estoque": Estoque, "CodPeca": CodPeca, "CodFunc":CodFunc, "CodCliente": CodCliente, "Data": Data}
         
         self.itens_carrinho.append(item)
 
@@ -832,49 +906,49 @@ class PECA:
     def avancar(self):
         # #VERIFICAÇÕES
 
-        # #Verificando Data
-        # Data = self.data_mysql()
-        # if Data == None: #Verificando se a data é ou não valida
-        #     return #Sai da Funcao
+        #Verificando Data
+        Data = self.data_mysql()
+        if Data == None: #Verificando se a data é ou não valida
+            return #Sai da Funcao
         
-        # #Verificando Funcionario
-        # NomeFunc = self.NomeFuncionarioEntry.get()
-        # CpfFunc = self.CPFFUncionarioEntry.get()
-        # CodFunc = self.CodigoFuncionarioEntry.get()
-        # Data = self.DataEntry.get()
+        #Verificando Funcionario
+        NomeFunc = self.NomeFuncionarioEntry.get()
+        CpfFunc = self.CPFFUncionarioEntry.get()
+        CodFunc = self.CodigoFuncionarioEntry.get()
+        Data = self.DataEntry.get()
 
-        # conn = get_connection()
-        # cursor = conn.cursor()
-        # cursor.execute("SELECT nome_func, cpf_func, cod_func FROM funcionario WHERE status = True and nome_func = %s and cpf_func =%s and cod_func = %s",(NomeFunc,CpfFunc,CodFunc,))
-        # VerificacaoFuncionario = cursor.fetchone()
-        # cursor.close()
-        # conn.close()
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT nome_func, cpf_func, cod_func FROM funcionario WHERE status = True and nome_func = %s and cpf_func =%s and cod_func = %s",(NomeFunc,CpfFunc,CodFunc,))
+        VerificacaoFuncionario = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
-        # if VerificacaoFuncionario:
-        #     NomeFunc, CpfFunc, CodFunc = VerificacaoFuncionario
-        #     print( NomeFunc, CpfFunc, CodFunc)
-        # else:
-        #     messagebox.showerror("Error","Funcionario não encontrado")
-        #     return #Encerra Função
+        if VerificacaoFuncionario:
+            NomeFunc, CpfFunc, CodFunc = VerificacaoFuncionario
+            print( NomeFunc, CpfFunc, CodFunc)
+        else:
+            messagebox.showerror("Error","Funcionario não encontrado")
+            return #Encerra Função
   
-        # #Verificando Cliente
-        # NomeCliente = self.NomeEntry.get()
-        # CpfCliente = self.CPFEntry.get()
-        # CodCliente = self.CodigoClienteEntry.get()
+        #Verificando Cliente
+        NomeCliente = self.NomeEntry.get()
+        CpfCliente = self.CPFEntry.get()
+        CodCliente = self.CodigoClienteEntry.get()
         
-        # conn = get_connection()
-        # cursor = conn.cursor()
-        # cursor.execute("SELECT nome_cliente, cpf_cliente, cod_cliente FROM cliente WHERE status = True and nome_cliente =%s and cpf_cliente =%s and cod_cliente = %s",(NomeCliente,CpfCliente,CodCliente,))
-        # VerificacaoCliente = cursor.fetchone()
-        # cursor.close()
-        # conn.close()
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT nome_cliente, cpf_cliente, cod_cliente FROM cliente WHERE status = True and nome_cliente =%s and cpf_cliente =%s and cod_cliente = %s",(NomeCliente,CpfCliente,CodCliente,))
+        VerificacaoCliente = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
-        # if VerificacaoCliente:
-        #     NomeCliente, CpfCliente, CodCliente = VerificacaoCliente
-        #     print(NomeCliente,CpfCliente,CodCliente)
-        # else:
-        #     messagebox.showerror("Error","Cliente não encontrado")
-        #     return #Fecha a Função
+        if VerificacaoCliente:
+            NomeCliente, CpfCliente, CodCliente = VerificacaoCliente
+            print(NomeCliente,CpfCliente,CodCliente)
+        else:
+            messagebox.showerror("Error","Cliente não encontrado")
+            return #Fecha a Função
         
         #DESTRUINDO TODOS OS FRAMES
         self.PecaFrame.destroy()
@@ -887,9 +961,11 @@ class PECA:
         self.frame_img.destroy()
 
 
+        self.root.configure(fg_color="#743FC9")
+
         #CRIANDO FRAME PRINCIPAL
         self.CarrinhoFrame = ctk.CTkFrame(self.root, width=805, height=805, fg_color="#F9F5FF",border_color="#F9F5FF",border_width=8,corner_radius=15)
-        self.CarrinhoFrame.place(x = 350, y = 20)
+        self.CarrinhoFrame.place(x = 500, y = 20)
 
         #Adicionando Barra de Rolagem
         self.CanvasCarrinho = ctk.CTkCanvas(self.CarrinhoFrame,bg = "#F9F5FF",highlightthickness=0,width = 990, height = 990, )
@@ -906,11 +982,36 @@ class PECA:
             y = 10 + i * 200
             self.criar_item_carrinho(self.Frame_Rolavel,item,y,i)
 
+
+        #FRAME DE FINALIZAR COMPRA:
+        self.FinalizarFrame = ctk.CTkFrame(self.root, width=400, height=400, fg_color="#F9F5FF",border_color="#F9F5FF",border_width=8,corner_radius=15)
+        self.FinalizarFrame.place(x = 40 , y = 200)
+
+        TipoPagementoLista = ["Dinheiro","Catão de Crédito","Cartão de Débito","Pix","Boleto"]
+        self.TipoPagamentoCB = ctk.CTkComboBox (self.FinalizarFrame,corner_radius=5,fg_color="WHITE",bg_color="#5424A2",border_width=3,text_color="BLACK",values=TipoPagementoLista,font=("Georgia",18),width=250,height=40) #Criando ComboBox
+        self.TipoPagamentoCB.place(x = 50, y =100)
+        self.TipoPagamentoCB.set("Tipo de Pagemento")
+        self.TipoPagamentoCB.bind("<Key>",self.bloquear_tudo_exceto_setas)
+
+        FinalizarButton = ctk.CTkButton(self.FinalizarFrame,text = "FINALIZAR COMPRA",font= ("Georgia",21),width=130,command=self.finalizar_compra)
+        FinalizarButton.place(x = 50, y = 200 )
+
+        self.PrecoTotalLabel = ctk.CTkLabel(self.FinalizarFrame,text= f"R$ " ,font= ("Georgia",16),fg_color = "#5224A2", text_color = "BLACK")
+        self.PrecoTotalLabel.place( x = 50, y = 250)
+
+        VoltarButton = ctk.CTkButton(self.FinalizarFrame,text = "VOLTAR",font= ("Georgia",21),width=130)
+        VoltarButton.place(x = 50, y = 300)
+
+        self.valor_total()
+
+
+
         print(f"Carrinho {self.itens_carrinho}")
 
         print(f"Frame: {self.frames_carrinho}")
 
     def recriar_todos_itens_carrinho(self):
+        self.check_vars_carrinho = []
         # Destrói todos os frames existentes
         for frame in self.frames_carrinho:
             frame.destroy()
@@ -938,7 +1039,7 @@ class PECA:
 
         #POSICIONANDO INFORMAÇÕES:
         Imagem_FrameCarinho = ctk.CTkFrame(item_frame, fg_color="#5224A2", width=170, height=170)
-        Imagem_FrameCarinho.place(x = 20, y = 10)
+        Imagem_FrameCarinho.place(x = 40, y = 10)
 
         DescricaoLabel = ctk.CTkLabel(item_frame,text= item["Descricao"] ,font= ("Georgia",22),fg_color = "#5224A2", text_color = "WHITE",wraplength=500,justify="left")
         DescricaoLabel.place(x = 220, y = 20)
@@ -957,6 +1058,19 @@ class PECA:
         #BOTÃO DE EXCLUIR:
         ExcluirButton = ctk.CTkButton(item_frame,text = "",font= ("Georgia",16),width=0,image=self.IconLixo,corner_radius=5,fg_color="#FF0000",command=lambda idx=indice: self.excluir_item_do_carrinho(idx))
         ExcluirButton.place(x = 700, y = 150)
+
+        #CHECKBOX DE SELEÇÃO:
+        marcacao = ctk.BooleanVar(value=True) #Começa como marcado
+        CheckBox = ctk.CTkCheckBox(item_frame,text = '', variable=marcacao,width=10,height=10)
+        CheckBox.place(x = 5, y = 5)
+
+        #SALVA A VARIAVEL DE MARCAÇÃO ASSOCIADA AO ITEM:
+        if len(self.check_vars_carrinho) > indice:
+            self.check_vars_carrinho[indice] = marcacao
+        else:
+            self.check_vars_carrinho.append(marcacao)
+
+
 
         #COMBO BOX:
         estoque_disponivel = int(item.get("Estoque", 1))
@@ -980,11 +1094,12 @@ class PECA:
 
             print(self.itens_carrinho[indice])
 
+            self.valor_total()
+
         QuantidadeCB.configure(command=lambda value=QuantidadeCB.get(): QuantidadeAlterada(value))
 
         #ARMAZENA OS DADOS
         self.frames_carrinho.append(item_frame)
-
 
 
 
