@@ -292,17 +292,17 @@ class PECA:
 
 
         #BOTAO DE PESQUISA CLIENTE
-        PesquisarClienteButton = ctk.CTkButton(self.ClienteFrame,text = "Pesquisar",font= ("Georgia",22),width=100,command=self.pesquisar_cliente)
-        PesquisarClienteButton.place(x = 20,y = 25)
+        self.PesquisarClienteButton = ctk.CTkButton(self.ClienteFrame,text = "Pesquisar",font= ("Georgia",22),width=100,command=self.pesquisar_cliente)
+        self.PesquisarClienteButton.place(x = 20,y = 25)
         #BOTÃO DE LIMPAR Cliente
-        limparClienteButton = ctk.CTkButton(self.ClienteFrame,text = "LIMPAR",font= ("Georgia",22),width=160,command=self.limparCamposCliente)
-        limparClienteButton.place(x = 655, y = 25)
+        self.limparClienteButton = ctk.CTkButton(self.ClienteFrame,text = "LIMPAR",font= ("Georgia",22),width=160,command=self.limparCamposCliente)
+        self.limparClienteButton.place(x = 655, y = 25)
         #BOTAO DE LISTAR CLIENTE
-        ListarClienteButton = ctk.CTkButton(self.ClienteFrame,text = "Listar",font= ("Georgia",21),width=130,command=self.listar_cliente)
-        ListarClienteButton.place(x = 945 , y = 162)
+        self.ListarClienteButton = ctk.CTkButton(self.ClienteFrame,text = "Listar",font= ("Georgia",21),width=130,command=self.listar_cliente)
+        self.ListarClienteButton.place(x = 945 , y = 162)
         #BOTÃO DE PESQUISA NA TABELA CLIENTE
-        PesquisaTabelaClienteButton = ctk.CTkButton(self.ClienteFrame, text="Pesquisar Tabela", font= ("Georgia",21),command=self.pesquisa_tabelaCliente)
-        PesquisaTabelaClienteButton.place(x = 380, y = 162)
+        self.PesquisaTabelaClienteButton = ctk.CTkButton(self.ClienteFrame, text="Pesquisar Tabela", font= ("Georgia",21),command=self.pesquisa_tabelaCliente)
+        self.PesquisaTabelaClienteButton.place(x = 380, y = 162)
         #BOTÂO ABRIR TELA CLIENTE
         AbrirTelaClienteButton = ctk.CTkButton(self.ClienteFrame, text="Ir para tela de \ncadastro de cliente", font= ("Georgia",14),command=self.pesquisa_tabelaCliente)
         AbrirTelaClienteButton.place(x =120, y = 330)
@@ -716,7 +716,7 @@ class PECA:
 
     
 
-        
+    
     def get_itens_selecionados(self):
         selecionados = []
         for i, var in enumerate(self.check_vars_carrinho):
@@ -727,7 +727,7 @@ class PECA:
     def valor_total(self):
         selecionados = self.get_itens_selecionados()
         if not selecionados:
-            messagebox.showerror("Error","Não existe nenhum item selecionado para finalização da compra!")
+            messagebox.showerror("Error","Valor Inválido!")
             return
         
         valor_total = 0 
@@ -787,12 +787,13 @@ class PECA:
         itens_texto = "\n".join(f"- {item['Descricao']} (Qtd: {item['Quantidade']})" for item in selecionados)
         mensagem = f"{len(selecionados)} item(s) finalizado(s) com sucesso!\n\nItens comprados:\n{itens_texto}"
         messagebox.showinfo("Compra", mensagem)
+        self.reset()
+
 
 
     def AdicionarCarrinho(self):
 
         #VERIFICAÇÕES
-
         #Verificando Data
         Data = self.data_mysql()
         if Data == None: #Verificando se a data é ou não valida
@@ -884,6 +885,31 @@ class PECA:
         messagebox.showinfo("Success","Adicionado no carrinho com sucesso")
         self.limparCampos()
 
+        self.NomeEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
+        self.CPFEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
+        self.TelefoneEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
+        self.EmailEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
+        self.CodigoClienteEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
+        self.PesquisaClienteEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
+        self.PesquisaTabelaClienteEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
+        self.PesquisarClienteButton.configure(state = "disabled")
+        self.PesquisaTabelaClienteButton.configure(state = "disabled")
+        self.ListarClienteButton.configure(state = "disabled")
+        self.limparClienteButton.configure(state = "disabled")
+
+        #TABELA
+        conn = get_connection()
+        cursor = conn.cursor()
+        for linha in self.tabelaCliente.get_children():
+            self.tabelaCliente.delete(linha)
+        cursor.execute("SELECT cod_cliente,nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente FROM cliente WHERE  status = TRUE ")
+        consulta_tabela = cursor.fetchall()
+
+        for linha in consulta_tabela:
+            self.tabela.insert("","end",values = "")
+
+
+
 
     def excluir_item_do_carrinho(self, indice):
         # Verificação adicional de segurança
@@ -902,9 +928,14 @@ class PECA:
         self.recriar_todos_itens_carrinho()
 
         print(self.itens_carrinho)
-        
+        self.valor_total()
+    
+
+    def voltar(self):
+        self.FrameTelaCarrinho.destroy()
+
     def avancar(self):
-        # #VERIFICAÇÕES
+        # # #VERIFICAÇÕES
 
         #Verificando Data
         Data = self.data_mysql()
@@ -950,21 +981,14 @@ class PECA:
             messagebox.showerror("Error","Cliente não encontrado")
             return #Fecha a Função
         
-        #DESTRUINDO TODOS OS FRAMES
-        self.PecaFrame.destroy()
-        self.ClienteFrame.destroy()
-        self.FuncionarioFrame.destroy()
-        self.frame_tabela.destroy()
-        self.frame_tabelaCliente.destroy()
-        self.HorizontalFrame.destroy()
-        self.VerticalFrame.destroy()
-        self.frame_img.destroy()
-
 
         self.root.configure(fg_color="#743FC9")
 
+        self.FrameTelaCarrinho = ctk.CTkFrame(self.root, width=1600, height=1200, fg_color="#743FC9",border_color="#743FC9",border_width=8,corner_radius=15)
+        self.FrameTelaCarrinho.place(x = 0 , y = 0)
+
         #CRIANDO FRAME PRINCIPAL
-        self.CarrinhoFrame = ctk.CTkFrame(self.root, width=805, height=805, fg_color="#F9F5FF",border_color="#F9F5FF",border_width=8,corner_radius=15)
+        self.CarrinhoFrame = ctk.CTkFrame(self.FrameTelaCarrinho, width=805, height=805, fg_color="#F9F5FF",border_color="#F9F5FF",border_width=8,corner_radius=15)
         self.CarrinhoFrame.place(x = 500, y = 20)
 
         #Adicionando Barra de Rolagem
@@ -984,23 +1008,23 @@ class PECA:
 
 
         #FRAME DE FINALIZAR COMPRA:
-        self.FinalizarFrame = ctk.CTkFrame(self.root, width=400, height=400, fg_color="#F9F5FF",border_color="#F9F5FF",border_width=8,corner_radius=15)
+        self.FinalizarFrame = ctk.CTkFrame(self.FrameTelaCarrinho, width=400, height=400, fg_color="#F9F5FF",border_color="#F9F5FF",border_width=8,corner_radius=15)
         self.FinalizarFrame.place(x = 40 , y = 200)
 
         TipoPagementoLista = ["Dinheiro","Catão de Crédito","Cartão de Débito","Pix","Boleto"]
         self.TipoPagamentoCB = ctk.CTkComboBox (self.FinalizarFrame,corner_radius=5,fg_color="WHITE",bg_color="#5424A2",border_width=3,text_color="BLACK",values=TipoPagementoLista,font=("Georgia",18),width=250,height=40) #Criando ComboBox
-        self.TipoPagamentoCB.place(x = 50, y =100)
+        self.TipoPagamentoCB.place(x = 70, y =100)
         self.TipoPagamentoCB.set("Tipo de Pagemento")
         self.TipoPagamentoCB.bind("<Key>",self.bloquear_tudo_exceto_setas)
 
-        FinalizarButton = ctk.CTkButton(self.FinalizarFrame,text = "FINALIZAR COMPRA",font= ("Georgia",21),width=130,command=self.finalizar_compra)
-        FinalizarButton.place(x = 50, y = 200 )
+        FinalizarButton = ctk.CTkButton(self.FinalizarFrame,text = "FINALIZAR COMPRA",font= ("Georgia",24),width=230,height= 50,fg_color="#1DDB50",command=self.finalizar_compra)
+        FinalizarButton.place(x = 70, y = 220 )
 
-        self.PrecoTotalLabel = ctk.CTkLabel(self.FinalizarFrame,text= f"R$ " ,font= ("Georgia",16),fg_color = "#5224A2", text_color = "BLACK")
-        self.PrecoTotalLabel.place( x = 50, y = 250)
+        self.PrecoTotalLabel = ctk.CTkLabel(self.FinalizarFrame,text= f"R$ " ,font= ("Georgia",28),fg_color = "#F9F5FF", text_color = "BLACK")
+        self.PrecoTotalLabel.place( x = 70, y = 170)
 
-        VoltarButton = ctk.CTkButton(self.FinalizarFrame,text = "VOLTAR",font= ("Georgia",21),width=130)
-        VoltarButton.place(x = 50, y = 300)
+        VoltarButton = ctk.CTkButton(self.FinalizarFrame,text = "VOLTAR",font= ("Georgia",24),width=250,height=50,command=self.voltar)
+        VoltarButton.place(x = 70, y = 300)
 
         self.valor_total()
 
@@ -1061,7 +1085,7 @@ class PECA:
 
         #CHECKBOX DE SELEÇÃO:
         marcacao = ctk.BooleanVar(value=True) #Começa como marcado
-        CheckBox = ctk.CTkCheckBox(item_frame,text = '', variable=marcacao,width=10,height=10)
+        CheckBox = ctk.CTkCheckBox(item_frame,text = '', variable=marcacao,width=10,height=10,command=self.valor_total)
         CheckBox.place(x = 5, y = 5)
 
         #SALVA A VARIAVEL DE MARCAÇÃO ASSOCIADA AO ITEM:
@@ -1069,8 +1093,7 @@ class PECA:
             self.check_vars_carrinho[indice] = marcacao
         else:
             self.check_vars_carrinho.append(marcacao)
-
-
+            
 
         #COMBO BOX:
         estoque_disponivel = int(item.get("Estoque", 1))
