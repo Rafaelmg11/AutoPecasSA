@@ -4,10 +4,10 @@ from tkinter import messagebox,filedialog #filedialog abre janelas de seleção 
 from tkinter import ttk
 from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: converter em widgets para exibição 
 import io #Fluxo de bytes (transforma imagem em bytes)
-from Crud_novo import get_connection,selecionar_fornecedores,selecionar_tipopeca,obter_cod_fornecedor,create_peca,update_peca,delete_peca
-from StyleComboBox import style_combobox
+from Crud_novo import get_connection
 from customtkinter import CTkImage
 from datetime import datetime
+# from Tela_ClienteNovo import CLIENTE
 
 
 
@@ -88,6 +88,8 @@ class PECA:
             return  # deixa passar
         return "break"  # bloqueia tudo o resto
 
+
+    # def abrir_tela_cliente(self):
 
     def create_widgets(self):
 
@@ -301,6 +303,10 @@ class PECA:
         #BOTÃO DE PESQUISA NA TABELA CLIENTE
         PesquisaTabelaClienteButton = ctk.CTkButton(self.ClienteFrame, text="Pesquisar Tabela", font= ("Georgia",21),command=self.pesquisa_tabelaCliente)
         PesquisaTabelaClienteButton.place(x = 380, y = 162)
+        #BOTÂO ABRIR TELA CLIENTE
+        AbrirTelaClienteButton = ctk.CTkButton(self.ClienteFrame, text="Ir para tela de \ncadastro de cliente", font= ("Georgia",14),command=self.pesquisa_tabelaCliente)
+        AbrirTelaClienteButton.place(x =120, y = 330)
+        
 
 
         #BOTÃO DE VOLTAR:
@@ -588,6 +594,7 @@ class PECA:
         else:
             messagebox.showerror("Error", "Nenhum resultado encontrado")
 
+
     def listar_pecas(self):
         conn = get_connection()
         cursor = conn.cursor()
@@ -606,6 +613,8 @@ class PECA:
             self.tabela.insert("", "end", values=linha, tags=(tag,))
 
     def listar_cliente(self):
+
+
         conn = get_connection()
         cursor = conn.cursor()
         
@@ -622,6 +631,36 @@ class PECA:
             tag = 'evenrow' if i % 2 == 0 else 'oddrow'
             self.tabelaCliente.insert("", "end", values=linha, tags=(tag,))
 
+   
+    def limparCamposCliente(self):
+        
+        self.NomeEntry.delete(0, ctk.END)
+        self.NomeEntry.focus()
+        self.CPFEntry.delete(0, ctk.END)
+        self.CPFEntry.focus()
+        self.TelefoneEntry.delete(0, ctk.END)
+        self.TelefoneEntry.focus()
+        self.EmailEntry.delete(0, ctk.END)
+        self.EmailEntry.focus()
+        self.CodigoClienteEntry.delete(0, ctk.END)
+        self.CodigoClienteEntry.focus()
+        self.PesquisaClienteEntry.delete(0, ctk.END)
+        self.PesquisaClienteEntry.focus()
+        self.PesquisaTabelaClienteEntry.delete(0, ctk.END)
+        self.PesquisaTabelaClienteEntry.focus()
+        self.FocusIvisivelEntry.focus
+
+    def limparCamposFuncionario(self):
+        self.NomeFuncionarioEntry.delete(0, ctk.END)
+        self.NomeFuncionarioEntry.focus()
+        self.CodigoFuncionarioEntry.delete(0, ctk.END)
+        self.CodigoFuncionarioEntry.focus()
+        self.CPFFUncionarioEntry.delete(0, ctk.END)
+        self.CPFFUncionarioEntry.focus()
+    
+
+
+   
     #FUNÇÃO DE LIMPAR
     def limparCampos(self):
         self.DescricaoEntry.delete(0, ctk.END)
@@ -632,7 +671,6 @@ class PECA:
         self.PesquisaEntry.focus()
         self.PesquisaTabelaEntry.delete(0, ctk.END)
         self.PesquisaTabelaEntry.focus()
-        
         self.FocusIvisivelEntry.focus()
 
 
@@ -662,24 +700,6 @@ class PECA:
         for linha in consulta_tabela:
             self.tabela.insert("","end",values = "")
 
-    #FUNÇÃO DE LIMPAR
-    def limparCamposCliente(self):
-        self.NomeEntry.delete(0, ctk.END)
-        self.NomeEntry.focus()
-        self.CPFEntry.delete(0, ctk.END)
-        self.CPFEntry.focus()
-        self.TelefoneEntry.delete(0, ctk.END)
-        self.TelefoneEntry.focus()
-        self.EmailEntry.delete(0, ctk.END)
-        self.EmailEntry.focus()
-        self.CodigoClienteEntry.delete(0, ctk.END)
-        self.CodigoClienteEntry.focus()
-        self.PesquisaClienteEntry.delete(0, ctk.END)
-        self.PesquisaClienteEntry.focus()
-        self.PesquisaTabelaClienteEntry.delete(0, ctk.END)
-        self.PesquisaTabelaClienteEntry.focus()
-        
-        self.FocusIvisivelEntry.focus()
     
         #TABELA
         conn = get_connection()
@@ -696,73 +716,84 @@ class PECA:
 
     def AdicionarCarrinho(self):
 
-        #VERIFICAÇÕES
+        # #VERIFICAÇÕES
 
-        #Verificando Data
-        Data = self.data_mysql()
-        if Data == None: #Verificando se a data é ou não valida
-            return #Sai da Funcao
+        # #Verificando Data
+        # Data = self.data_mysql()
+        # if Data == None: #Verificando se a data é ou não valida
+        #     return #Sai da Funcao
         
-        #Verificando Funcionario
-        NomeFunc = self.NomeFuncionarioEntry.get()
-        CpfFunc = self.CPFFUncionarioEntry.get()
-        CodFunc = self.CodigoFuncionarioEntry.get()
-        Data = self.DataEntry.get()
+        # #Verificando Funcionario
+        # NomeFunc = self.NomeFuncionarioEntry.get()
+        # CpfFunc = self.CPFFUncionarioEntry.get()
+        # CodFunc = self.CodigoFuncionarioEntry.get()
+        # Data = self.DataEntry.get()
 
-        print(NomeFunc,CpfFunc,CodFunc)
+        # conn = get_connection()
+        # cursor = conn.cursor()
+        # cursor.execute("SELECT nome_func, cpf_func, cod_func FROM funcionario WHERE status = True and nome_func = %s and cpf_func =%s and cod_func = %s",(NomeFunc,CpfFunc,CodFunc,))
+        # VerificacaoFuncionario = cursor.fetchone()
+        # cursor.close()
+        # conn.close()
 
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT nome_func, cpf_func, cod_func FROM funcionario WHERE status = True and nome_func = %s and cpf_func =%s and cod_func = %s",(NomeFunc,CpfFunc,CodFunc,))
-        VerificacaoFuncionario = cursor.fetchone()
-        cursor.close()
-        conn.close()
-
-        if VerificacaoFuncionario:
-            NomeFunc, CpfFunc, CodFunc = VerificacaoFuncionario
-            print( NomeFunc, CpfFunc, CodFunc)
-        else:
-            messagebox.showerror("Error","Funcionario não encontrado")
-            return #Encerra Função
+        # if VerificacaoFuncionario:
+        #     NomeFunc, CpfFunc, CodFunc = VerificacaoFuncionario
+        #     print( NomeFunc, CpfFunc, CodFunc)
+        # else:
+        #     messagebox.showerror("Error","Funcionario não encontrado")
+        #     return #Encerra Função
   
-        #Verificando Cliente
-        NomeCliente = self.NomeEntry.get()
-        CpfCliente = self.CPFEntry.get()
-        CodCliente = self.CodigoClienteEntry.get()
+        # #Verificando Cliente
+        # NomeCliente = self.NomeEntry.get()
+        # CpfCliente = self.CPFEntry.get()
+        # CodCliente = self.CodigoClienteEntry.get()
         
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT nome_cliente, cpf_cliente, cod_cliente FROM cliente WHERE status = True and nome_cliente =%s and cpf_cliente =%s and cod_cliente = %s",(NomeCliente,CpfCliente,CodCliente,))
-        VerificacaoCliente = cursor.fetchone()
-        cursor.close()
-        conn.close()
+        # conn = get_connection()
+        # cursor = conn.cursor()
+        # cursor.execute("SELECT nome_cliente, cpf_cliente, cod_cliente FROM cliente WHERE status = True and nome_cliente =%s and cpf_cliente =%s and cod_cliente = %s",(NomeCliente,CpfCliente,CodCliente,))
+        # VerificacaoCliente = cursor.fetchone()
+        # cursor.close()
+        # conn.close()
 
-        if VerificacaoCliente:
-            NomeCliente, CpfCliente, CodCliente = VerificacaoCliente
-        else:
-            messagebox.showerror("Error","Cliente não encontrado")
-            return #Fecha a Função
+        # if VerificacaoCliente:
+        #     NomeCliente, CpfCliente, CodCliente = VerificacaoCliente
+        #     print(NomeCliente,CpfCliente,CodCliente)
+        # else:
+        #     messagebox.showerror("Error","Cliente não encontrado")
+        #     return #Fecha a Função
         
-            
-        #CONTINUANDO O CODIGO ........
+
         #TRAZENDO INFORMAÇÕES
-        imagem_pil = None
 
+        imagem_pil = None
+        
         DescricaoCarinho = self.DescricaoEntry.get()
-        QuantidadeCarrinho = self.QuantidadeCB.get()
-        PrecoCarinho = self.PrecoQtde
         CodPeca = self.CodigoEntry.get()
 
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT desc_peca, cod_peca FROM peca WHERE status = True and desc_peca = %s and cod_peca = %s",(DescricaoCarinho,CodPeca,))
+        VerificacaoPeca = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if VerificacaoPeca:
+            pass
+        else:
+            messagebox.showerror("Error","Peça não encontrada")
+            return #ENCERRA A FUNÇÃO
+
+    
+        QuantidadeCarrinho = self.QuantidadeCB.get()
+        PrecoCarinho = self.PrecoQtde
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT qtde_estoque FROM peca WHERE status = TRUE and cod_peca = %s",(CodPeca,))
         EstoqueConsulta = cursor.fetchone()
         cursor.close()
         conn.close()
-
         Estoque = EstoqueConsulta[0]
-
-
 
         # Usa imagem atual (produto), ou padrão se não tiver
         if hasattr(self, 'imagem_pil') and self.imagem_foi_carregada:
@@ -799,6 +830,51 @@ class PECA:
         print(self.itens_carrinho)
         
     def avancar(self):
+        # #VERIFICAÇÕES
+
+        # #Verificando Data
+        # Data = self.data_mysql()
+        # if Data == None: #Verificando se a data é ou não valida
+        #     return #Sai da Funcao
+        
+        # #Verificando Funcionario
+        # NomeFunc = self.NomeFuncionarioEntry.get()
+        # CpfFunc = self.CPFFUncionarioEntry.get()
+        # CodFunc = self.CodigoFuncionarioEntry.get()
+        # Data = self.DataEntry.get()
+
+        # conn = get_connection()
+        # cursor = conn.cursor()
+        # cursor.execute("SELECT nome_func, cpf_func, cod_func FROM funcionario WHERE status = True and nome_func = %s and cpf_func =%s and cod_func = %s",(NomeFunc,CpfFunc,CodFunc,))
+        # VerificacaoFuncionario = cursor.fetchone()
+        # cursor.close()
+        # conn.close()
+
+        # if VerificacaoFuncionario:
+        #     NomeFunc, CpfFunc, CodFunc = VerificacaoFuncionario
+        #     print( NomeFunc, CpfFunc, CodFunc)
+        # else:
+        #     messagebox.showerror("Error","Funcionario não encontrado")
+        #     return #Encerra Função
+  
+        # #Verificando Cliente
+        # NomeCliente = self.NomeEntry.get()
+        # CpfCliente = self.CPFEntry.get()
+        # CodCliente = self.CodigoClienteEntry.get()
+        
+        # conn = get_connection()
+        # cursor = conn.cursor()
+        # cursor.execute("SELECT nome_cliente, cpf_cliente, cod_cliente FROM cliente WHERE status = True and nome_cliente =%s and cpf_cliente =%s and cod_cliente = %s",(NomeCliente,CpfCliente,CodCliente,))
+        # VerificacaoCliente = cursor.fetchone()
+        # cursor.close()
+        # conn.close()
+
+        # if VerificacaoCliente:
+        #     NomeCliente, CpfCliente, CodCliente = VerificacaoCliente
+        #     print(NomeCliente,CpfCliente,CodCliente)
+        # else:
+        #     messagebox.showerror("Error","Cliente não encontrado")
+        #     return #Fecha a Função
         
         #DESTRUINDO TODOS OS FRAMES
         self.PecaFrame.destroy()
@@ -812,13 +888,13 @@ class PECA:
 
 
         #CRIANDO FRAME PRINCIPAL
-        self.CarrinhoFrame = ctk.CTkFrame(self.root, width=800, height=800, fg_color="BLACK",border_color="#CCCCCC",border_width=2)
+        self.CarrinhoFrame = ctk.CTkFrame(self.root, width=805, height=805, fg_color="#F9F5FF",border_color="#F9F5FF",border_width=8,corner_radius=15)
         self.CarrinhoFrame.place(x = 350, y = 20)
 
         #Adicionando Barra de Rolagem
-        self.CanvasCarrinho = ctk.CTkCanvas(self.CarrinhoFrame,bg = "WHITE",highlightthickness=0,width = 990, height = 990, )
-        BarraRolagem = ctk.CTkScrollbar(self.CarrinhoFrame,orientation="vertical",command=self.CanvasCarrinho.yview,height=800,bg_color="BLUE")
-        self.Frame_Rolavel = ctk.CTkFrame(self.CanvasCarrinho,fg_color="#F5EFFF",width=1000,height=2820,corner_radius=0)
+        self.CanvasCarrinho = ctk.CTkCanvas(self.CarrinhoFrame,bg = "#F9F5FF",highlightthickness=0,width = 990, height = 990, )
+        BarraRolagem = ctk.CTkScrollbar(self.CarrinhoFrame,orientation="vertical",command=self.CanvasCarrinho.yview,height=800,bg_color="#F9F5FF")
+        self.Frame_Rolavel = ctk.CTkFrame(self.CanvasCarrinho,fg_color="#F9F5FF",width=1000,height=2820,corner_radius=0)
         BarraRolagem.bind("<Configure>",lambda e: self.CanvasCarrinho.configure(scrollregion=self.CanvasCarrinho.bbox("all")))
         self.CanvasCarrinho.create_window((570,565), window=self.Frame_Rolavel)
         self.CanvasCarrinho.configure(yscrollcommand=BarraRolagem.set)
@@ -853,7 +929,7 @@ class PECA:
 
 
         #CRIANDO FRAME UNITARIO
-        item_frame = ctk.CTkFrame(parent, fg_color="#FF0000", width=760, height=190)
+        item_frame = ctk.CTkFrame(parent, fg_color="#5224A2", width=760, height=190)
         item_frame.place(x=50, y = y)
 
         # Redimensiona e cria nova CTkImage
@@ -861,16 +937,16 @@ class PECA:
         imagem_ctk = CTkImage(light_image=imagem_redimensionada, dark_image=imagem_redimensionada, size=(170, 170))
 
         #POSICIONANDO INFORMAÇÕES:
-        Imagem_FrameCarinho = ctk.CTkFrame(item_frame, fg_color="#00FF37", width=170, height=170)
+        Imagem_FrameCarinho = ctk.CTkFrame(item_frame, fg_color="#5224A2", width=170, height=170)
         Imagem_FrameCarinho.place(x = 20, y = 10)
 
-        DescricaoLabel = ctk.CTkLabel(item_frame,text= item["Descricao"] ,font= ("Georgia",22),fg_color = "#FF0000", text_color = "WHITE",wraplength=500,justify="left")
+        DescricaoLabel = ctk.CTkLabel(item_frame,text= item["Descricao"] ,font= ("Georgia",22),fg_color = "#5224A2", text_color = "WHITE",wraplength=500,justify="left")
         DescricaoLabel.place(x = 220, y = 20)
 
-        QuantidadeLabel = ctk.CTkLabel(item_frame,text= f"Quantidade: {item['Quantidade']}" ,font= ("Georgia",16),fg_color = "#FF0000", text_color = "#CCCCCC")
+        QuantidadeLabel = ctk.CTkLabel(item_frame,text= f"Quantidade: {item['Quantidade']}" ,font= ("Georgia",16),fg_color = "#5224A2", text_color = "#CCCCCC")
         QuantidadeLabel.place(x = 220, y = 120)
 
-        PrecoLabel = ctk.CTkLabel(item_frame,text= f"R$ {item['Preco']}" ,font= ("Georgia",28),fg_color = "#FF0000", text_color = "WHITE")
+        PrecoLabel = ctk.CTkLabel(item_frame,text= f"R$ {item['Preco']}" ,font= ("Georgia",28),fg_color = "#5224A2", text_color = "WHITE")
         PrecoLabel.place(x = 220, y = 150)
 
         imagem_label = ctk.CTkLabel(Imagem_FrameCarinho, text="", image=imagem_ctk)
@@ -879,7 +955,7 @@ class PECA:
 
 
         #BOTÃO DE EXCLUIR:
-        ExcluirButton = ctk.CTkButton(item_frame,text = "",font= ("Georgia",16),width=0,image=self.IconLixo,corner_radius=0,fg_color="#FF0000",command=lambda idx=indice: self.excluir_item_do_carrinho(idx))
+        ExcluirButton = ctk.CTkButton(item_frame,text = "",font= ("Georgia",16),width=0,image=self.IconLixo,corner_radius=5,fg_color="#FF0000",command=lambda idx=indice: self.excluir_item_do_carrinho(idx))
         ExcluirButton.place(x = 700, y = 150)
 
         #COMBO BOX:
