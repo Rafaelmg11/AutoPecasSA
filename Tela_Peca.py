@@ -197,14 +197,11 @@ class PECA:
 
             #VERIFICANDO SE TODOS OS CAMPOS ESTÃO PREENCHIDOS:
             if tipoDePeca and descricao and quantidade and lote and valor and fornecedor and codigo_fornecedor:
-                if tipoDePeca not in TipoPecaLista:
-                    messagebox.showerror("Error", "Selecione um tipo de peça válido")
-                else:
-                    create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor,imagem_bytes)
+                create_peca(tipoDePeca,descricao,quantidade,lote,valor,fornecedor,codigo_fornecedor,imagem_bytes)
 
-                    limparCampos()
+                limparCampos()
 
-                    messagebox.showinfo("Success","Peça criado com sucesso!")
+                messagebox.showinfo("Success","Peça criado com sucesso!")
             else:
                 messagebox.showerror("Error","Todos os campos são obrigatórios" )
 
@@ -452,7 +449,7 @@ class PECA:
         TipoDePecaCB.set("Selecione Um Tipo") #FRASE DO FRONT END INICIAL
         TipoDePecaCB.bind("<<ComboboxSelected>>",selecionado_TipoDePeca) #AÇÃO DE SELECIONAR
         TipoDePecaCB.bind("<KeyRelease>",filtrar_tipopeca) #CHAMA A FUNÇÃO DE FILTRO
-        TipoDePecaCB.bind("<Key>", bloquear_tudo_exceto_setas)
+  
 
 
         fornecedoresTB = selecionar_fornecedores() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS FORNECEDORES

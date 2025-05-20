@@ -14,12 +14,28 @@ import requests
 class Loja:
 
 
-    def __init__(self,root,main_window = None):
+    def __init__(self,root,main_window = None,usuario=None,senha=None):
         self.root = root
         self.main_window = main_window
         ctk.set_appearance_mode("light")
         self.root.title("Tela Principal")
         self.root.configure(fg_color = "#F9F5FF") #Cor de fundo da self.root
+
+        # self.usuario = usuario
+        # self.senha = senha
+        # print("Usuario:",usuario)
+        # print("Senha:",senha)
+
+        # conn = get_connection()
+        # cursor = conn.cursor()
+        # cursor.execute("SELECT cod_usuario,cpf_usuario,cod_cliente FROM usuario WHERE status = True and nome_usuario = %s and senha = %s",(self.usuario,self.senha,))
+        # usuarioconsulta = cursor.fetchone()
+        # cursor.close()
+        # conn.close()
+
+        # self.cod_usuario,self.cpf_usuario,self.cod_cliente = usuarioconsulta
+
+            
 
         # Tamanho desejado da janela
         largura = 1600
@@ -71,7 +87,7 @@ class Loja:
         User_Frame =  ctk.CTkFrame (self.root,fg_color="#5424A2",border_width=1, border_color="#CCCCCC",corner_radius=0,width=330,height= 845)
         User_Frame.place(x = 0,y = 0 )
 
-        Usuario_Label = ctk.CTkLabel(User_Frame,text = "NOME DO USUARIO: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
+        Usuario_Label = ctk.CTkLabel(User_Frame,text = self.usuario,font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         Usuario_Label.place(x = 80, y = 60)
 
     
@@ -98,24 +114,29 @@ class Loja:
         InicioButton = ctk.CTkButton(User_Frame,text = "Início",font= ("Georgia",25),width=328,image=self.IconInicio,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command=self.click_inicio)
         InicioButton.place(x = 1,y = 150)
 
-        CarrinhoButton_Painel = ctk.CTkButton(User_Frame,text = "Carrinho",font= ("Georgia",25),width=328,image=self.IconCarrinho_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        # SairButton = ctk.CTkButton(self.root,text = "Início",font= ("Georgia",25),width=220,image=self.IconInicio,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command=self.sair)
+        # SairButton.place(x = 20, y = 330)
+
+        CarrinhoButton_Painel = ctk.CTkButton(User_Frame,text = "Carrinho",font= ("Georgia",25),width=328,image=self.IconCarrinho_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0,command=self.abrir_carrinho)
         CarrinhoButton_Painel.place(x = 1,y = 205)
 
-        FavoritosButton_Painel = ctk.CTkButton(User_Frame,text = "Favoritos",font= ("Georgia",25),width=328,image=self.IconCoracao_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
-        FavoritosButton_Painel.place(x = 1,y = 260)
+        # FavoritosButton_Painel = ctk.CTkButton(User_Frame,text = "Favoritos",font= ("Georgia",25),width=328,image=self.IconCoracao_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        # FavoritosButton_Painel.place(x = 1,y = 260)
 
-        PedidosButton = ctk.CTkButton(User_Frame,text = "Pedidos",font= ("Georgia",25),width=328,image=self.IconPedidos,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
-        PedidosButton.place(x = 1, y = 315)
+        # PedidosButton = ctk.CTkButton(User_Frame,text = "Pedidos",font= ("Georgia",25),width=328,image=self.IconPedidos,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        # PedidosButton.place(x = 1, y = 315)
 
-        SacolaButton = ctk.CTkButton(User_Frame,text = "Compras",font= ("Georgia",25),width=328,image=self.IconSacola_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
-        SacolaButton.place(x = 1,y = 370)
+        # SacolaButton = ctk.CTkButton(User_Frame,text = "Compras",font= ("Georgia",25),width=328,image=self.IconSacola_Painel,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        # SacolaButton.place(x = 1,y = 370)
 
-        ContaButton = ctk.CTkButton(User_Frame,text = "Conta",font= ("Georgia",25),width=328,image=self.IconConta,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
-        ContaButton.place(x = 1,y = 425)
+        # ContaButton = ctk.CTkButton(User_Frame,text = "Conta",font= ("Georgia",25),width=328,image=self.IconConta,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        # ContaButton.place(x = 1,y = 425)
 
-        WhatsButton = ctk.CTkButton(User_Frame,text = "Whatsapp",font= ("Georgia",25),width=328,image=self.IconWhats,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
-        WhatsButton.place(x = 1,y = 480)
+        # WhatsButton = ctk.CTkButton(User_Frame,text = "Whatsapp",font= ("Georgia",25),width=328,image=self.IconWhats,compound="left",corner_radius=0,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0)
+        # WhatsButton.place(x = 1,y = 480)
 
+    # def sair(self):
+    #     self.destroy()
 
 
     def create_widgets(self):
@@ -183,15 +204,15 @@ class Loja:
         #BOTÃO DE CARRINHO
         CarrinhoButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCarrinho,corner_radius=0,fg_color="#5424A2",command=self.abrir_carrinho)
         CarrinhoButton.place(x = 1450,y = 0)
-        #BOTÃO DE CORAÇÃO
-        CoracaoButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCoracao,corner_radius=0,fg_color="#5424A2")
-        CoracaoButton.place(x = 1380,y = 0)
-        #BOTÃO DE LOCALIZAÇÃO
-        LocalizacaoButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconLocalizacao,corner_radius=0,fg_color="#5424A2")
-        LocalizacaoButton.place(x = 1200,y = 0)
-        #BOTÃO DE SACOLA DE COMPRA
-        SacolaButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconSacola,corner_radius=0,fg_color="#5424A2")
-        SacolaButton.place(x = 1305,y = 0)
+        # #BOTÃO DE CORAÇÃO
+        # CoracaoButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCoracao,corner_radius=0,fg_color="#5424A2")
+        # CoracaoButton.place(x = 1380,y = 0)
+        # #BOTÃO DE LOCALIZAÇÃO
+        # LocalizacaoButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconLocalizacao,corner_radius=0,fg_color="#5424A2")
+        # LocalizacaoButton.place(x = 1200,y = 0)
+        # #BOTÃO DE SACOLA DE COMPRA
+        # SacolaButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconSacola,corner_radius=0,fg_color="#5424A2")
+        # SacolaButton.place(x = 1305,y = 0)
         #BOTÃO DE USUARIO
         UsuarioButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconUsuario,corner_radius=0,fg_color="#5424A2",command=self.click_usuario)
         UsuarioButton.place(x = 50,y = 0)
@@ -374,7 +395,9 @@ class Loja:
         messagebox.showinfo("Compra", mensagem)
 
     def AdicionarCarrinho(self,Descricao,PrecoUnitario,Imagem_Bytes,TipoPeca,Fornecedor,CodPeca,CodFornecedor,QtdeEstoque,QtdeCompra,PrecoTotal,):
-        CodFunc = 30
+        CodFunc = 1000 #CODIGO DA LOJA
+
+        CodCliente = self.cod_usuario
 
         print("Descricao:",Descricao)
         print("Preco Unitario",PrecoUnitario)
@@ -402,6 +425,25 @@ class Loja:
 
         self.itens_carrinho.append(item)
 
+        #BANCO DE DADOS:
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            query = ("INSERT INTO carrinho (cod_usuario,cod_peca,quantidade) VALUES (%s,%s,%s)")
+
+            valores = (self.cod_usuario,CodPeca,QtdeCompra)
+
+            cursor.execute(query, valores)
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+        except:
+            messagebox.showerror("Error")
+            return
+
+
+
 
         messagebox.showinfo("Success","Peça adicionada no carrinho com sucesso")
         print(item)
@@ -411,7 +453,26 @@ class Loja:
         if not self.itens_carrinho or indice >= len(self.itens_carrinho):
             return
         
-        # Remove o item da lista
+        item = self.itens_carrinho[indice]
+        cod_usuario = self.cod_usuario
+        cod_peca = item["CodPeca"]
+        
+        # Remove o item da lista e do BANco de Dados
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            query = "DELETE FROM carrinho WHERE cod_usuario = %s AND cod_peca = %s"
+            valores = (cod_usuario, cod_peca)
+            cursor.execute(query, valores)
+            conn.commit()
+            cursor.close()
+            conn.close()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao excluir item do carrinho:\n{e}")
+            return
+
+
+        #LISTA
         self.itens_carrinho.pop(indice)
         
         # Destrói o frame correspondente
@@ -515,6 +576,7 @@ class Loja:
         self.frames_carrinho.append(item_frame)
 
     def abrir_carrinho(self):
+
 
         self.FrameCarrinho = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="#5424A2",border_color="#F9F5FF",border_width=0,corner_radius=0)
         self.FrameCarrinho.place(x = 0 , y = 60)
@@ -712,12 +774,12 @@ class Loja:
                 Imagem_Label = ctk.CTkLabel(imagem_frame, image=self.Imagem_Padrao, text="")
                 Imagem_Label.place(x = 0, y = 0)
 
-            # Estado individual (usando lista para mutabilidade dentro da função)
-            estado_favorito = [False]
-            # Criar botão e função com lambda para capturar esse botão e estado
-            FavoritarButton = ctk.CTkButton(produto_frame,text = "",font= ("Georgia",14),image=self.IconCoracaoVazio_Produto,width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
-            FavoritarButton.place(x = 161, y = 2)
-            FavoritarButton.configure(command=lambda b=FavoritarButton,s=estado_favorito: self.favoritar(b, s))
+            # # Estado individual (usando lista para mutabilidade dentro da função)
+            # estado_favorito = [False]
+            # # Criar botão e função com lambda para capturar esse botão e estado
+            # FavoritarButton = ctk.CTkButton(produto_frame,text = "",font= ("Georgia",14),image=self.IconCoracaoVazio_Produto,width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
+            # FavoritarButton.place(x = 161, y = 2)
+            # FavoritarButton.configure(command=lambda b=FavoritarButton,s=estado_favorito: self.favoritar(b, s))
             
 
             x = x + 245
@@ -806,12 +868,12 @@ class Loja:
                 Imagem_Label = ctk.CTkLabel(imagem_frame, image=self.Imagem_Padrao, text="")
                 Imagem_Label.place(x = 0, y = 0)
 
-            # Estado individual (usando lista para mutabilidade dentro da função)
-            estado_favorito = [False]
-            # Criar botão e função com lambda para capturar esse botão e estado
-            FavoritarButton = ctk.CTkButton(produto_frame,text = "",font= ("Georgia",14),image=self.IconCoracaoVazio_Produto,width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
-            FavoritarButton.place(x = 161, y = 2)
-            FavoritarButton.configure(command=lambda b=FavoritarButton,s=estado_favorito: self.favoritar(b, s))
+            # # Estado individual (usando lista para mutabilidade dentro da função)
+            # estado_favorito = [False]
+            # # Criar botão e função com lambda para capturar esse botão e estado
+            # FavoritarButton = ctk.CTkButton(produto_frame,text = "",font= ("Georgia",14),image=self.IconCoracaoVazio_Produto,width=0,corner_radius=5,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 )
+            # FavoritarButton.place(x = 161, y = 2)
+            # FavoritarButton.configure(command=lambda b=FavoritarButton,s=estado_favorito: self.favoritar(b, s))
 
             # Cálculo para a próxima posição
             if (i + 1) % 4 == 0:  # A cada 4 itens

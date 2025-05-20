@@ -9,6 +9,7 @@ from Tela_Comanda import COMANDA
 from PIL import Image
 from customtkinter import CTkImage
 import customtkinter as ctk
+from Tela_Usuarios import USUARIO
 
 
 
@@ -165,7 +166,7 @@ class Menu:
         root_usuario.geometry("850x570") #Tamanho da janela
         # Aplica o estilo na nova janela
         style_combobox(root_usuario)
-        app_comanda = COMANDA(root_usuario, self.root)  # Passa a referência da janela principal (self.root)
+        app_usuario = USUARIO(root_usuario, self.root)  # Passa a referência da janela principal (self.root)
         
         root_usuario.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
         #root_cliente.mainloop()  # Inicia a execução da janela do cliente

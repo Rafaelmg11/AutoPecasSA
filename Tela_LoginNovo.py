@@ -73,7 +73,7 @@ class Tela_Login:
             if VerifyLogin:
                 if "USER" in usuario:
                     # Oculta a janela principal
-                    self.root.destroy()
+                    self.root.withdraw()
 
                     # Cria uma nova janela Tkinter para o cadastro de peca
                     ctk.set_appearance_mode("light")
@@ -89,7 +89,7 @@ class Tela_Login:
 
                 elif "ADM" in usuario:
                     # Oculta a janela principal
-                    self.root.destroy()
+                    self.root.withdraw()
                     # Cria uma nova janela Tkinter para o cadastro de peca
                     ctk.set_appearance_mode("light")
                     root_adm = ctk.CTkToplevel(self.root)
@@ -103,7 +103,7 @@ class Tela_Login:
 
                 else:
                     # Oculta a janela principal
-                    self.root.destroy()
+                    self.root.withdraw()
                     # Cria uma nova janela Tkinter para o cadastro de peca
                     ctk.set_appearance_mode("light")
                     root_loja = ctk.CTkToplevel(self.root)
@@ -111,7 +111,7 @@ class Tela_Login:
                     root_loja.geometry("850x570") #Tamanho da janela
                     # Aplica o estilo na nova janela
                     style_combobox(root_loja)
-                    app_loja = Loja(root_loja, self.root)  # Passa a referência da janela principal (self.root)
+                    app_loja = Loja(root_loja, self.root , usuario=usuario, senha=senha)  # Passa a referência da janela principal (self.root)
                     root_loja.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
                     messagebox.showinfo(title = "INFO LOGIN",message="Acesso Confirmado, Bem Vindo!")#Ebibe mensagem de sucesso
 
@@ -137,10 +137,6 @@ class Tela_Login:
         LoginButton.place(x=122, y=430)
         CadastroButton =  ctk.CTkButton(self.root, text="FAZER CADASTRO",  width=200, font=("Georgia", 20),command=cadastrar)
         CadastroButton.place(x=95, y=480)
-
-
-
-
 
 
 

@@ -1,6 +1,7 @@
-import tkinter as tk
-from TL import Tela_Login
+
+from Tela_LoginNovo import Tela_Login
 from tkinter import*
+import customtkinter as ctk
 
 #AVISOS PARA O PROFESSOR:
 # NO CRUD PRINCIPAL NAO EXISTE NADA SOBRE "PESQUISAR" TUDO QUE FAZ PESQUISA ESTA DENTRO DOS CODIGO DAS TELAS
@@ -17,6 +18,6 @@ from tkinter import*
 
 #QUALQUER COISA CHAME A GENTE NAS SUAS AULAS ;) OBRIGADO!
 
-root = tk.Tk()
+root = ctk.CTk()
 app = Tela_Login(root)
 root.mainloop()
