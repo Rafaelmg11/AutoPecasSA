@@ -2,10 +2,12 @@ from tkinter import* #Importa tudo do tkinter
 from tkinter import messagebox #Importa as caixas de mensagem
 from Crud_novo import get_connection
 from Tela_PrincipalADMNovo import Menu
+from Tela_Usuario import Menu
 import mysql.connector
 import tkinter as ttk
 import customtkinter as ctk
-
+from customtkinter import CTkImage
+from PIL import Image
 
 # OBSERVAÇÕES  SOBRE O LOGIN (para diferenciar o adm de usuario, o adm tem que ter ADM no usuario, qualquer outro usuario sem ADM é apenas um usuario comum)
 
@@ -13,7 +15,7 @@ class Tela_Login:
     def __init__(self,root): #NÂO TEM MAIN_WINDOW
         self.root = root
         self.root.title("CADASTRO DE PRODUTOS") #Define o titulo
-        self.root.geometry("400x500") #Define o tamanho da janela
+        self.root.geometry("400x600") #Define o tamanho da janela
         self.root.configure(background = ("#5424A2")) #Configura a cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
         #Criação de Widgets
@@ -32,26 +34,27 @@ class Tela_Login:
     def create_widgets(self):
         #CRIANDO E POSICIONANDO AS LABELS:
         UsuarioLabel = Label(self.root,text="Usuario: ",font=("Georgia",16),bg = "#5424A2",fg = "WHITE")
-        UsuarioLabel.place(x=110,y=200)
+        UsuarioLabel.place(x=100,y=260)
         SenhaLabel = Label(self.root,text= "Senha:",font=("Georgia",16),bg = "#5424A2",fg = "WHITE") 
-        SenhaLabel.place(x=110,y=260)
+        SenhaLabel.place(x=100,y=320)
         InformaçãoLabel = Label (self.root,text="Sistema Desenvolvido por:\n"
                                                 "\n"
                                                 "Rafael de Almeida de Magalhães\n"
-                                                "Matheus Golanowski\n"
-                                                "Matheus Eduardo Souza",font=("Georgia",8),bg = "#5424A2",fg = "WHITE")
+                                                ,font=("Georgia",8),bg = "#5424A2",fg = "WHITE")
         #CRIANDO AS CAIXAS DE ENTRADA:
         UsuarioEntry = ttk.Entry(self.root, width=19,font=("Georgia",13))
-        UsuarioEntry.place(x=110,y=230)
+        UsuarioEntry.place(x=100,y=290)
         SenhaEntry = ttk.Entry (self.root, width=19,font=("Georgia",13))
-        SenhaEntry.place(x=110,y=290)
-        InformaçãoLabel.place(x=110,y=400)
+        SenhaEntry.place(x=100,y=350)
+        InformaçãoLabel.place(x=100,y=530)
 
         #LOGO:
         # CARREGAR IMAGEM
-        self.logo = PhotoImage(file="icons/LogoMobiliaria.png") #Carrega a imagem da logo
-        self.LogoLabel = Label(self.root,image = self.logo, bg = "#5424A2") #Cria um label para a imagem, do logo
-        self.LogoLabel.place(x=105,y=35) 
+        self.Logo_pil = Image.open("icons/Logo.png") #Carrega a imagem da logo
+        self.Logo = CTkImage(self.Logo_pil,size= (350 , 260)) #Converte imagem 
+        LogoLabel = ctk.CTkLabel(self.root,text = "",image=self.Logo,font=("Georgia",14))
+        LogoLabel.place(x = 30, y = 0)
+
 
         def login():
             usuario = UsuarioEntry.get()
@@ -83,7 +86,9 @@ class Tela_Login:
 
         #CRIANDO BOTAO:
         LoginButton =  ttk.Button(self.root, text="LOGIN",  width=12, font=("Georgia", 11),command=login)
-        LoginButton.place(x=150, y=350)
+        LoginButton.place(x=140, y=410)
+        CadastroButton =  ttk.Button(self.root, text="FAZER CADASTRO",  width=20, font=("Georgia", 11),command=login)
+        CadastroButton.place(x=105, y=460)
 
     
 

@@ -156,8 +156,10 @@ def create_cliente(Nome,Telefone,Email,CPF,Endereco,CodEndereco):
     query = "INSERT INTO cliente (nome_cliente,telefone_cliente,email_cliente,cpf_cliente,endereco_cliente,cod_endereco) VALUES ( %s, %s , %s, %s, %s, %s)"
     cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,CodEndereco))
     conn.commit ()
+    Cod_Cliente = cursor.lastrowid
     cursor.close()
     conn.close()
+    return Cod_Cliente
 
 
 def update_cliente(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,CodEndereco):
@@ -234,7 +236,21 @@ def create_endereco_fornecedor(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
     cursor.close()
     conn.close()
     return cod_endereco
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#FUNCÃO FORNECEDOR:
 
-
+def create_usuario(Cod_Cliente,CPF,Email,NomeUsuario,Senha,Telefone):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = "INSERT INTO usuario (cod_funcionario,cod_cliente,cpf_usuario,email,nome_usuario,senha,telefone_usuario) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        cursor.execute(query,(None,Cod_Cliente,CPF,Email,NomeUsuario,Senha,Telefone) )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        conn = get_connection()
+    except Exception as e: 
+        print("Erro ao inserir usuário:", e)

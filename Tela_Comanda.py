@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 
-class PECA:
+class COMANDA:
 
     def __init__(self,root,main_window= None): 
         self.root = root
@@ -303,9 +303,7 @@ class PECA:
         #BOTÃO DE PESQUISA NA TABELA CLIENTE
         self.PesquisaTabelaClienteButton = ctk.CTkButton(self.ClienteFrame, text="Pesquisar Tabela", font= ("Georgia",21),command=self.pesquisa_tabelaCliente)
         self.PesquisaTabelaClienteButton.place(x = 380, y = 162)
-        #BOTÂO ABRIR TELA CLIENTE
-        AbrirTelaClienteButton = ctk.CTkButton(self.ClienteFrame, text="Ir para tela de \ncadastro de cliente", font= ("Georgia",14),command=self.pesquisa_tabelaCliente)
-        AbrirTelaClienteButton.place(x =120, y = 330)
+
         
 
 
@@ -1127,5 +1125,5 @@ class PECA:
 
 if __name__ == "__main__":
     root = ctk.CTk()
-    app = PECA(root)
+    app = COMANDA(root)
     root.mainloop()

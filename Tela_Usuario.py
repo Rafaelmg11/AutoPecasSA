@@ -1,10 +1,9 @@
 
-from Tela_Peca import PECA
+from Tela_PecaUSER import PECA
 import customtkinter as ctk
 from StyleComboBox import style_combobox
-from Tela_ClienteNovo import CLIENTE
-from Tela_FuncionarioNovo import FUNCIONARIO
-from Tela_FornecedorNovo import FORNECEDOR
+from Tela_ClienteUSER import CLIENTE
+from Tela_FornecedorUSER import FORNECEDOR
 from Tela_Comanda import COMANDA
 from PIL import Image
 from customtkinter import CTkImage
@@ -28,16 +27,13 @@ class Menu:
         PecaButton.place(x=190,y=480)
         
         ClienteButton = ctk.CTkButton(self.root, text="CLIENTE",  width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_cliente)
-        ClienteButton.place(x = 190, y = 600)
+        ClienteButton.place(x = 190, y = 540)
 
         FornecedorButton = ctk.CTkButton(self.root, text="FORNECEDOR",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_fornecedor)
         FornecedorButton.place(x = 190, y = 420)
 
-        FuncionarioButton = ctk.CTkButton(self.root, text="FUNCIONARIO",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_funcionario)
-        FuncionarioButton.place(x = 190, y = 540)
-
         ComandaButton = ctk.CTkButton(self.root, text="COMANDA",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_comanda)
-        ComandaButton.place(x = 190, y = 660)
+        ComandaButton.place(x = 190, y = 600)
 
         #LOGO:
         # CARREGAR IMAGEM
@@ -107,25 +103,6 @@ class Menu:
         root_fornecedor.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
         #root_cliente.mainloop()  # Inicia a execução da janela do cliente
 
-    def abrir_funcionario(self):
-
-        # Oculta a janela principal
-        self.root.withdraw()
-
-        # Cria uma nova janela Tkinter para o cadastro de peca
-        
-        ctk.set_appearance_mode("light")
-          
-  
-        root_funcionario = ctk.CTkToplevel(self.root)
-        root_funcionario.title("ABA DE FUNCIONARIOS") #Titulo
-        root_funcionario.geometry("850x570") #Tamanho da janela
-        # Aplica o estilo na nova janela
-        style_combobox(root_funcionario)
-        app_funcionario = FUNCIONARIO(root_funcionario, self.root)  # Passa a referência da janela principal (self.root)
-        
-        root_funcionario.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
-        #root_cliente.mainloop()  # Inicia a execução da janela do cliente
 
     def abrir_comanda(self):
 
