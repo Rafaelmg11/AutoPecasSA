@@ -4,7 +4,7 @@ from tkinter import messagebox,filedialog #filedialog abre janelas de seleção 
 from tkinter import ttk
 from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: converter em widgets para exibição 
 import io #Fluxo de bytes (transforma imagem em bytes)
-from Crud_novo import get_connection
+from Crud_novo import get_connection, selecionar_tipopeca
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
 import requests
@@ -53,9 +53,14 @@ class TelaPrincipal:
         self.Pesquisa = None
 
 
-
         self.contador_pagina()
         self.create_widgets()
+
+    def bloquear_tudo_exceto_setas(self, event):
+        # Permitir apenas as teclas de seta
+        if event.keysym in ["Left", "Right", "Up", "Down"]:
+            return  # deixa passar
+        return "break"  # bloqueia tudo o resto
 
 
     def click_usuario(self):
@@ -115,6 +120,15 @@ class TelaPrincipal:
 
     def create_widgets(self):
 
+        #INICIANDO LISTAS:
+        #LISTA COM OS ITEMS:
+        self.itens_carrinho = []
+        #LISTA DE FRAMES TRABALHANDO EM CONJUNTO:
+        self.frames_carrinho = []
+        #LISTA CHACK:
+        self.check_vars_carrinho = []
+
+
 
         Frame_categorias = ctk.CTkFrame(self.root, width=960, height=110, fg_color="#5424A2")  
         Frame_categorias.place (x = 290,y = 120)
@@ -155,6 +169,7 @@ class TelaPrincipal:
         self.IconTransmissao = CTkImage(light_image= Image.open("icons/Transmissao.png"),size = (50, 50))
         self.IconFreio = CTkImage(light_image= Image.open("icons/Freio.png"),size = (50, 50))
         self.IconIncioPrincipal = CTkImage(light_image= Image.open("icons/InicioPrincipal.png"),size = (50, 50))
+        self.IconLixo  = CTkImage(light_image= Image.open("icons/Lixo.png"),size = (25, 25))
 
 
 
@@ -166,7 +181,7 @@ class TelaPrincipal:
         self.PesquisarButton = ctk.CTkButton(self.Freme_menu,text = "Pesquisar",font= ("Georgia",16),width=100,height=35,command=lambda: self.create_produto_frame(self.Rolavel_Frame))
         self.PesquisarButton.place(x = 480,y = 14)
         #BOTÃO DE CARRINHO
-        CarrinhoButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCarrinho,corner_radius=0,fg_color="#5424A2")
+        CarrinhoButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCarrinho,corner_radius=0,fg_color="#5424A2",command=self.abrir_carrinho)
         CarrinhoButton.place(x = 1450,y = 0)
         #BOTÃO DE CORAÇÃO
         CoracaoButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconCoracao,corner_radius=0,fg_color="#5424A2")
@@ -181,7 +196,7 @@ class TelaPrincipal:
         UsuarioButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),width=0,image=self.IconUsuario,corner_radius=0,fg_color="#5424A2",command=self.click_usuario)
         UsuarioButton.place(x = 50,y = 0)
         #BOTÃO DE CATEGORIAS 
-        CategoriasButton = ctk.CTkButton(Frame_categorias,text = "TODAS\n CATEGORIAS ",font= ("Georgia",16),compound="top",width=0,image=self.IconCategorias,corner_radius=0,fg_color="#5424A2")
+        CategoriasButton = ctk.CTkButton(Frame_categorias,text = "TODAS\n CATEGORIAS ",font= ("Georgia",16),compound="top",width=0,image=self.IconCategorias,corner_radius=0,fg_color="#5424A2",command=self.click_categorias)
         CategoriasButton.place(x = 20,y = 5)
         #BOTÃO DE MOTOR
         MotorButton = ctk.CTkButton(Frame_categorias,text = "MOTOR",font= ("Georgia",16),compound="top",width=0,image=self.IconMotor,corner_radius=0,fg_color="#5424A2",command= self.click_motor)
@@ -274,22 +289,309 @@ class TelaPrincipal:
         print(f"PAC: Preço: {self.pac_preco} | Prazo: {self.pac_prazo} dias")
         print(f"SEDEX: Preço: {self.sedex_preco} | Prazo: {self.sedex_prazo} dias")
 
+
+    def get_itens_selecionados(self):
+        selecionados = []
+        for i, var in enumerate(self.check_vars_carrinho):
+            if var.get(): #Se checkboz estiver marcado
+                selecionados.append(self.itens_carrinho[i])
+        return selecionados
+
+    def valor_total(self):
+        
+        valor_total = 0 
+        selecionados = self.get_itens_selecionados()
+        if not selecionados:
+            self.PrecoTotalLabel.configure(text = f"R$ {valor_total:.2f}")
+            return
+        
+        for i,item in enumerate(selecionados):
+            valor_total += item["Preco"]
+
+        self.PrecoTotalLabel.configure(text = f"R$ {valor_total:.2f}")
+
+    def finalizar_compra(self):
+        selecionados = self.get_itens_selecionados()
+        if not selecionados:
+            messagebox.showerror("Error","Não existe nenhum item selecionado para finalização da compra!")
+            return
+        
+        valor_total = 0 
+        for i,item in enumerate(selecionados):
+            valor_total += item["Preco"]
+
+        
+        self.PrecoTotalLabel.configure(text = f"R$ {valor_total:.2f}")
         
 
+        TipoPagamento = self.TipoPagamentoCB.get()
+
+        if TipoPagamento == None or TipoPagamento == "Tipo de Pagemento":
+            messagebox.showerror("Error","Tipo de Pagemento Inválido")
+            return
+        
+        CodFunc = selecionados[0]["CodFunc"]
+        CodCliente = selecionados[0]["CodCliente"]
+        Data = 1111-11-11
+
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            query = "INSERT INTO compra (cod_funcionario, cod_cliente, data_compra, tipo_pagamento, valor_total) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(query, (CodFunc, CodCliente, Data, TipoPagamento, valor_total))
+            cod_compra = cursor.lastrowid  # Pega o último ID gerado 
+
+            
+            #INSERINDO OS DADOS DE PECA_COMPRA:
+            for item in selecionados:
+                cod_peca = item["CodPeca"]
+                quantidade = item["Quantidade"]
+                query_peca = "INSERT INTO peca_compra (cod_compra,cod_peca,quantidade) VALUES (%s,%s,%s)"
+                cursor.execute(query_peca,(cod_compra,cod_peca,quantidade))
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+            messagebox.showinfo("Sucesso","Compra Finalizada com sucesso!")
+
+            #REMOVE OS ITENS COMPRADOS DO CARRINHO:
+            Indice_Itens_Remover = []
+
+            for i, item in enumerate(self.itens_carrinho):
+                if item in selecionados:
+                    Indice_Itens_Remover.append(i)
+
+            #REMOVE TUDO DA LISTA DE REMOVER (DE TRAZ PRA FRENTE PARA EVITAR PROBLEMA COM IDICE)
+            for indice in sorted(Indice_Itens_Remover, reverse=True):
+                self.excluir_item_do_carrinho(indice)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao finalizar compra: {e}")
+
+
+        itens_texto = "\n".join(f"- {item['Descricao']} (Qtd: {item['Quantidade']})" for item in selecionados)
+        mensagem = f"{len(selecionados)} item(s) finalizado(s) com sucesso!\n\nItens comprados:\n{itens_texto}"
+        messagebox.showinfo("Compra", mensagem)
+
+    def AdicionarCarrinho(self,Descricao,PrecoUnitario,Imagem_Bytes,TipoPeca,Fornecedor,CodPeca,CodFornecedor,QtdeEstoque,QtdeCompra,PrecoTotal,):
+        CodFunc = 30
+
+        print("Descricao:",Descricao)
+        print("Preco Unitario",PrecoUnitario)
+        print("Imagem")
+        print("TipoPeca",TipoPeca)
+        print("Fornecedor",Fornecedor)
+        print("CodPeca",CodPeca)
+        print("CodFornecedor",CodFornecedor)
+        print("Qtde Compra:",QtdeCompra)
+        print("Preco Total:", PrecoTotal)
+        print("Qtde Estoque:", QtdeEstoque)
+        print("")
+
+        CodCliente = 30
+        
+        if Imagem_Bytes:
+            imagem_pil = Image.open(io.BytesIO(Imagem_Bytes))
+        else:
+            imagem_pil = Image.open("sem_imagem.png")
+
+        Imagem = imagem_pil
+
+
+        item = {"Descricao": Descricao, "Quantidade": QtdeCompra, "Preco":PrecoTotal, "Imagem": Imagem, "Estoque": QtdeEstoque, "CodPeca": CodPeca, "CodFunc":CodFunc, "CodCliente": CodCliente}
+
+        self.itens_carrinho.append(item)
+
+
+        messagebox.showinfo("Success","Peça adicionada no carrinho com sucesso")
+        print(item)
+
+    def excluir_item_do_carrinho(self, indice):
+        # Verificação adicional de segurança
+        if not self.itens_carrinho or indice >= len(self.itens_carrinho):
+            return
+        
+        # Remove o item da lista
+        self.itens_carrinho.pop(indice)
+        
+        # Destrói o frame correspondente
+        if indice < len(self.frames_carrinho):
+            self.frames_carrinho[indice].destroy()
+            self.frames_carrinho.pop(indice)
+        
+        # Recria todos os itens do carrinho para garantir a ordem correta
+        self.recriar_todos_itens_carrinho()
+
+        print(self.itens_carrinho)
+        self.valor_total()
+
+    def recriar_todos_itens_carrinho(self):
+        self.check_vars_carrinho = []
+        # Destrói todos os frames existentes
+        for frame in self.frames_carrinho:
+            frame.destroy()
+        self.frames_carrinho = []
+        
+        # Recria todos os itens
+        for i, item in enumerate(self.itens_carrinho):
+            y = 10 + i * 200
+            self.criar_item_carrinho(self.Frame_Rolavel, item, y, i)
+
+    def criar_item_carrinho(self,parent,item,y,indice):
+
+        y = 10 + indice * 200  # Calcula baseado no índice, não na quantidade
+
+
+        #CRIANDO FRAME UNITARIO
+        item_frame = ctk.CTkFrame(parent, fg_color="#5224A2", width=760, height=190)
+        item_frame.place(x=50, y = y)
+
+        # Redimensiona e cria nova CTkImage
+
+        imagem_redimensionada = item["Imagem"].resize((170, 170), Image.LANCZOS)
+        imagem_ctk = CTkImage(light_image=imagem_redimensionada, dark_image=imagem_redimensionada, size=(170, 170))
+
+        #POSICIONANDO INFORMAÇÕES:
+        Imagem_FrameCarinho = ctk.CTkFrame(item_frame, fg_color="#5224A2", width=170, height=170)
+        Imagem_FrameCarinho.place(x = 40, y = 10)
+
+        DescricaoLabel = ctk.CTkLabel(item_frame,text= item["Descricao"] ,font= ("Georgia",22),fg_color = "#5224A2", text_color = "WHITE",wraplength=500,justify="left")
+        DescricaoLabel.place(x = 220, y = 20)
+
+        QuantidadeLabel = ctk.CTkLabel(item_frame,text= f"Quantidade: {item['Quantidade']}" ,font= ("Georgia",16),fg_color = "#5224A2", text_color = "#CCCCCC")
+        QuantidadeLabel.place(x = 220, y = 120)
+
+        PrecoLabel = ctk.CTkLabel(item_frame,text= f"R$ {item['Preco']}" ,font= ("Georgia",28),fg_color = "#5224A2", text_color = "WHITE")
+        PrecoLabel.place(x = 220, y = 150)
+
+        imagem_label = ctk.CTkLabel(Imagem_FrameCarinho, text="", image=imagem_ctk)
+        imagem_label.place(x=0, y=0)
+        imagem_label.image = imagem_ctk  # <- Mantém referência
+
+
+        #BOTÃO DE EXCLUIR:
+        ExcluirButton = ctk.CTkButton(item_frame,text = "",font= ("Georgia",16),width=0,image=self.IconLixo,corner_radius=5,fg_color="#FF0000",command=lambda idx=indice: self.excluir_item_do_carrinho(idx))
+        ExcluirButton.place(x = 700, y = 150)
+
+        #CHECKBOX DE SELEÇÃO:
+        marcacao = ctk.BooleanVar(value=True) #Começa como marcado
+        CheckBox = ctk.CTkCheckBox(item_frame,text = '', variable=marcacao,width=10,height=10,command=self.valor_total)
+        CheckBox.place(x = 5, y = 5)
+
+        #SALVA A VARIAVEL DE MARCAÇÃO ASSOCIADA AO ITEM:
+        if len(self.check_vars_carrinho) > indice:
+            self.check_vars_carrinho[indice] = marcacao
+        else:
+            self.check_vars_carrinho.append(marcacao)
+            
+
+        #COMBO BOX:
+        estoque_disponivel = int(item.get("Estoque", 1))
+        Quantidades = [str(i) for i in range(1, estoque_disponivel + 1)]
+        QuantidadeCB = ctk.CTkComboBox(item_frame, values=Quantidades, width=130,height=30,corner_radius=4,font= ("Georgia",16))
+        QuantidadeCB.set(item["Quantidade"])  # valor atual do carrinho
+        QuantidadeCB.place(x=600, y=60)
+
+        def QuantidadeAlterada(value):
+            Qtde = int(value)
+            PrecoUnitario = float(item["Preco"]) / int(item["Quantidade"]) #Preço unitario
+            NovoPreco = PrecoUnitario * Qtde
+            QuantidadeLabel.configure(text = f"Quantidade: {Qtde}")
+
+            #ATUALIZA O DICIONARIO
+            # Atualiza dicionário também!
+            self.itens_carrinho[indice]["Quantidade"] = Qtde
+            self.itens_carrinho[indice]["Preco"] = round(NovoPreco, 2)
+
+            PrecoLabel.configure(text = f"R$ {self.itens_carrinho[indice]['Preco']:.2f}")
+
+            print(self.itens_carrinho[indice])
+
+            self.valor_total()
+
+        QuantidadeCB.configure(command=lambda value=QuantidadeCB.get(): QuantidadeAlterada(value))
+
+        #ARMAZENA OS DADOS
+        self.frames_carrinho.append(item_frame)
+
+    def abrir_carrinho(self):
+
+        self.FrameCarrinho = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="#5424A2",border_color="#F9F5FF",border_width=0,corner_radius=0)
+        self.FrameCarrinho.place(x = 0 , y = 60)
+
+        #CRIANDO FRAME PRINCIPAL
+        self.CarrinhoFrame = ctk.CTkFrame(self.FrameCarrinho, width=805, height=805, fg_color="#F9F5FF",border_color="#F9F5FF",border_width=8,corner_radius=15)
+        self.CarrinhoFrame.place(x = 50, y = 20)
+
+        #Adicionando Barra de Rolagem
+        self.CanvasCarrinho = ctk.CTkCanvas(self.CarrinhoFrame,bg = "#F9F5FF",highlightthickness=0,width = 990, height = 990, )
+        BarraRolagem = ctk.CTkScrollbar(self.CarrinhoFrame,orientation="vertical",command=self.CanvasCarrinho.yview,height=800,bg_color="#F9F5FF")
+        self.Frame_Rolavel = ctk.CTkFrame(self.CanvasCarrinho,fg_color="#F9F5FF",width=1000,height=2820,corner_radius=0)
+        BarraRolagem.bind("<Configure>",lambda e: self.CanvasCarrinho.configure(scrollregion=self.CanvasCarrinho.bbox("all")))
+        self.CanvasCarrinho.create_window((570,565), window=self.Frame_Rolavel)
+        self.CanvasCarrinho.configure(yscrollcommand=BarraRolagem.set)
+        self.CanvasCarrinho.place(x = 5, y = 5)
+        BarraRolagem.place(x = 780, y= 2)        
+
+        #Criar os itens em cada frame no carrinho
+        for i,item in enumerate(self.itens_carrinho):
+            y = 10 + i * 200
+            self.criar_item_carrinho(self.Frame_Rolavel,item,y,i)  
+
+        #FRAME DE FINALIZAR COMPRA:
+        self.FinalizarFrame = ctk.CTkFrame(self.FrameCarrinho, width=400, height=400, fg_color="#F9F5FF",border_color="#F9F5FF",border_width=8,corner_radius=15)
+        self.FinalizarFrame.place(x = 1000 , y = 200)
+
+        TipoPagementoLista = ["Dinheiro","Catão de Crédito","Cartão de Débito","Pix","Boleto"]
+        self.TipoPagamentoCB = ctk.CTkComboBox (self.FinalizarFrame,corner_radius=5,fg_color="WHITE",bg_color="#5424A2",border_width=3,text_color="BLACK",values=TipoPagementoLista,font=("Georgia",18),width=250,height=40) #Criando ComboBox
+        self.TipoPagamentoCB.place(x = 70, y =100)
+        self.TipoPagamentoCB.set("Tipo de Pagemento")
+        self.TipoPagamentoCB.bind("<Key>",self.bloquear_tudo_exceto_setas)
+
+        FinalizarButton = ctk.CTkButton(self.FinalizarFrame,text = "FINALIZAR COMPRA",font= ("Georgia",24),width=230,height= 50,fg_color="#1DDB50",command=self.finalizar_compra)
+        FinalizarButton.place(x = 70, y = 220 )
+
+        self.PrecoTotalLabel = ctk.CTkLabel(self.FinalizarFrame,text= f"R$ " ,font= ("Georgia",28),fg_color = "#F9F5FF", text_color = "BLACK")
+        self.PrecoTotalLabel.place( x = 70, y = 170)
+
+        VoltarButton = ctk.CTkButton(self.FinalizarFrame,text = "VOLTAR",font= ("Georgia",24),width=250,height=50,command=self.voltar)
+        VoltarButton.place(x = 70, y = 300)
+
+        self.valor_total()
+
+        print(f"Carrinho {self.itens_carrinho}")
+
+        print(f"Frame: {self.frames_carrinho}")
+
     def ver_mais_peca(self, peca):
+
+        # Limpa tela anterior, se existir
+        try:
+            self.SoloFrame.destroy()
+        except:
+            pass
+        try:
+            self.FrameCarrinho.destroy()
+        except:
+            pass
+    
 
         #RECEBENDO VALORES DA PEÇA:
         Descricao, Preco, Imagem_Bytes, TipoPeca, QtdeEstoque, Fornecedor, CodPeca, CodFornecedor = peca
 
-        #FRAMES:
-        SoloFrame = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="#F9F5FF",corner_radius=0)  
-        SoloFrame.place(x = 0, y = 60)
+        #INICIALIZANDO VALOR E QUNAITDADE:
+        self.qtde_compra_atual = 1
+        self.preco_total_atual = float(peca[1]) #PREÇO UNITARIO
 
-        InformacoesFrame = ctk.CTkFrame(SoloFrame, width= 500, height= 750, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=6)
+        #FRAMES:
+        self.SoloFrame = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="#F9F5FF",corner_radius=0)  
+        self.SoloFrame.place(x = 0, y = 60)
+
+        InformacoesFrame = ctk.CTkFrame(self.SoloFrame, width= 500, height= 750, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=6)
         InformacoesFrame.place(x = 1020, y = 15)
-        ImagemFrame = ctk.CTkFrame(SoloFrame, width= 455, height= 455, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=0)
+        ImagemFrame = ctk.CTkFrame(self.SoloFrame, width= 455, height= 455, fg_color="White",border_width=2,border_color="#CCCCCC",corner_radius=0)
         ImagemFrame.place(x = 450, y = 15)
-        SugeridosFrame = ctk.CTkFrame(SoloFrame, width= 960, height= 280, fg_color="#F9F5FF",border_width=0,border_color="#CCCCCC",corner_radius=6)
+        SugeridosFrame = ctk.CTkFrame(self.SoloFrame, width= 960, height= 280, fg_color="#F9F5FF",border_width=0,border_color="#CCCCCC",corner_radius=6)
         SugeridosFrame.place(x = 30, y = 485 )
 
         #IMAGEM:
@@ -319,27 +621,37 @@ class TelaPrincipal:
 
         #Botão de voltar
         def voltar():
-            SoloFrame.destroy()
+            self.SoloFrame.destroy()
         self.IconVoltar = CTkImage(light_image= Image.open("icons/XRoxo.png"),size = (50, 50)) 
-        self.VoltarButton =  ctk.CTkButton(SoloFrame,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#F9F5FF",border_color="WHITE",anchor="w",  border_width=0 , command=voltar)
+        self.VoltarButton =  ctk.CTkButton(self.SoloFrame,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#F9F5FF",border_color="WHITE",anchor="w",  border_width=0 , command=voltar)
         self.VoltarButton.place(x = 2 , y = 2)
 
         #Botão de Comprar
         ComprarButton =  ctk.CTkButton(InformacoesFrame,text = "COMPRAR AGORA ",font= ("Georgia",25),image=self.IconSacola,compound="left",width=30,corner_radius=6,fg_color="#0CF048",border_color="WHITE",anchor="w",  border_width=0 , text_color="WHITE")
         ComprarButton.place(x = 105 , y = 350)
+
+
         #Botão de Carrinho
-        CarrinhoButton =  ctk.CTkButton(InformacoesFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",25),image=self.IconCarrinho,compound="left",width=30,corner_radius=6,fg_color="#5A70FF",border_color="WHITE",anchor="center",  border_width=0 , text_color="WHITE")
+        CarrinhoButton =  ctk.CTkButton(InformacoesFrame,text = "ADICIONAR AO CARRINHO",font= ("Georgia",25),image=self.IconCarrinho,compound="left",width=30,corner_radius=6,fg_color="#5A70FF",border_color="WHITE",anchor="center",  border_width=0 , text_color="WHITE",
+                    command= lambda: self.AdicionarCarrinho(Descricao,float(Preco),Imagem_Bytes,TipoPeca,Fornecedor,CodPeca,CodFornecedor,QtdeEstoque,
+                    getattr(self, "qtde_compra_atual", 1), getattr(self, "preco_total_atual", float(Preco)) ))
         CarrinhoButton.place(x = 55 , y = 430)
+
+
 
 
         #COMBOX:
         def selecionado_quantidade(event): 
             QtdeCompra = QuantidadeCB.get() #VARIAVEL RECEBENDO O VALOR DA COMBO BOX
+            self.qtde_compra_atual = int(QtdeCompra)
+
             print("Selecionado {}".format(QtdeCompra)) #PRINT DE CONFIRMAÇÃO APENAS
-            PrecoQtde = float(Preco) * float(QtdeCompra)
-            PrecoLabel.configure(text = f"R$ {PrecoQtde:.2f}")
+           
+            self.preco_total_atual = float(Preco) * self.qtde_compra_atual 
+
+            PrecoLabel.configure(text = f"R$ {self.preco_total_atual:.2f}")
             QuantidadeCB.set(f"Quantidade: {QtdeCompra}")
-            print(PrecoQtde)
+            print(self.preco_total_atual)
             self.FocusIvisivelEntry.focus()
             
         def bloquear_tudo_exceto_setas(event):
@@ -409,7 +721,6 @@ class TelaPrincipal:
             
 
             x = x + 245
-
 
     def create_produto_frame(self,parent_frame):
 
@@ -534,7 +845,15 @@ class TelaPrincipal:
         if self.pagina_atual >= total_paginas - 1:
             ProximoButton.configure(state="disabled")
 
-
+    def voltar(self):
+        try:
+            self.SoloFrame.destroy()
+        except:
+            pass
+        try:
+            self.FrameCarrinho.destroy()
+        except:
+            pass
 
     def contador_pagina(self):
         def bloquear_tudo_exceto_setas(event):
@@ -545,7 +864,6 @@ class TelaPrincipal:
         QtdePaginaEntry.insert(0, self.pagina_atual)
         QtdePaginaEntry.bind("<Key>",bloquear_tudo_exceto_setas)
             
-
     def pagina_proxima(self):
    
         self.pagina_atual += 1
@@ -596,16 +914,58 @@ class TelaPrincipal:
         self.create_produto_frame(self.Rolavel_Frame)
 
     def click_inicio(self):
+        try:
+            self.SoloFrame.destroy()
+        except:
+            pass
+        try:
+            self.FrameCarrinho.destroy()
+        except:
+            pass
         self.Pesquisa = ""
         self.create_produto_frame(self.Rolavel_Frame)
+
+
+    def Selecionado_Categoria(self):
+        Categoria = self.CategoriaCB.get()
+        self.Pesquisa = Categoria
+        self.create_produto_frame(self.Rolavel_Frame)
+        self.CategoriaCB.set(f"{Categoria}")
+        # self.CategoriasFrame.destroy()
+
+    def click_categorias(self):
+
+        self.CategoriasFrame = ctk.CTkFrame(self.root, fg_color="#5224A2", width=300, height=100)
+        self.CategoriasFrame.place(relx = 0.5, rely = 0.5, anchor = "center")
+
+
+        def voltar():
+            self.CategoriasFrame.destroy()
+        self.IconVoltar = CTkImage(light_image= Image.open("icons/X.png"),size = (25, 25)) 
+        self.VoltarButton =  ctk.CTkButton(self.CategoriasFrame,text = "",font= ("Georgia",14),image=self.IconVoltar,width=30,corner_radius=2,fg_color="#5424A2",border_color="WHITE",anchor="w",  border_width=0 , command=voltar)
+        self.VoltarButton.place(x = 2 , y = 2)
+
+        self.CategoriaTB = selecionar_tipopeca() #RECEBENDO FUNÇÃO DO CRUD DE BUSCAR TODOS OS TIPOS DE PEÇA
+        self.TipoPecaLista = [Categoria[0] for Categoria in self.CategoriaTB] #LISTA
+        self.CategoriaCB = ctk.CTkComboBox (self.CategoriasFrame,values= self.TipoPecaLista, width=210,height=50,corner_radius=4,font= ("Georgia",20)) #CRIANDO COMBO BOX
+        self.CategoriaCB.place(x = 50,y = 25)
+        self.CategoriaCB.set("Categorias") #FRASE DO FRONT END INICIAL
+        self.CategoriaCB.configure(command=lambda _: self.Selecionado_Categoria() )
+        self.CategoriaCB.bind("<Key>", self.bloquear_tudo_exceto_setas)
+
+        
+
+
+
+
+
+
 
     def favoritar(self, botao, estado):
         estado[0] = not estado[0]
         nova_img = self.IconCoracaoCheio_Produto if estado[0] else self.IconCoracaoVazio_Produto
         botao.configure(image=nova_img)
 
-
-            
 
 
 if __name__ == "__main__":

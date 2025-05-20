@@ -324,7 +324,6 @@ class PECA:
         self.IconLixo = self.IconCarrinho = CTkImage(light_image= Image.open("icons/Lixo.png"),size = (25, 25))
 
 
-
         #LISTAS:
         #LISTA COM OS ITEMS:
         self.itens_carrinho = []
@@ -725,12 +724,12 @@ class PECA:
         return selecionados
     
     def valor_total(self):
+        valor_total = 0 
         selecionados = self.get_itens_selecionados()
         if not selecionados:
-            messagebox.showerror("Error","Valor Inválido!")
+            self.PrecoTotalLabel.configure(text = f"R$ {valor_total:.2f}")
             return
-        
-        valor_total = 0 
+
         for i,item in enumerate(selecionados):
             valor_total += item["Preco"]
 
@@ -787,7 +786,6 @@ class PECA:
         itens_texto = "\n".join(f"- {item['Descricao']} (Qtd: {item['Quantidade']})" for item in selecionados)
         mensagem = f"{len(selecionados)} item(s) finalizado(s) com sucesso!\n\nItens comprados:\n{itens_texto}"
         messagebox.showinfo("Compra", mensagem)
-        self.reset()
 
 
 
@@ -858,7 +856,6 @@ class PECA:
         else:
             messagebox.showerror("Error","Peça não encontrada")
             return #ENCERRA A FUNÇÃO
-
     
         QuantidadeCarrinho = self.QuantidadeCB.get()
         PrecoCarinho = self.PrecoQtde
@@ -885,6 +882,7 @@ class PECA:
         messagebox.showinfo("Success","Adicionado no carrinho com sucesso")
         self.limparCampos()
 
+        #BLOQUANDO CLIENTE
         self.NomeEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
         self.CPFEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
         self.TelefoneEntry.bind("<Key>", self.bloquear_tudo_exceto_setas)
@@ -897,7 +895,7 @@ class PECA:
         self.ListarClienteButton.configure(state = "disabled")
         self.limparClienteButton.configure(state = "disabled")
 
-        #TABELA
+        #LIMPANDO TABELA
         conn = get_connection()
         cursor = conn.cursor()
         for linha in self.tabelaCliente.get_children():
