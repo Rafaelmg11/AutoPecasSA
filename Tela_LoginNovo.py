@@ -73,6 +73,9 @@ class Tela_Login:
             if VerifyLogin:
                 if "USER" in usuario:
                     # Oculta a janela principal
+                    UsuarioEntry.delete(0, ctk.END)
+                    SenhaEntry.delete(0, ctk.END)
+
                     self.root.withdraw()
 
                     # Cria uma nova janela Tkinter para o cadastro de peca
@@ -89,6 +92,8 @@ class Tela_Login:
 
                 elif "ADM" in usuario:
                     # Oculta a janela principal
+                    UsuarioEntry.delete(0, ctk.END)
+                    SenhaEntry.delete(0, ctk.END)
                     self.root.withdraw()
                     # Cria uma nova janela Tkinter para o cadastro de peca
                     ctk.set_appearance_mode("light")
@@ -103,6 +108,8 @@ class Tela_Login:
 
                 else:
                     # Oculta a janela principal
+                    UsuarioEntry.delete(0, ctk.END)
+                    SenhaEntry.delete(0, ctk.END)
                     self.root.withdraw()
                     # Cria uma nova janela Tkinter para o cadastro de peca
                     ctk.set_appearance_mode("light")

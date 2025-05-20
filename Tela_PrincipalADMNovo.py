@@ -20,7 +20,7 @@ class Menu:
         self.root = root
         self.main_window = main_window
         self.root.title("Tela Principal")
-        self.root.geometry("740x750")
+        self.root.geometry("740x780")
         self.root.configure(fg_color="#5424A2")  # Cor de fundo da janela principal
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
         
@@ -42,6 +42,9 @@ class Menu:
 
         UsuarioButton = ctk.CTkButton(self.root, text="USUARIOS",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_usuario)
         UsuarioButton.place(x = 190, y = 670)
+
+        VoltarButton = ctk.CTkButton(self.root, text="VOLTAR",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.voltar)
+        VoltarButton.place(x = 190, y = 730 )
 
         #LOGO:
         # CARREGAR IMAGEM
@@ -170,6 +173,12 @@ class Menu:
         
         root_usuario.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
         #root_cliente.mainloop()  # Inicia a execução da janela do cliente
+
+    def voltar(self):
+        self.root.destroy()  # Fecha a janela de cadastro de clientes, liberando recursos
+        self.main_window.deiconify()  # Reexibe a janela principal
+
+
 
 
 

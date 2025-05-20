@@ -21,19 +21,19 @@ class Loja:
         self.root.title("Tela Principal")
         self.root.configure(fg_color = "#F9F5FF") #Cor de fundo da self.root
 
-        # self.usuario = usuario
-        # self.senha = senha
-        # print("Usuario:",usuario)
-        # print("Senha:",senha)
+        self.usuario = usuario
+        self.senha = senha
+        print("Usuario:",usuario)
+        print("Senha:",senha)
 
-        # conn = get_connection()
-        # cursor = conn.cursor()
-        # cursor.execute("SELECT cod_usuario,cpf_usuario,cod_cliente FROM usuario WHERE status = True and nome_usuario = %s and senha = %s",(self.usuario,self.senha,))
-        # usuarioconsulta = cursor.fetchone()
-        # cursor.close()
-        # conn.close()
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT cod_usuario,cpf_usuario,cod_cliente FROM usuario WHERE status = True and nome_usuario = %s and senha = %s",(self.usuario,self.senha,))
+        usuarioconsulta = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
-        # self.cod_usuario,self.cpf_usuario,self.cod_cliente = usuarioconsulta
+        self.cod_usuario,self.cpf_usuario,self.cod_cliente = usuarioconsulta
 
             
 
@@ -77,6 +77,11 @@ class Loja:
         if event.keysym in ["Left", "Right", "Up", "Down"]:
             return  # deixa passar
         return "break"  # bloqueia tudo o resto
+    
+    def voltar(self):
+        self.root.destroy()  # Fecha a janela de cadastro de clientes, liberando recursos
+        self.main_window.deiconify()  # Reexibe a janela principal
+
 
 
     def click_usuario(self):
@@ -89,6 +94,10 @@ class Loja:
 
         Usuario_Label = ctk.CTkLabel(User_Frame,text = self.usuario,font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         Usuario_Label.place(x = 80, y = 60)
+
+        #BOTÃO DE VOLTAR:
+        VoltarButton = ctk.CTkButton(User_Frame,text = "SAIR",font= ("Georgia",24),compound="top",width=0,corner_radius=0,fg_color="#5424A2",text_color="WHITE",command=self.voltar)
+        VoltarButton.place(x = 30,y = 800)
 
     
         #ICONS
@@ -151,6 +160,7 @@ class Loja:
 
 
 
+
         Frame_categorias = ctk.CTkFrame(self.root, width=960, height=110, fg_color="#5424A2")  
         Frame_categorias.place (x = 290,y = 120)
 
@@ -195,6 +205,7 @@ class Loja:
 
 
         #BOTÕES:
+
         #BOTÃO DE INICIO
         InicioButton = ctk.CTkButton(self.Freme_menu,text = "",font= ("Georgia",16),compound="top",width=0,image=self.IconIncioPrincipal,corner_radius=0,fg_color="#5424A2",command=self.click_inicio)
         InicioButton.place(x = 150,y = 0)
@@ -986,7 +997,6 @@ class Loja:
             pass
         self.Pesquisa = ""
         self.create_produto_frame(self.Rolavel_Frame)
-
 
     def Selecionado_Categoria(self):
         Categoria = self.CategoriaCB.get()
