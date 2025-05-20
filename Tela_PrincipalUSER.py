@@ -12,11 +12,11 @@ import customtkinter as ctk
 
 
 
-class Menu:
+class MenuUser:
 
-    def __init__(self, root):#,main_window
+    def __init__(self, root, main_window = None):
         self.root = root
-        # self.main_window = main_window
+        self.main_window = main_window
         self.root.title("Tela Principal")
         self.root.geometry("740x730")
         self.root.configure(fg_color="#5424A2")  # Cor de fundo da janela principal
@@ -133,5 +133,5 @@ class Menu:
 
 if __name__ == "__main__":
     root = ctk.CTk()
-    app = Menu(root)
+    app = MenuUser(root)
     root.mainloop()

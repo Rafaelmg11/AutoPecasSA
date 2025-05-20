@@ -101,8 +101,10 @@ def create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_byt
     query = "INSERT INTO funcionario (nome_func,telefone_func,email_func,cpf_func,endereco_func,cargo,salario,imagem,cod_endereco) VALUES ( %s, %s , %s, %s, %s, %s, %s,%s,%s)"
     cursor.execute(query,(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco))
     conn.commit ()
+    Cod_Funcionario = cursor.lastrowid
     cursor.close()
     conn.close()
+    return Cod_Funcionario
 
 def update_funcionario(Cod_Funcionario,Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco):
     conn = get_connection()
@@ -240,7 +242,7 @@ def create_endereco_fornecedor(CEP,Estado,Cidade,Bairro,Logradouro,Numero):
 
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-#FUNCÃO FORNECEDOR:
+#FUNCÃO USUARIO
 
 def create_usuario(Cod_Cliente,CPF,Email,NomeUsuario,Senha,Telefone):
     try:
@@ -248,6 +250,20 @@ def create_usuario(Cod_Cliente,CPF,Email,NomeUsuario,Senha,Telefone):
         cursor = conn.cursor()
         query = "INSERT INTO usuario (cod_funcionario,cod_cliente,cpf_usuario,email,nome_usuario,senha,telefone_usuario) VALUES (%s,%s,%s,%s,%s,%s,%s)"
         cursor.execute(query,(None,Cod_Cliente,CPF,Email,NomeUsuario,Senha,Telefone) )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        conn = get_connection()
+    except Exception as e: 
+        print("Erro ao inserir usuário:", e)
+
+
+def create_usuarioFuncionario(Cod_Funcionario,CPF,Email,NomeUsuario,Senha,Telefone):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        query = "INSERT INTO usuario (cod_funcionario,cod_cliente,cpf_usuario,email,nome_usuario,senha,telefone_usuario) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        cursor.execute(query,(Cod_Funcionario,None,CPF,Email,NomeUsuario,Senha,Telefone) )
         conn.commit()
         cursor.close()
         conn.close()

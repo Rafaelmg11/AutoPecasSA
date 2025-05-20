@@ -4,7 +4,7 @@ from tkinter import messagebox,filedialog #filedialog abre janelas de seleção 
 from tkinter import ttk
 from PIL import Image, ImageTk #Image:abrir,redimensionar e manipular, ImageTk: converter em widgets para exibição 
 import io #Fluxo de bytes (transforma imagem em bytes)
-from Crud_novo import get_connection,selecionar_cargo,create_funcionario,update_funcionario,delete_funcionario
+from Crud_novo import get_connection,selecionar_cargo,create_funcionario,update_funcionario,delete_funcionario,create_usuarioFuncionario
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
 from Endereco_Funcionario import ENDERECO
@@ -18,7 +18,7 @@ class FUNCIONARIO:
         self.callback = callback
         ctk.set_appearance_mode("light")
         # self.root.title("CADASTRO DE FUNCIONARIOS") #Titulo
-        self.root.geometry("860x600") #Tamanho da janela
+        self.root.geometry("860x650") #Tamanho da janela
         self.root.configure(fg_color = "#5424A2") #Cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
@@ -123,7 +123,7 @@ class FUNCIONARIO:
         frame_img.place(x= 20, y = 80)
 
         frame_tabela = ctk.CTkFrame (self.root,width= 855,height = 200, fg_color= "#5424A2")
-        frame_tabela.place(x = 5, y = 340)
+        frame_tabela.place(x = 5, y = 390)
 
         #IMAGEM:
         imagem_label = ctk.CTkLabel(frame_img,text = "",font=("Georgia",14))
@@ -244,12 +244,22 @@ class FUNCIONARIO:
             Salario = SalarioEntry.get()
             CodEndereco = self.cod_endereco
 
+            Usuario = UsuarioEntry.get()
+            Senha = SenhaEntry.get()
+
             if Cargo == "Selecione Um Cargo":
                 messagebox.showerror("Error","Cargo Inválido")
             else:
 
-                if Nome and Telefone and Email and CPF and Endereco and Cargo and Salario and CodEndereco:
-                    create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco)
+                if Nome and Telefone and Email and CPF and Endereco and Cargo and Salario and CodEndereco and Usuario and Senha:
+                    if not "ADM" in Usuario or not "USER" in Usuario:
+                        messagebox.showerror("Error","Usuario Invalido, deve conter 'ADM' ou 'USER'")
+                        return
+                    else:
+                        pass
+                    Cod_Funcionario = create_funcionario(Nome,Telefone,Email,CPF,Endereco,Cargo,Salario,imagem_bytes,CodEndereco)
+
+                    create_usuarioFuncionario(Cod_Funcionario,CPF,Email,Usuario,Senha,Telefone)
 
                     limparCampos()
 
@@ -318,14 +328,15 @@ class FUNCIONARIO:
                 cursor.execute("SELECT * FROM funcionario WHERE status = TRUE and cod_func=%s ",(Cod_Funcionario,)) 
                 funcionario_pesquisa = cursor.fetchone()
                 
-                
-                
                 # Verificando se o funcionario foi encontrado
                 if funcionario_pesquisa:  # SE FOI ENCONTRADO...
                     cursor.execute("SELECT cod_endereco FROM funcionario WHERE status = TRUE AND cod_func=%s",(Cod_Funcionario,))#SELECIONANDO O COD_ENDERECO
                     cod_endereco_consulta = cursor.fetchone()#RECEBENDO O COD_ENDERECO
                     delete_funcionario(Cod_Funcionario) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
                     cursor.execute("UPDATE endereco_funcionario SET status = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
+                    cursor.execute("SELECT cod_usuario FROM usuario WHERE status = TRUE AND cod_funcionario=%s",(Cod_Funcionario,))
+                    cod_usuario_consulta = cursor.fetchone()
+                    cursor.execute("UPDATE usuario SET status = FALSE WHERE cod_usuario = %s",(cod_usuario_consulta))
                     limparCampos()
                     conn.commit()
                     cursor.close()
@@ -457,6 +468,10 @@ class FUNCIONARIO:
             PesquisaEntry.delete(0, ctk.END)
             PesquisaEntry.focus()
             PesquisaTabelaEntry.delete(0, ctk.END)
+            UsuarioEntry.delete(0, ctk.END)
+            UsuarioEntry.focus()
+            SenhaEntry.delete(0, ctk.END)
+            SenhaEntry.focus()
             PesquisaTabelaEntry.focus()
             
             FocusIvisivelEntry.focus()
@@ -511,7 +526,8 @@ class FUNCIONARIO:
         EmailLabel =ctk.CTkLabel (self.root,text="Email: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         CodigoLabel =ctk.CTkLabel (self.root,text="Cod. Funcionario: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
         SalarioLabel = ctk.CTkLabel (self.root,text="Salario: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
-        # EnderecoLabel = ctk.CTkLabel (self.root,text="Endereco: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        UsuarioLabel =ctk.CTkLabel (self.root,text="Usuario: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        SenhaLabel =ctk.CTkLabel (self.root,text="Senha: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
 
         #POSICIONANDO LabelS:
         CargoLabel.place(x = 530, y = 120)
@@ -520,8 +536,9 @@ class FUNCIONARIO:
         TelefoneLabel.place(x= 170, y =160)
         EmailLabel.place(x = 170 , y = 200)
         SalarioLabel.place (x = 530, y = 160 )
-        # EnderecoLabel.place (x=530, y = 80)
         CodigoLabel.place(x = 530, y = 200 )
+        UsuarioLabel.place(x = 170, y = 240 )
+        SenhaLabel.place(x = 530, y = 240)
 
 
         #CRIANDO CAMPOS DE ENTRADAS:
@@ -537,6 +554,8 @@ class FUNCIONARIO:
         PesquisaEntry = ctk.CTkEntry(self.root,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Funcionário")
         PesquisaTabelaEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Pesquisa de Funcionário na Tabela")
         FocusIvisivelEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Focus")
+        UsuarioEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Nickname do usuario")
+        SenhaEntry = ctk.CTkEntry(self.root,width=207,font=("Georgia",14),placeholder_text = "Senha do usuario")
 
 
         #POSICIONA OS CAMPOS DE ENTRADAS:
@@ -547,8 +566,10 @@ class FUNCIONARIO:
         SalarioEntry.place(x = 640, y = 160)
         self.entry_endereco.place(x = 640 , y = 80)
         CodigoEntry.place(x = 700, y = 200)
-        PesquisaTabelaEntry.place(x = 265, y =315)
+        PesquisaTabelaEntry.place(x = 265, y =365)
         PesquisaEntry.place(x = 130,y = 25)
+        UsuarioEntry.place(x = 270,y = 240)
+        SenhaEntry.place(x = 640, y = 240)
         FocusIvisivelEntry.place(x = 330000000, y = 300000000)
 
         #TABELA:
@@ -591,15 +612,6 @@ class FUNCIONARIO:
         tabela.config(yscrollcommand=BarraRolamento.set)
         BarraRolamento.config(command=tabela.yview)
 
-        # #ICONS:
-        # iconCadastrar = CTkImage(light_image= Image.open("icons/IconCadastrar.png"),size = (20, 20))
-        # iconExcluir = CTkImage(light_image= Image.open("icons/IconExcluir.png"),size = (20, 20))
-        # iconImagem = CTkImage(light_image= Image.open("icons/IconImagem.png"),size= (20, 20))
-        # iconLista = CTkImage(light_image=Image.open("icons/IconLista.png"),size = (20, 20))
-        # iconLupa = CTkImage(light_image= Image.open("icons/IconLupa.png"),size = (20, 20))
-        # iconLupaLista = CTkImage(light_image= Image.open("icons/IconLupaLista.png"),size = (20, 20))
-        # iconVassoura = CTkImage(light_image=Image.open("icons/IconVassoura.png"),size = (20, 20))
-
 
         #BOTÕES:
         #BOTÃO DE ENDEREÇO
@@ -607,13 +619,13 @@ class FUNCIONARIO:
         EnderecoButton.place (x=525, y = 80)
         #BOTÃO DE CADASTRO
         CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=160, command=cadastrar_funcionario)
-        CadastrarButton.place(x =180 , y = 260)
+        CadastrarButton.place(x =180 , y = 310)
         #BOTÃO ALTERAR
         AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=160,command=alterar_funcionario)
-        AlterarButton.place(x = 370,y = 260)
+        AlterarButton.place(x = 370,y = 310)
         #BOTAO DE EXCLUIR
         ExcluirButton = ctk.CTkButton(self.root,text = "EXCLUIR",font= ("Georgia",14),width=160,command=excluir_funcionario)
-        ExcluirButton.place(x = 560, y = 260)
+        ExcluirButton.place(x = 560, y = 310)
         #BOTÃO DE LIMPAR
         limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=160,command=limparCampos)
         limparButton.place(x = 555, y = 25)
@@ -622,16 +634,16 @@ class FUNCIONARIO:
         botao_imagem.place(x= 16, y = 210)
         #BOTÃO DE PESQUISA NA TABELA
         PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela", command=pesquisa_tabela)
-        PesquisaTabelaButton.place(x = 100, y = 315)
+        PesquisaTabelaButton.place(x = 100, y = 365)
         #BOTAO DE PESQUISA
         PesquisarButton = ctk.CTkButton(self.root,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_funcionario)
         PesquisarButton.place(x = 20,y = 25)
         #BOTAO DE LISTAR
         ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_funcionario)
-        ListarButton.place(x = 630 , y = 315)
+        ListarButton.place(x = 630 , y = 365)
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=130, font=("Georgia", 16), command=voltar_para_principal) #AÇÃO PARA O BOTÃO
-        voltar_button.place(x=20, y=555)
+        voltar_button.place(x=20, y=605)
 
 
 

@@ -15,36 +15,39 @@ import customtkinter as ctk
 
 class Menu:
 
-    def __init__(self, root):#,main_window
+    def __init__(self, root,main_window = None):#,main_window
         self.root = root
-        # self.main_window = main_window
+        self.main_window = main_window
         self.root.title("Tela Principal")
-        self.root.geometry("740x730")
+        self.root.geometry("740x750")
         self.root.configure(fg_color="#5424A2")  # Cor de fundo da janela principal
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
         
         # ABRIR OUTRAS JANELAS
         PecaButton = ctk.CTkButton(self.root, text="PEÇA", width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_peca)
-        PecaButton.place(x=190,y=480)
+        PecaButton.place(x=190,y=430)
         
         ClienteButton = ctk.CTkButton(self.root, text="CLIENTE",  width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_cliente)
-        ClienteButton.place(x = 190, y = 600)
+        ClienteButton.place(x = 190, y = 550)
 
         FornecedorButton = ctk.CTkButton(self.root, text="FORNECEDOR",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_fornecedor)
-        FornecedorButton.place(x = 190, y = 420)
+        FornecedorButton.place(x = 190, y = 370)
 
         FuncionarioButton = ctk.CTkButton(self.root, text="FUNCIONARIO",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_funcionario)
-        FuncionarioButton.place(x = 190, y = 540)
+        FuncionarioButton.place(x = 190, y = 490)
 
         ComandaButton = ctk.CTkButton(self.root, text="COMANDA",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_comanda)
-        ComandaButton.place(x = 190, y = 660)
+        ComandaButton.place(x = 190, y = 610)
+
+        UsuarioButton = ctk.CTkButton(self.root, text="USUARIOS",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_usuario)
+        UsuarioButton.place(x = 190, y = 670)
 
         #LOGO:
         # CARREGAR IMAGEM
         self.Logo_pil = Image.open("icons/Logo.png") #Carrega a imagem da logo
         self.Logo = CTkImage(self.Logo_pil,size= (500 , 350)) #Converte imagem 
         LogoLabel = ctk.CTkLabel(self.root,text = "",image=self.Logo,font=("Georgia",14))
-        LogoLabel.place(x = 120, y = 50)
+        LogoLabel.place(x = 120, y = 0)
 
 
     def abrir_peca(self):
@@ -145,6 +148,26 @@ class Menu:
         app_comanda = COMANDA(root_comanda, self.root)  # Passa a referência da janela principal (self.root)
         
         root_comanda.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
+        #root_cliente.mainloop()  # Inicia a execução da janela do cliente
+
+    def abrir_usuario(self):
+
+        # Oculta a janela principal
+        self.root.withdraw()
+
+        # Cria uma nova janela Tkinter para o cadastro de peca
+        
+        ctk.set_appearance_mode("light")
+          
+  
+        root_usuario = ctk.CTkToplevel(self.root)
+        root_usuario.title("ABA DE USUARIOS") #Titulo
+        root_usuario.geometry("850x570") #Tamanho da janela
+        # Aplica o estilo na nova janela
+        style_combobox(root_usuario)
+        app_comanda = COMANDA(root_usuario, self.root)  # Passa a referência da janela principal (self.root)
+        
+        root_usuario.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
         #root_cliente.mainloop()  # Inicia a execução da janela do cliente
 
 

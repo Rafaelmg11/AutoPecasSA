@@ -4,7 +4,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from Crud_novo import get_connection,create_cliente,create_usuario
 from customtkinter import CTkImage
-from Endereco_Cliente import ENDERECO_CLIENTE
+from Endereco_Cadastrar import ENDERECO_CLIENTE
 from PIL import Image
 
 class CADASTRO:
@@ -140,7 +140,7 @@ class CADASTRO:
 
 
 
-            if Nome and Telefone and Email and CPF and Endereco and CodEndereco:
+            if Nome and Telefone and Email and CPF and Endereco and CodEndereco and NomeUsuario and Senha:
                 Cod_Cliente = create_cliente(Nome,Telefone,Email,CPF,Endereco,CodEndereco)
 
 
@@ -148,7 +148,10 @@ class CADASTRO:
 
                 create_usuario(Cod_Cliente,CPF,Email,NomeUsuario,Senha,Telefone)
 
-                messagebox.showinfo("Success","Cliente cadastrado com sucesso!")
+                messagebox.showinfo("Success","Cadastrado com sucesso!")
+                self.root.destroy()
+                self.main_window.deiconify()
+                
             else:
                 messagebox.showerror("Error","Todos os campos são obrigatórios!")
 
@@ -217,10 +220,16 @@ class CADASTRO:
         EnderecoButton.place(x = 30, y = 240)
         #BOTÃO DE CADASTRO
         CadastrarButton = ctk.CTkButton (self.root,text = "REALIZAR CADASTRO",font=("Georgia",24),width=200,height= 50,fg_color="#40D468",corner_radius=4, command=cadastrar_cliente)
-        CadastrarButton.place(x =130 , y = 580)
+        CadastrarButton.place(x =125 , y = 580)
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR",width=260,height= 50, font=("Georgia", 24), command=voltar_para_principal) #AÇÃO PARA O BOTÃO
-        voltar_button.place(x=130, y=650)
+        voltar_button.place(x=125, y=650)
+
+    
+    def reabrir_janela(self):
+        self.root.withdraw()
+        self.root.deiconify()  # Reexibe a janela principal
+
 
 
 

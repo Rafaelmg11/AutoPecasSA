@@ -2,7 +2,7 @@ import customtkinter as ctk
 import mysql.connector
 from tkinter import messagebox
 from tkinter import ttk
-from Crud_novo import get_connection,create_cliente,update_cliente,delete_cliente
+from Crud_novo import get_connection,create_cliente,update_cliente,delete_cliente,create_usuario
 from customtkinter import CTkImage
 from Endereco_Cliente import ENDERECO_CLIENTE
 
@@ -14,7 +14,7 @@ class CLIENTE:
         self.callback = callback
         ctk.set_appearance_mode("light")
         # self.root.title("CADASTRO DE CLIENTES") #Titulo
-        self.root.geometry("750x570") #Tamanho da janela
+        self.root.geometry("750x610") #Tamanho da janela
         self.root.configure(fg_color = "#5424A2") #Cor de fundo da janela
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
 
@@ -104,7 +104,7 @@ class CLIENTE:
 
         #Criando frames
         frame_tabela = ctk.CTkFrame (self.root,width= 710,height = 200, fg_color= "#5424A2")
-        frame_tabela.place(x = 20, y = 310)
+        frame_tabela.place(x = 20, y = 350)
 
 
         def reabrir_janela(self):
@@ -159,10 +159,16 @@ class CLIENTE:
             Email = EmailEntry.get()
             Endereco =  self.entry_endereco.get()
             CodEndereco = self.cod_endereco
+            Usuario = UsuarioEntry.get()
+            Senha = SenhaEntry.get()
 
 
-            if Nome and Telefone and Email and CPF and Endereco and CodEndereco:
-                create_cliente(Nome,Telefone,Email,CPF,Endereco,CodEndereco)
+            if Nome and Telefone and Email and CPF and Endereco and CodEndereco and Usuario and Senha:
+                Cod_Cliente = create_cliente(Nome,Telefone,Email,CPF,Endereco,CodEndereco)
+
+                print("Cod_Cliente gerado:", Cod_Cliente)
+
+                create_usuario(Cod_Cliente,CPF,Email,Usuario,Senha,Telefone)
 
                 limparCampos()
 
@@ -231,6 +237,9 @@ class CLIENTE:
                     cod_endereco_consulta = cursor.fetchone()#RECEBENDO O COD_ENDERECO
                     delete_cliente(cod_cliente) #PUXANDO FUNÇÃO DO CRUD E PASSANDO A VARIAVEL
                     cursor.execute("UPDATE endereco_cliente SET status = FALSE WHERE cod_endereco = %s",(cod_endereco_consulta))
+                    cursor.execute("SELECT cod_usuario FROM usuario WHERE status = TRUE AND cod_cliente=%s",(cod_cliente,))
+                    cod_usuario_consulta = cursor.fetchone()
+                    cursor.execute("UPDATE usuario SET status = FALSE WHERE cod_usuario = %s",(cod_usuario_consulta))
                     limparCampos()
                     conn.commit()
                     cursor.close()
@@ -345,6 +354,10 @@ class CLIENTE:
             PesquisaEntry.delete(0, ctk.END)
             PesquisaEntry.focus()
             PesquisaTabelaEntry.delete(0, ctk.END)
+            UsuarioEntry.delete(0, ctk.END)
+            UsuarioEntry.focus()
+            SenhaEntry.delete(0, ctk.END)
+            SenhaEntry.focus()
             PesquisaTabelaEntry.focus()
             
             FocusIvisivelEntry.focus()
@@ -373,6 +386,8 @@ class CLIENTE:
         TelefoneLabel =ctk.CTkLabel(self.root,text="Telefone: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         EmailLabel =ctk.CTkLabel (self.root,text="Email: ",font=("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
         CodigoLabel =ctk.CTkLabel (self.root,text="Cod. cliente: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        UsuarioLabel =ctk.CTkLabel (self.root,text="Usuario: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
+        SenhaLabel =ctk.CTkLabel (self.root,text="Senha: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE")
      
 
         #POSICIONANDO LabelS:
@@ -381,6 +396,9 @@ class CLIENTE:
         TelefoneLabel.place(x= 30, y =160)
         EmailLabel.place(x = 370 , y = 80)
         CodigoLabel.place (x = 370, y = 160 )
+        UsuarioLabel.place(x = 30, y = 200 )
+        SenhaLabel.place(x = 370, y = 200)
+
 
 
         #CRIANDO CAMPOS DE ENTRADAS:
@@ -394,6 +412,8 @@ class CLIENTE:
         CodigoEntry = ctk.CTkEntry(self.root,width=177,font=("Georgia",14),placeholder_text = "Codigo do Cliente")
         PesquisaEntry = ctk.CTkEntry(self.root,width=400,font= ("Georgia",14),placeholder_text = "Pesquisa de Cliente")
         PesquisaTabelaEntry = ctk.CTkEntry(self.root,width=380,font= ("Georgia",14),placeholder_text = "Pesquisa de Cliente na Tabela")
+        UsuarioEntry = ctk.CTkEntry(self.root,width=207,font= ("Georgia",14),placeholder_text = "Usuario do Cliente")
+        SenhaEntry = ctk.CTkEntry(self.root,width=207,font= ("Georgia",14),placeholder_text = "Senha do Cliente")
         FocusIvisivelEntry = ctk.CTkEntry(self.root,width=350,font= ("Georgia",14),placeholder_text = "Focus")
 
 
@@ -404,8 +424,10 @@ class CLIENTE:
         EmailEntry.place(x = 510, y =80)
         self.entry_endereco.place(x = 510 ,y = 120)
         CodigoEntry.place(x = 540, y = 160)
-        PesquisaTabelaEntry.place(x = 175, y =285)
+        PesquisaTabelaEntry.place(x = 175, y =325)
         PesquisaEntry.place(x = 130,y = 25)
+        UsuarioEntry.place(x = 140, y = 200 )
+        SenhaEntry.place(x = 510, y = 200)
         FocusIvisivelEntry.place(x = 330000000, y = 300000000)
 
         #TABELA:
@@ -450,28 +472,28 @@ class CLIENTE:
         EnderecoButton.place(x = 370, y = 120)
         #BOTÃO DE CADASTRO
         CadastrarButton = ctk.CTkButton (self.root,text = "CADASTRAR",font= ("Georgia",14),width=160, command=cadastrar_cliente)
-        CadastrarButton.place(x =100 , y = 220)
+        CadastrarButton.place(x =100 , y = 260)
         #BOTÃO ALTERAR
         AlterarButton = ctk.CTkButton(self.root,text = "ALTERAR",font= ("Georgia",14),width=160,command=alterar_cliente)
-        AlterarButton.place(x = 295, y = 220)
+        AlterarButton.place(x = 295, y = 260)
         #BOTAO DE EXCLUIR
         ExcluirButton = ctk.CTkButton(self.root,text = "EXCLUIR",font= ("Georgia",14),width=160,command=excluir_cliente)
-        ExcluirButton.place(x = 490, y = 220)
+        ExcluirButton.place(x = 490, y = 260)
         #BOTÃO DE LIMPAR
         limparButton = ctk.CTkButton(self.root,text = "LIMPAR",font= ("Georgia",14),width=160,command=limparCampos)
         limparButton.place(x = 555, y = 25)
         #BOTÃO DE PESQUISA NA TABELA
         PesquisaTabelaButton = ctk.CTkButton(self.root, text="Pesquisar Tabela", command=pesquisa_tabela)
-        PesquisaTabelaButton.place(x = 24, y = 285)
+        PesquisaTabelaButton.place(x = 24, y = 325)
         #BOTAO DE PESQUISA
         PesquisarButton = ctk.CTkButton(self.root,text = "Pesquisar",font= ("Georgia",16),width=100,command=pesquisar_cliente)
         PesquisarButton.place(x = 20,y = 25)
         #BOTAO DE LISTAR
         ListarButton = ctk.CTkButton(self.root,text = "Listar",font= ("Georgia",16),width=147,command=listar_cliente)
-        ListarButton.place(x = 572 , y = 285)
+        ListarButton.place(x = 572 , y = 325)
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR", width=130, font=("Georgia", 16), command=voltar_para_principal) #AÇÃO PARA O BOTÃO
-        voltar_button.place(x=20, y=525)
+        voltar_button.place(x=20, y=565)
 
 
 
