@@ -82,6 +82,10 @@ class Loja:
         self.root.destroy()  # Fecha a janela de cadastro de clientes, liberando recursos
         self.main_window.deiconify()  # Reexibe a janela principal
 
+    def voltar_para_principal(self):
+        self.root.destroy()  # Fecha a janela de cadastro de clientes, liberando recursos
+        self.main_window.deiconify()  # Reexibe a janela principal
+
 
 
     def click_usuario(self):
@@ -96,7 +100,7 @@ class Loja:
         Usuario_Label.place(x = 80, y = 60)
 
         #BOTÃO DE VOLTAR:
-        VoltarButton = ctk.CTkButton(User_Frame,text = "SAIR",font= ("Georgia",24),compound="top",width=0,corner_radius=0,fg_color="#5424A2",text_color="WHITE",command=self.voltar)
+        VoltarButton = ctk.CTkButton(User_Frame,text = "SAIR",font= ("Georgia",24),compound="top",width=0,corner_radius=0,fg_color="#5424A2",text_color="WHITE",command=self.voltar_para_principal)
         VoltarButton.place(x = 30,y = 800)
 
     
@@ -458,6 +462,7 @@ class Loja:
 
         messagebox.showinfo("Success","Peça adicionada no carrinho com sucesso")
         print(item)
+
 
     def excluir_item_do_carrinho(self, indice):
         # Verificação adicional de segurança
@@ -1024,12 +1029,6 @@ class Loja:
         self.CategoriaCB.set("Categorias") #FRASE DO FRONT END INICIAL
         self.CategoriaCB.configure(command=lambda _: self.Selecionado_Categoria() )
         self.CategoriaCB.bind("<Key>", self.bloquear_tudo_exceto_setas)
-
-        
-
-
-
-
 
 
 

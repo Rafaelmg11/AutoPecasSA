@@ -29,15 +29,14 @@ class MenuUser:
         ClienteButton = ctk.CTkButton(self.root, text="CLIENTE",  width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_cliente)
         ClienteButton.place(x = 190, y = 540)
 
+        VoltarButton = ctk.CTkButton(self.root, text="VOLTAR",  width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.voltar_para_principal)
+        VoltarButton.place(x = 190, y = 660)
+
         FornecedorButton = ctk.CTkButton(self.root, text="FORNECEDOR",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_fornecedor)
         FornecedorButton.place(x = 190, y = 420)
 
         ComandaButton = ctk.CTkButton(self.root, text="COMANDA",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_comanda)
         ComandaButton.place(x = 190, y = 600)
-
-        # VoltarButton = ctk.CTkButton(self.root, text="VOLTAR",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.voltar)
-        # VoltarButton.place(x = 190, y = 780 )
-
 
         #LOGO:
         # CARREGAR IMAGEM
@@ -46,6 +45,10 @@ class MenuUser:
         LogoLabel = ctk.CTkLabel(self.root,text = "",image=self.Logo,font=("Georgia",14))
         LogoLabel.place(x = 120, y = 50)
 
+
+    def voltar_para_principal(self):
+        self.root.destroy()  # Fecha a janela de cadastro de clientes, liberando recursos
+        self.main_window.deiconify()  # Reexibe a janela principal
 
     def abrir_peca(self):
 

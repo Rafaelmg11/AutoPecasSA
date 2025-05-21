@@ -70,8 +70,6 @@ class PECA:
             self.root.quit()  # Encerra o loop de eventos da janela de cadastro
 
         def voltar_para_principal():
-            # Fechar a janela atual de cadastro de peças e voltar para a janela principal
-            # self.root.quit()  # Fecha a janela de cadastro de peças (destrói a instância)
             self.root.destroy()  # Fecha a janela de cadastro de peças, liberando recursos
             self.main_window.deiconify()  # Reexibe a janela principal
 
