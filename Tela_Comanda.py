@@ -125,7 +125,6 @@ class COMANDA:
         NomeFuncionarioLabel =ctk.CTkLabel(self.FuncionarioFrame,text= "Nome: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
         CPFFuncionarioLabel =ctk.CTkLabel(self.FuncionarioFrame,text= "CPF: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
         CodigoFuncionarioLabel =ctk.CTkLabel(self.FuncionarioFrame,text= "Cod: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
-        DataLabel =ctk.CTkLabel(self.FuncionarioFrame,text= "Data: ",font= ("Georgia",26),fg_color = "#5424A2", text_color = "WHITE")
 
 
 
@@ -145,7 +144,7 @@ class COMANDA:
         NomeFuncionarioLabel.place(x = 20, y = 80)
         CPFFuncionarioLabel.place(x = 20, y = 120)
         CodigoFuncionarioLabel.place(x = 20, y = 160)
-        DataLabel.place(x = 20 , y = 200)
+
 
         #CRIANDO CAMPOS DE ENTRADAS:
         self.DescricaoEntry = ctk.CTkEntry(self.PecaFrame,width=450,font=("Georgia",20),placeholder_text = "Descrição da Peça")
@@ -167,8 +166,6 @@ class COMANDA:
         self.NomeFuncionarioEntry = ctk.CTkEntry(self.FuncionarioFrame,width=300,font=("Georgia",20),placeholder_text = "Nome do Funcionario")
         self.CPFFUncionarioEntry = ctk.CTkEntry(self.FuncionarioFrame,width=250,font=("Georgia",20),placeholder_text = "CPF do Funcionario")
         self.CodigoFuncionarioEntry = ctk.CTkEntry(self.FuncionarioFrame,width=250,font=("Georgia",20),placeholder_text = "Codigo do Funcionario")
-        self.DataEntry = ctk.CTkEntry(self.FuncionarioFrame,width=130,font=("Georgia",20),placeholder_text = "xx/xx/xxxx")
-        self.DataEntry.bind("<KeyRelease>", self.formatar_entrada)
 
 
 
@@ -192,7 +189,7 @@ class COMANDA:
         self.NomeFuncionarioEntry.place(x = 110, y =82)
         self.CPFFUncionarioEntry.place(x = 90, y = 122)
         self.CodigoFuncionarioEntry.place(x = 90, y = 162)
-        self.DataEntry.place(x = 110, y = 202)
+
 
         #TABELA:
         # Estilo da Treeview
@@ -331,32 +328,8 @@ class COMANDA:
         self.check_vars_carrinho = []
 
 
-    def formatar_entrada(self,event):
-        valor = self.DataEntry.get().replace("/", "")  # Remove qualquer barra existente
-        self.novo_valor = ""
 
-        # Adiciona as barras automaticamente enquanto digita
-        if len(valor) > 0:
-            self.novo_valor += valor[:2]
-        if len(valor) > 2:
-            self.novo_valor += "/" + valor[2:4]
-        if len(valor) > 4:
-            self.novo_valor += "/" + valor[4:8]
 
-        self.DataEntry.delete(0, "end")
-        self.DataEntry.insert(0, self.novo_valor)
-
-    def data_mysql(self):
-        try:
-            # Pega o valor já formatado como dd/mm/aaaa
-            data_formatada = self.DataEntry.get()
-            data_obj = datetime.strptime(data_formatada, "%d/%m/%Y")
-            data_mysql = data_obj.strftime("%Y-%m-%d")
-            print(data_mysql)
-            return data_mysql
-        except ValueError:
-            messagebox.showerror("Error","Data inválida")  # Retorna None se a data for inválida
-            return None
 
     def reabrir_janela(self):
         self.PecaFrame.deiconify()  # Reexibe a janela principal
@@ -757,13 +730,13 @@ class COMANDA:
         
         CodFunc = selecionados[0]["CodFunc"]
         CodCliente = selecionados[0]["CodCliente"]
-        Data = selecionados[0]["Data"]
+        DataAtual = datetime.today().strftime("%Y-%m-%d")
 
         try:
             conn = get_connection()
             cursor = conn.cursor()
             query = "INSERT INTO compra (cod_funcionario, cod_cliente, data_compra, tipo_pagamento, valor_total) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(query, (CodFunc, CodCliente, Data, TipoPagamento, valor_total))
+            cursor.execute(query, (CodFunc, CodCliente, DataAtual, TipoPagamento, valor_total))
             cod_compra = cursor.lastrowid  # Pega o último ID gerado 
 
             
@@ -785,15 +758,17 @@ class COMANDA:
         mensagem = f"{len(selecionados)} item(s) finalizado(s) com sucesso!\n\nItens comprados:\n{itens_texto}"
         messagebox.showinfo("Compra", mensagem)
 
+        self.FrameTelaCarrinho.destroy()
+        self.create_widgets()
+
 
 
     def AdicionarCarrinho(self):
 
         #VERIFICAÇÕES
         #Verificando Data
-        Data = self.data_mysql()
-        if Data == None: #Verificando se a data é ou não valida
-            return #Sai da Funcao
+        DataAtual = datetime.today().strftime("%Y-%m-%d")
+
         
         #Verificando Funcionario
         NomeFunc = self.NomeFuncionarioEntry.get()
@@ -871,7 +846,7 @@ class COMANDA:
         else:
             imagem_pil = self.imagem_padrao_pil.copy()
 
-        item = {"Descricao": DescricaoCarinho, "Quantidade": QuantidadeCarrinho, "Preco":PrecoCarinho, "Imagem": imagem_pil, "Estoque": Estoque, "CodPeca": CodPeca, "CodFunc":CodFunc, "CodCliente": CodCliente, "Data": Data}
+        item = {"Descricao": DescricaoCarinho, "Quantidade": QuantidadeCarrinho, "Preco":PrecoCarinho, "Imagem": imagem_pil, "Estoque": Estoque, "CodPeca": CodPeca, "CodFunc":CodFunc, "CodCliente": CodCliente, "Data": DataAtual}
         
         self.itens_carrinho.append(item)
 
@@ -934,15 +909,13 @@ class COMANDA:
         # # #VERIFICAÇÕES
 
         #Verificando Data
-        Data = self.data_mysql()
-        if Data == None: #Verificando se a data é ou não valida
-            return #Sai da Funcao
+        DataAtual = datetime.today().strftime("%Y-%m-%d")
+
         
         #Verificando Funcionario
         NomeFunc = self.NomeFuncionarioEntry.get()
         CpfFunc = self.CPFFUncionarioEntry.get()
         CodFunc = self.CodigoFuncionarioEntry.get()
-        Data = self.DataEntry.get()
 
         conn = get_connection()
         cursor = conn.cursor()

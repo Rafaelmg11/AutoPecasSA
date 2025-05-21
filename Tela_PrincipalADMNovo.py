@@ -10,6 +10,7 @@ from PIL import Image
 from customtkinter import CTkImage
 import customtkinter as ctk
 from Tela_Usuarios import USUARIO
+from Tela_Compra import COMPRA
 
 
 
@@ -20,7 +21,7 @@ class Menu:
         self.root = root
         self.main_window = main_window
         self.root.title("Tela Principal")
-        self.root.geometry("740x780")
+        self.root.geometry("740x840")
         self.root.configure(fg_color="#5424A2")  # Cor de fundo da janela principal
         self.root.resizable(width = False,height = False) #Impede que a janela seja redimensionada 
         
@@ -43,8 +44,11 @@ class Menu:
         UsuarioButton = ctk.CTkButton(self.root, text="USUARIOS",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_usuario)
         UsuarioButton.place(x = 190, y = 670)
 
+        CompraButton = ctk.CTkButton(self.root, text="COMPRA",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_compra)
+        CompraButton.place(x = 190, y = 730)
+
         VoltarButton = ctk.CTkButton(self.root, text="VOLTAR",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.voltar)
-        VoltarButton.place(x = 190, y = 730 )
+        VoltarButton.place(x = 190, y = 790 )
 
         #LOGO:
         # CARREGAR IMAGEM
@@ -172,6 +176,27 @@ class Menu:
         app_usuario = USUARIO(root_usuario, self.root)  # Passa a referência da janela principal (self.root)
         
         root_usuario.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
+        #root_cliente.mainloop()  # Inicia a execução da janela do cliente
+
+
+    def abrir_compra(self):
+
+        # Oculta a janela principal
+        self.root.withdraw()
+
+        # Cria uma nova janela Tkinter para o cadastro de peca
+        
+        ctk.set_appearance_mode("light")
+          
+  
+        root_compra = ctk.CTkToplevel(self.root)
+        root_compra.title("ABA DE CLIENTE") #Titulo
+        root_compra.geometry("750x570") #Tamanho da janela
+        # Aplica o estilo na nova janela
+        style_combobox(root_compra)
+        app_compra = COMPRA(root_compra, self.root)  # Passa a referência da janela principal (self.root)
+        
+        root_compra.protocol("WM_DELETE_WINDOW", lambda: self.reabrir_janela())  # Fechar corretamente ao fechar a janela 
         #root_cliente.mainloop()  # Inicia a execução da janela do cliente
 
     def voltar(self):
