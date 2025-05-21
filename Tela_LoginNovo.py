@@ -47,17 +47,40 @@ class Tela_Login:
         #CRIANDO AS CAIXAS DE ENTRADA:
         UsuarioEntry = ctk.CTkEntry(self.root, width=200,font=("Georgia",18))
         UsuarioEntry.place(x=100,y=305)
-        SenhaEntry = ctk.CTkEntry (self.root, width=200,font=("Georgia",18))
+        SenhaEntry = ctk.CTkEntry (self.root, width=200,font=("Georgia",18),show='*')
         SenhaEntry.place(x=100,y=385)
         InformaçãoLabel.place(x=150,y=660)
+
+
 
         #LOGO:
         # CARREGAR IMAGEM
         self.Logo_pil = Image.open("icons/Logo.png") #Carrega a imagem da logo
-        self.Logo = CTkImage(self.Logo_pil,size= (350 , 260)) #Converte imagem 
+        self.Logo = CTkImage(self.Logo_pil,size= (350 , 260)) #Converte imagem
+
+        IconOlhoAberto = CTkImage(light_image= Image.open("icons/OlhoLivre.png"),size = (22, 22)) 
+        IconOlhoBloqueado = CTkImage(light_image= Image.open("icons/OlhoBloqueado.png"),size = (22, 22))
+
         LogoLabel = ctk.CTkLabel(self.root,text = "",image=self.Logo,font=("Georgia",14))
         LogoLabel.place(x = 30, y = 0)
 
+        global ver
+
+        ver = 1
+
+        def ver_sennha():
+            global ver
+            ver = ver + 1
+            if ver%2 == 0:
+                VerSenhaButton.configure(image = IconOlhoAberto)
+                SenhaEntry.configure(show = "")
+            elif ver%2 == 1:
+                VerSenhaButton.configure(image = IconOlhoBloqueado)
+                SenhaEntry.configure(show="*")
+            
+
+        VerSenhaButton =  ctk.CTkButton(self.root, text = "",width= 0 , image=IconOlhoBloqueado, font=("Georgia", 20),command=ver_sennha)
+        VerSenhaButton.place(x = 305, y = 385)
 
         def login():
             usuario = UsuarioEntry.get()

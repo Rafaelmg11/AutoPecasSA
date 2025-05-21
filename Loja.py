@@ -35,8 +35,6 @@ class Loja:
 
         self.cod_usuario,self.cpf_usuario,self.cod_cliente = usuarioconsulta
 
-            
-
         # Tamanho desejado da janela
         largura = 1600
         altura = 870
@@ -71,6 +69,8 @@ class Loja:
 
         self.contador_pagina()
         self.create_widgets()
+        # self.carrinho_banco()
+
 
     def bloquear_tudo_exceto_setas(self, event):
         # Permitir apenas as teclas de seta
@@ -326,6 +326,46 @@ class Loja:
         print(f"SEDEX: Preço: {self.sedex_preco} | Prazo: {self.sedex_prazo} dias")
 
 
+    def carrinho_banco(self):
+
+        CodFunc = 1000
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""select peca.desc_peca, (peca.valor_unitario * carrinho.quantidade) as valor_total, peca.imagem, peca.qtde_estoque, carrinho.quantidade, peca.cod_peca, cliente.cod_cliente FROM carrinho 
+                            inner join peca 
+                                on peca.cod_peca = carrinho.cod_peca 
+                            inner join usuario
+                                on usuario.cod_usuario = carrinho.cod_usuario 
+                            inner join cliente 
+                                on usuario.cod_cliente = cliente.cod_cliente 
+                            WHERE peca.status = TRUE and carrinho.cod_usuario = %s""",(self.cod_usuario,))
+                            
+        CarrinhoPecas = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        for Peca in CarrinhoPecas:
+
+            Descricao, PrecoTotal, Imagem,QtdeEstoque,QtdeCompra,CodPeca,CodCliente = Peca
+
+            CodFunc = 1000
+
+
+            if Imagem:  # SE TEM IMAGEM NO BANCO
+                imagem_pil = Image.open(io.BytesIO(Imagem))
+            else:  # SE NÃO TIVER USA A IMAGEM PADRÂO
+                with open("sem_imagem.png", "rb") as f:
+                    imagem_padrao_bytes = f.read() #MODO DE LEITURA BINARIA
+                    imagem_pil = Image.open(io.BytesIO(imagem_padrao_bytes))
+
+            Imagem = imagem_pil
+
+            item = {"Descricao": Descricao, "Quantidade": QtdeCompra, "Preco":PrecoTotal, "Imagem": Imagem, "Estoque": QtdeEstoque, "CodPeca": CodPeca, "CodFunc":CodFunc, "CodCliente": CodCliente}
+
+            self.itens_carrinho.append(item)
+
+
     def get_itens_selecionados(self):
         selecionados = []
         for i, var in enumerate(self.check_vars_carrinho):
@@ -463,7 +503,6 @@ class Loja:
         messagebox.showinfo("Success","Peça adicionada no carrinho com sucesso")
         print(item)
 
-
     def excluir_item_do_carrinho(self, indice):
         # Verificação adicional de segurança
         if not self.itens_carrinho or indice >= len(self.itens_carrinho):
@@ -593,6 +632,12 @@ class Loja:
 
     def abrir_carrinho(self):
 
+        # Limpa os itens antigos do carrinho antes de recarregar
+        self.itens_carrinho = []
+        self.check_vars_carrinho = []
+        self.frames_carrinho = []
+
+        self.carrinho_banco()
 
         self.FrameCarrinho = ctk.CTkFrame(self.root, width=1540, height=845, fg_color="#5424A2",border_color="#F9F5FF",border_width=0,corner_radius=0)
         self.FrameCarrinho.place(x = 0 , y = 60)
@@ -1029,8 +1074,6 @@ class Loja:
         self.CategoriaCB.set("Categorias") #FRASE DO FRONT END INICIAL
         self.CategoriaCB.configure(command=lambda _: self.Selecionado_Categoria() )
         self.CategoriaCB.bind("<Key>", self.bloquear_tudo_exceto_setas)
-
-
 
     def favoritar(self, botao, estado):
         estado[0] = not estado[0]

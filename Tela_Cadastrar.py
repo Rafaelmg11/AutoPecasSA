@@ -122,7 +122,6 @@ class CADASTRO:
             self.root.destroy()  # Fecha a janela de cadastro de clientes, liberando recursos
             self.main_window.deiconify()  # Reexibe a janela principal
 
-
             
         def cadastrar_cliente():
             
@@ -197,7 +196,7 @@ class CADASTRO:
         EmailEntry = ctk.CTkEntry(self.frame_cadastro,width=320,font=("Georgia",20),placeholder_text = "Digite o seu E-mail")
         self.entry_endereco = ctk.CTkEntry (self.frame_cadastro,width=300,font=("Georgia",20),placeholder_text = "Clique no botão à esquerda")
         UsuarioEntry = ctk.CTkEntry (self.frame_cadastro,width=320,font=("Georgia",20),placeholder_text = "Digite seu nickname para usuario")
-        SenhaEntry = ctk.CTkEntry (self.frame_cadastro,width=320,font=("Georgia",20),placeholder_text = "Digite sua Senha")
+        SenhaEntry = ctk.CTkEntry (self.frame_cadastro,width=290,font=("Georgia",20),placeholder_text = "Digite sua Senha",show="*")
         # Bloqueia a digitação
         self.entry_endereco.bind("<Key>", bloquear_tudo_exceto_setas)
 
@@ -224,6 +223,29 @@ class CADASTRO:
         #BOTÃO DE VOLTAR:
         voltar_button = ctk.CTkButton(self.root, text="VOLTAR",width=260,height= 50, font=("Georgia", 24), command=voltar_para_principal) #AÇÃO PARA O BOTÃO
         voltar_button.place(x=125, y=650)
+
+        #VER SENHA
+        IconOlhoAberto = CTkImage(light_image= Image.open("icons/OlhoLivre.png"),size = (21, 21))
+        IconOlhoBloqueado = CTkImage(light_image= Image.open("icons/OlhoBloqueado.png"),size = (21, 21))
+
+
+        global ver
+
+        ver = 1
+
+        def ver_sennha():
+            global ver
+            ver = ver + 1
+            if ver%2 == 0:
+                VerSenhaButton.configure(image = IconOlhoAberto)
+                SenhaEntry.configure(show = "")
+            elif ver%2 == 1:
+                VerSenhaButton.configure(image = IconOlhoBloqueado)
+                SenhaEntry.configure(show="*")
+            
+
+        VerSenhaButton =  ctk.CTkButton(self.frame_cadastro, text = "",width= 0 , image=IconOlhoBloqueado, font=("Georgia", 20),command=ver_sennha)
+        VerSenhaButton.place(x = 435, y = 323)
 
     
     def reabrir_janela(self):

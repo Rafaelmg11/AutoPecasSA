@@ -217,6 +217,9 @@ class FUNCIONARIO:
         #FUNÇÃO PARA CARREGAR IMAGEM:
         def carregar_imagem():
             global imagem_bytes, imagem_display #Variaveis globais
+            if not imagem_bytes:
+                with open("sem_imagem.png", "rb") as f:
+                    imagem_bytes = f.read()
             caminho = filedialog.askopenfilename(filetypes=[("Imagens","*.png;*.jpg;*.jpeg")]) # Abre gerenciador de arquivos na pasta "Imagens"(recebe o caminho do arquivo)
             if caminho:
                 with open(caminho,"rb") as f: #Abre o arquivo localizado em modo de leitura binaria(bytes)
@@ -252,7 +255,7 @@ class FUNCIONARIO:
             else:
 
                 if Nome and Telefone and Email and CPF and Endereco and Cargo and Salario and CodEndereco and Usuario and Senha:
-                    if not "ADM" in Usuario or not "USER" in Usuario:
+                    if not "ADM" in Usuario and not "USER" in Usuario:
                         messagebox.showerror("Error","Usuario Invalido, deve conter 'ADM' ou 'USER'")
                         return
                     else:
@@ -272,6 +275,9 @@ class FUNCIONARIO:
         def alterar_funcionario():
 
             global imagem_bytes
+            if not imagem_bytes:
+                with open("sem_imagem.png", "rb") as f:
+                    imagem_bytes = f.read()
 
             #RECEBENDO VALORES
             Nome = NomeEntry.get()

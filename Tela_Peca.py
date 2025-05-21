@@ -152,7 +152,11 @@ class PECA:
 
         #FUNÇÃO PARA CARREGAR IMAGEM:
         def carregar_imagem():
+
             global imagem_bytes, imagem_display #Variaveis globais
+            if not imagem_bytes:
+                with open("sem_imagem.png", "rb") as f:
+                    imagem_bytes = f.read()
             caminho = filedialog.askopenfilename(filetypes=[("Imagens","*.png;*.jpg;*.jpeg")]) # Abre gerenciador de arquivos na pasta "Imagens"(recebe o caminho do arquivo)
             if caminho:
                 with open(caminho,"rb") as f: #Abre o arquivo localizado em modo de leitura binaria(bytes)
@@ -208,6 +212,10 @@ class PECA:
         def alterar_peca():
 
             global imagem_bytes
+
+            if not imagem_bytes:
+                with open("sem_imagem.png", "rb") as f:
+                    imagem_bytes = f.read()
 
             nome_selecionado = fornecedorCB.get() #VARIAVEL RECEBENDO O NOME DO FORNECEDOR(PARA OBTER O CODIGO FORNECEDOR)
             cod_fornecedor_selecionado = obter_cod_fornecedor(nome_selecionado) #VARIAVEL RECEBENDO O CODIGO DO FORNECEDOR
