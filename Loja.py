@@ -8,6 +8,7 @@ from Crud_novo import get_connection, selecionar_tipopeca
 from StyleComboBox import style_combobox
 from customtkinter import CTkImage
 import requests
+from datetime import datetime
 
 
 
@@ -408,13 +409,13 @@ class Loja:
         
         CodFunc = selecionados[0]["CodFunc"]
         CodCliente = selecionados[0]["CodCliente"]
-        Data = 1111-11-11
+        DataAtual = datetime.today().strftime("%Y-%m-%d")
 
         try:
             conn = get_connection()
             cursor = conn.cursor()
             query = "INSERT INTO compra (cod_funcionario, cod_cliente, data_compra, tipo_pagamento, valor_total) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(query, (CodFunc, CodCliente, Data, TipoPagamento, valor_total))
+            cursor.execute(query, (CodFunc, CodCliente, DataAtual, TipoPagamento, valor_total))
             cod_compra = cursor.lastrowid  # Pega o último ID gerado 
 
             
