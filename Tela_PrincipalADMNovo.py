@@ -47,7 +47,7 @@ class Menu:
         CompraButton = ctk.CTkButton(self.root, text="COMPRA",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.abrir_compra)
         CompraButton.place(x = 190, y = 730)
 
-        VoltarButton = ctk.CTkButton(self.root, text="VOLTAR",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.voltar)
+        VoltarButton = ctk.CTkButton(self.root, text="SAIR",   width=350,font=("Georgia",28),fg_color="#9955FF",height= 40,corner_radius=6, command=self.voltar)
         VoltarButton.place(x = 190, y = 790 )
 
         #LOGO:
