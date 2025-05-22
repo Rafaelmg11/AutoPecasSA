@@ -465,7 +465,6 @@ class PECA:
         fornecedorCB.set("Selecione um Fornecedor")#FRASE DO  FRONT INICIAL
         fornecedorCB.bind("<<ComboboxSelected>>", selecionado_fornec) #AÇÃO DE SELECIONAR
         fornecedorCB.bind("<KeyRelease>",filtrar_fornecedores) #CHAMA A FUNÇÃO DO FILTRO 
-        fornecedorCB.bind("<Key>", bloquear_tudo_exceto_setas)
 
         #CRIANDO LabelS:
         TipoDePecaLabel =ctk.CTkLabel(self.root,text = "Tipo de Peça: ",font = ("Georgia",20),fg_color = "#5424A2", text_color = "WHITE") 
